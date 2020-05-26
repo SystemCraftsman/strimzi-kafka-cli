@@ -1,6 +1,6 @@
 import click
 import os
-from option_extensions import NotRequiredIf, RequiredIf
+from option_extensions import NotRequiredIf, RequiredIf, Mutex
 
 
 @click.group()
@@ -23,17 +23,21 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
     if list:
         os.system('kubectl get kafkatopics -l strimzi.io/cluster={} -n {}'.format(cluster, namespace))
     elif create:
+        #TODO: use the normal method instead of the native one. how will you do it? need a template or sth like that!
         os.system('kubectl exec -it {}-kafka-0 -c kafka -n {} -- bin/kafka-topics.sh --bootstrap-server '
                   'localhost:9092 --create --topic {} --partitions {} --replication-factor {}'.format(cluster, namespace, topic, partitions, replication_factor))
     elif describe:
         if native:
-            print("TODO")
+            os.system('kubectl exec -it {}-kafka-0 -c kafka -n {} -- bin/kafka-topics.sh --bootstrap-server '
+                      'localhost:9092 --describe --topic {} '.format(cluster, namespace, topic))
         else:
-            os.system('kubectl describe kafkatopics {} -l strimzi.io/cluster={} -n {}'.format(topic, cluster, namespace))
+            topic_exists = topic in os.popen('kubectl get kafkatopics -l strimzi.io/cluster={} -n {}'.format(cluster, namespace)).read()
+            if topic_exists:
+                os.system('kubectl describe kafkatopics {} -n {}'.format(topic, namespace))
 
 
 @click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if='list')
-@click.option('--list', help='List all available clusters.', is_flag=True)
+@click.option('--list', help='List all available clusters.', required=True, is_flag=True)
 @click.option('-n', '--namespace', help='Namespace to use', default='default')
 @kfk.command()
 def clusters(cluster, list, namespace):
@@ -42,6 +46,29 @@ def clusters(cluster, list, namespace):
         os.system('kubectl get kafkas -n {}'.format(namespace))
     else:
         os.system('kubectl get kafkas {} -n {}'.format(cluster, namespace))
+
+
+@click.option('-n', '--namespace', help='Namespace to use', required=True)
+@click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('--topic', help='Topic Name', required=True)
+@click.option('--from-beginning', help='kfk', is_flag=True)
+@kfk.command()
+def console_consumer(topic, cluster, from_beginning, namespace):
+    os.system('kubectl exec -it {}-kafka-0 -c kafka -n {} -- bin/kafka-console-consumer.sh --bootstrap-server '
+              'localhost:9092 --topic {} '.format(cluster, namespace, topic))
+
+
+@click.option('-n', '--namespace', help='Namespace to use', required=True)
+@click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('--topic', help='Topic Name', required=True)
+@kfk.command()
+def console_producer(topic, cluster, namespace):
+    os.system('kubectl exec -it {}-kafka-0 -c kafka -n {} -- bin/kafka-console-producer.sh --broker-list '
+              'localhost:9092 --topic {} '.format(cluster, namespace, topic))
+
+@kfk.command()
+def configs():
+    print("Not implemented")
 
 
 if __name__ == '__main__':

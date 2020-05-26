@@ -3,12 +3,12 @@ from setuptools import setup
 setup(
     name='kfk',
     version='0.1',
-    py_modules=['kafka_cli'],
+    py_modules=['kfk_cli'],
     install_requires=[
         'Click',
     ],
     entry_points='''
         [console_scripts]
-        kfk=kafka_cli:kfk
+        kfk=kfk_cli:kfk
     ''',
 )
