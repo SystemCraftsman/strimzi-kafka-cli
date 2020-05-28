@@ -24,7 +24,8 @@ def kfk():
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
-@click.option('--delete-config', help='A topic configuration override to be removed for an existing topic', multiple=True)
+@click.option('--delete-config', help='A topic configuration override to be removed for an existing topic',
+              multiple=True)
 @click.option('--config', help='A topic configuration override for the topic being created or altered.', multiple=True)
 @click.option('--alter', help='Alter the number of partitions, replica assignment, and/or configuration for the topic.',
               is_flag=True)
@@ -39,8 +40,9 @@ def kfk():
 @click.option('--list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def topics(topic, list, create, partitions, replication_factor, describe, native, alter, config, delete_config, cluster, namespace):
-    """The kafka topic(s) to be created, altered or described. """
+def topics(topic, list, create, partitions, replication_factor, describe, native, alter, config, delete_config, cluster,
+           namespace):
+    """The kafka topic(s) to be created, altered or described."""
     if list:
         os.system('kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
                                                                                                   namespace=namespace))
@@ -82,7 +84,8 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
                                                                                             namespace=namespace)).read()
         if topic_exists:
             topic_yaml = os.popen(
-                'kubectl get kafkatopics {topic} -n {namespace} -o yaml'.format(topic=topic, namespace=namespace)).read()
+                'kubectl get kafkatopics {topic} -n {namespace} -o yaml'.format(topic=topic,
+                                                                                namespace=namespace)).read()
 
             file = io.StringIO(topic_yaml)
             topic_dict = yaml.full_load(file)
@@ -90,8 +93,7 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
             topic_dict["spec"]["partitions"] = int(partitions)
             topic_dict["spec"]["replicas"] = int(replication_factor)
 
-            if "annotations" in topic_dict["metadata"]:
-                del topic_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
+            delete_last_applied_configuration(topic_dict)
 
             add_topic_config(config, topic_dict)
             delete_topic_config(delete_config, topic_dict)
@@ -100,18 +102,24 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
             print(topic_yaml)
             os.system(
                 'echo "{topic_yaml}" | kubectl apply -f -'.format(strimzi_path=STRIMZI_PATH, topic_yaml=topic_yaml))
+    else:
+        print_missing_options_for_command("topics")
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
-@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if='list')
+@click.option('--describe', help='List details for the given cluster.', is_flag=True)
 @click.option('--list', help='List all available clusters.', required=True, is_flag=True)
+@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def clusters(cluster, list, namespace):
+def clusters(cluster, list, describe, namespace):
     """The kafka cluster(s) to be created, altered or described. """
     if list:
         os.system('kubectl get kafkas -n {namespace}'.format(namespace=namespace))
+    elif describe:
+        os.system(
+            'kubectl describe kafkas {cluster} -n {namespace}'.format(cluster=cluster, namespace=namespace))
     else:
-        os.system('kubectl get kafkas {cluster} -n {namespace}'.format(cluster=cluster, namespace=namespace))
+        print_missing_options_for_command("clusters")
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -120,9 +128,10 @@ def clusters(cluster, list, namespace):
 @click.option('--from-beginning', help='kfk', is_flag=True)
 @kfk.command()
 def console_consumer(topic, cluster, from_beginning, namespace):
+    """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
     os.system(
-        'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-consumer.sh --bootstrap-server '
-        'localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
+        'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-consumer.sh --bootstrap-server'
+        ' localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -130,13 +139,19 @@ def console_consumer(topic, cluster, from_beginning, namespace):
 @click.option('--topic', help='Topic Name', required=True)
 @kfk.command()
 def console_producer(topic, cluster, namespace):
+    """The console producer is a tool that reads data from standard input and publish it to Kafka."""
     os.system(
-        'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-producer.sh --broker-list '
-        'localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
+        'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-producer.sh --broker-list'
+        ' localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
 
+@kfk.command()
+def users():
+    """The kafka user(s) to be created, altered or described."""
+    print("Not implemented")
 
 @kfk.command()
 def configs():
+    """Add/Remove entity config for a topic, client, user or broker"""
     print("Not implemented")
 
 
@@ -166,6 +181,16 @@ def download_strimzi_if_not_exists():
         tar.close()
         print("Deleting {file} file".format(file=strimzi_tarfile_path))
         os.remove(strimzi_tarfile_path)
+
+
+def print_missing_options_for_command(command_str):
+    print("Missing options: kfk {command_str} [OPTIONS] \n Try 'kfk {command_str} --help' for help.".format(
+        command_str=command_str))
+
+
+def delete_last_applied_configuration(topic_dict):
+    if "annotations" in topic_dict["metadata"]:
+        del topic_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
 
 
 if __name__ == '__main__':
