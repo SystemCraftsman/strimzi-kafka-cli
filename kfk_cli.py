@@ -19,7 +19,7 @@ STRIMZI_RELEASE_URL = "https://github.com/strimzi/strimzi-kafka-operator/release
 
 @click.group()
 def kfk():
-    """A CLI wrapper for the Strimzi Kafka Operator"""
+    """A CLI for the Strimzi Kafka Operator"""
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
