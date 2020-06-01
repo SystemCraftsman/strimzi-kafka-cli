@@ -77,8 +77,6 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
                     'kubectl describe kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
 
     elif alter:
-        download_strimzi_if_not_exists()
-
         topic_exists = topic in os.popen(
             'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
                                                                                             namespace=namespace)).read()
@@ -90,8 +88,11 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
             file = io.StringIO(topic_yaml)
             topic_dict = yaml.full_load(file)
 
-            topic_dict["spec"]["partitions"] = int(partitions)
-            topic_dict["spec"]["replicas"] = int(replication_factor)
+            if partitions is not None:
+                topic_dict["spec"]["partitions"] = int(partitions)
+
+            if replication_factor is not None:
+                topic_dict["spec"]["replicas"] = int(replication_factor)
 
             delete_last_applied_configuration(topic_dict)
 
@@ -131,7 +132,8 @@ def console_consumer(topic, cluster, from_beginning, namespace):
     """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
     os.system(
         'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-consumer.sh --bootstrap-server'
-        ' localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
+        ' localhost:9092 --topic {topic} {from_beginning}'.format(cluster=cluster, namespace=namespace, topic=topic,
+                                                  from_beginning=(from_beginning and '--from-beginning' or '')))
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -144,10 +146,12 @@ def console_producer(topic, cluster, namespace):
         'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-producer.sh --broker-list'
         ' localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
 
+
 @kfk.command()
 def users():
     """The kafka user(s) to be created, altered or described."""
     print("Not implemented")
+
 
 @kfk.command()
 def configs():
