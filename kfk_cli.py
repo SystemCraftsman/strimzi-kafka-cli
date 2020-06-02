@@ -19,7 +19,7 @@ STRIMZI_RELEASE_URL = "https://github.com/strimzi/strimzi-kafka-operator/release
 
 @click.group()
 def kfk():
-    """A CLI for the Strimzi Kafka Operator"""
+    """Strimzi CLI"""
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -31,6 +31,9 @@ def kfk():
               is_flag=True)
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
               required_if='describe')
+@click.option('--delete', help='Delete a topic.', is_flag=True)
+@click.option('-o', '--output',
+              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.')
 @click.option('--describe', help='List details for the given topic.', is_flag=True)
 @click.option('--replication-factor', help='The replication factor for each partition in the topic being created.',
               cls=RequiredIf, required_if='create')
@@ -40,9 +43,12 @@ def kfk():
 @click.option('--list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def topics(topic, list, create, partitions, replication_factor, describe, native, alter, config, delete_config, cluster,
+def topics(topic, list, create, partitions, replication_factor, describe, output, delete, native, alter, config,
+           delete_config,
+           cluster,
            namespace):
     """The kafka topic(s) to be created, altered or described."""
+
     if list:
         os.system('kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
                                                                                                   namespace=namespace))
@@ -61,20 +67,37 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | kubectl create -f -'.format(strimzi_path=STRIMZI_PATH, topic_yaml=topic_yaml))
+                'echo "{topic_yaml}" | kubectl create -f - -n {namespace}'.format(strimzi_path=STRIMZI_PATH,
+                                                                                  topic_yaml=topic_yaml,
+                                                                                  namespace=namespace))
 
     elif describe:
-        if native:
+        if output is not None:
             os.system(
-                'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-topics.sh --bootstrap-server '
-                'localhost:9092 --describe --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
+                'kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace} -o {output}'.format(
+                    cluster=cluster,
+                    namespace=namespace, output=output))
         else:
-            topic_exists = topic in os.popen(
-                'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
-                                                                                                namespace=namespace)).read()
-            if topic_exists:
+            if native:
                 os.system(
-                    'kubectl describe kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
+                    'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-topics.sh --bootstrap-server '
+                    'localhost:9092 --describe --topic {topic} '.format(cluster=cluster, namespace=namespace,
+                                                                        topic=topic))
+            else:
+                topic_exists = topic in os.popen(
+                    'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
+                                                                                                    namespace=namespace)).read()
+                if topic_exists:
+                    os.system(
+                        'kubectl describe kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
+
+    elif delete:
+        topic_exists = topic in os.popen(
+            'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
+                                                                                            namespace=namespace)).read()
+        if topic_exists:
+            os.system(
+                'kubectl delete kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
 
     elif alter:
         topic_exists = topic in os.popen(
@@ -102,7 +125,9 @@ def topics(topic, list, create, partitions, replication_factor, describe, native
             topic_yaml = yaml.dump(topic_dict)
             print(topic_yaml)
             os.system(
-                'echo "{topic_yaml}" | kubectl apply -f -'.format(strimzi_path=STRIMZI_PATH, topic_yaml=topic_yaml))
+                'echo "{topic_yaml}" | kubectl apply -f - -n {namespace} '.format(strimzi_path=STRIMZI_PATH,
+                                                                                  topic_yaml=topic_yaml,
+                                                                                  namespace=namespace))
     else:
         print_missing_options_for_command("topics")
 
@@ -126,14 +151,15 @@ def clusters(cluster, list, describe, namespace):
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
 @click.option('--topic', help='Topic Name', required=True)
-@click.option('--from-beginning', help='kfk', is_flag=True)
+@click.option('--from-beginning', help='Consumes messages from beginning', is_flag=True)
 @kfk.command()
 def console_consumer(topic, cluster, from_beginning, namespace):
     """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
     os.system(
         'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-console-consumer.sh --bootstrap-server'
         ' localhost:9092 --topic {topic} {from_beginning}'.format(cluster=cluster, namespace=namespace, topic=topic,
-                                                  from_beginning=(from_beginning and '--from-beginning' or '')))
+                                                                  from_beginning=(
+                                                                          from_beginning and '--from-beginning' or '')))
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -147,10 +173,62 @@ def console_producer(topic, cluster, namespace):
         ' localhost:9092 --topic {topic} '.format(cluster=cluster, namespace=namespace, topic=topic))
 
 
+@click.option('-n', '--namespace', help='Namespace to use', required=True)
+@click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('--delete', help='Delete a user.', is_flag=True)
+@click.option('-o', '--output',
+              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.')
+@click.option('--describe', help='List details for the given user.', is_flag=True)
+@click.option('--authentication-type', type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
+              required_if='create')
+@click.option('--create', help='Create a new user.', is_flag=True)
+@click.option('--list', help='List all available users.', is_flag=True)
+@click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def users():
+def users(user, list, create, authentication_type, describe, output, delete, cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
-    print("Not implemented")
+    if list:
+        os.system('kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
+                                                                                                 namespace=namespace))
+    elif create:
+        download_strimzi_if_not_exists()
+
+        with open(r'{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
+                version=STRIMZI_VERSION)) as file:
+            topic_dict = yaml.full_load(file)
+
+            topic_dict["metadata"]["name"] = user
+            topic_dict["spec"]["authentication"]["type"] = authentication_type
+            del topic_dict["spec"]["authorization"]
+
+            topic_yaml = yaml.dump(topic_dict)
+            os.system(
+                'echo "{topic_yaml}" | kubectl create -f - -n {namespace}'.format(strimzi_path=STRIMZI_PATH,
+                                                                                  topic_yaml=topic_yaml,
+                                                                                  namespace=namespace))
+
+    elif describe:
+        if output is not None:
+            os.system(
+                'kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace} -o {output}'.format(
+                    cluster=cluster,
+                    namespace=namespace, output=output))
+        else:
+            user_exists = user in os.popen(
+                'kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
+                                                                                               namespace=namespace)).read()
+            if user_exists:
+                os.system(
+                    'kubectl describe kafkausers {user} -n {namespace}'.format(user=user, namespace=namespace))
+    elif delete:
+        user_exists = user in os.popen(
+            'kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
+                                                                                           namespace=namespace)).read()
+        if user_exists:
+            os.system(
+                'kubectl delete kafkausers {user} -n {namespace}'.format(user=user, namespace=namespace))
+    else:
+        print_missing_options_for_command("users")
 
 
 @kfk.command()
