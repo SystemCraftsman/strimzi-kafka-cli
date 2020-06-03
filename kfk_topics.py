@@ -20,7 +20,8 @@ from constants import *
               required_if='describe')
 @click.option('--delete', help='Delete a topic.', is_flag=True)
 @click.option('-o', '--output',
-              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.')
+              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
+                   '|jsonpath-file.')
 @click.option('--describe', help='List details for the given topic.', is_flag=True)
 @click.option('--replication-factor', help='The replication factor for each partition in the topic being created.',
               cls=RequiredIf, required_if='create')

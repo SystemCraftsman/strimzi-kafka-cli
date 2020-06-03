@@ -1,13 +1,14 @@
 import click
 
+
 class NotRequiredIf(click.Option):
     def __init__(self, *args, **kwargs):
         self.not_required_if = kwargs.pop('not_required_if')
         assert self.not_required_if, "'not_required_if' parameter required"
         kwargs['help'] = (kwargs.get('help', '') +
-            ' This argument is mutually exclusive with %s' %
-            self.not_required_if
-        ).strip()
+                          ' This argument is mutually exclusive with %s' %
+                          self.not_required_if
+                          ).strip()
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
@@ -42,7 +43,6 @@ class RequiredIf(click.Option):
 
         if other_present or we_are_present:
             self.required = True
-
 
         return super(RequiredIf, self).handle_parse_result(
             ctx, opts, args)

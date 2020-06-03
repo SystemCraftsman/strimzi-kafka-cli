@@ -12,7 +12,8 @@ from constants import *
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
 @click.option('--delete', help='Delete a user.', is_flag=True)
 @click.option('-o', '--output',
-              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.')
+              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
+                   '|jsonpath-file.')
 @click.option('--describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
               required_if='create')

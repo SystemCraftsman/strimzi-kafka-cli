@@ -8,6 +8,7 @@ from constants import *
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
+
 @click.group()
 def kfk():
     """Strimzi CLI"""
