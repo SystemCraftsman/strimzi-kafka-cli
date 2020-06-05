@@ -26,9 +26,8 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
     """The kafka user(s) to be created, altered or described."""
     if list:
         os.system(
-            Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace("{namespace}").build().format(
-                cluster=cluster,
-                namespace=namespace))
+            Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
+                cluster=cluster))
     elif create:
         download_strimzi_if_not_exists()
 
@@ -42,33 +41,28 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | ' + Kubectl().create().from_file("-").namespace("{namespace}").build().format(
+                'echo "{topic_yaml}" | ' + Kubectl().create().from_file("-").namespace(namespace).build().format(
                     strimzi_path=STRIMZI_PATH,
-                    topic_yaml=topic_yaml,
-                    namespace=namespace))
+                    topic_yaml=topic_yaml))
 
     elif describe:
         if output is not None:
             user_exists = user in os.popen(
-                Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(
-                    "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
+                Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
+                    cluster=cluster)).read()
             if user_exists:
-                os.system(Kubectl().get().kafkausers("{user}").output("{output}").namespace("{namespace}").format(
-                    user=user,
-                    namespace=namespace, output=output))
+                os.system(Kubectl().get().kafkausers(user).output(output).namespace(namespace).build)
         else:
             user_exists = user in os.popen(
                 Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(
                     "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
             if user_exists:
-                os.system(
-                    'kubectl describe kafkausers {user} -n {namespace}'.format(user=user, namespace=namespace))
+                os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
     elif delete:
         user_exists = user in os.popen(
-            Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(
-                "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
+            Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
+                cluster=cluster)).read()
         if user_exists:
-            os.system(
-                'kubectl delete kafkausers {user} -n {namespace}'.format(user=user, namespace=namespace))
+            os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
     else:
         print_missing_options_for_command("users")

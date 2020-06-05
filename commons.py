@@ -1,4 +1,3 @@
-import click
 import os
 import wget
 import tarfile
@@ -7,10 +6,6 @@ import ssl
 from constants import *
 
 ssl._create_default_https_context = ssl._create_unverified_context
-
-@click.group()
-def kfk():
-    """Strimzi CLI"""
 
 
 def download_strimzi_if_not_exists():
@@ -32,6 +27,6 @@ def print_missing_options_for_command(command_str):
         command_str=command_str))
 
 
-def delete_last_applied_configuration(dict):
-    if "annotations" in dict["metadata"]:
-        del dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
+def delete_last_applied_configuration(resource_dict):
+    if "annotations" in resource_dict["metadata"]:
+        del resource_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]

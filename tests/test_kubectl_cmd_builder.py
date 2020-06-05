@@ -19,8 +19,10 @@ class TestKubectl(TestCase):
         self.assertEqual(Kubectl().delete().build(), "kubectl delete")
 
     def test_exec(self):
-        self.assertEqual(Kubectl().exec("-it", "test-pod").container("test-container").namespace("test-namespace").exec_command("echo 'test'").build(),
-                         "kubectl exec -it test-pod -c test-container -n test-namespace -- echo 'test'")
+        self.assertEqual(
+            Kubectl().exec("-it", "test-pod").container("test-container").namespace("test-namespace").exec_command(
+                "echo 'test'").build(),
+            "kubectl exec -it test-pod -c test-container -n test-namespace -- echo 'test'")
 
     def test_kafkas_all(self):
         self.assertEqual(Kubectl().get().kafkas().build(), "kubectl get kafkas")
