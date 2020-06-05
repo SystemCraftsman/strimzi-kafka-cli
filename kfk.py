@@ -3,7 +3,7 @@ import click
 
 @click.group()
 def kfk():
-    """Strimzi CLI"""
+    """Strimzi Kafka CLI"""
 
 
 if __name__ == '__main__':

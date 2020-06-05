@@ -62,10 +62,13 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
 
     elif describe:
         if output is not None:
-            os.system(
+            topic_exists = topic in os.popen(
                 Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(
-                    "{namespace}").build().output("{output}").format(cluster=cluster, namespace=namespace,
-                                                                     output=output))
+                    "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
+            if topic_exists:
+                os.system(Kubectl().get().kafkatopics("{topic}").output("{output}").namespace("{namespace}").build().format(
+                    topic=topic,
+                    namespace=namespace, output=output))
         else:
             if native:
                 native_command = "bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topic}"
@@ -77,7 +80,7 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                     Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(
                         "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
                 if topic_exists:
-                    os.system(Kubectl().describe().kafkatopics("{topic}").namespace("{namespace}").format(topic=topic,
+                    os.system(Kubectl().describe().kafkatopics("{topic}").namespace("{namespace}").build().format(topic=topic,
                                                                                                           namespace=namespace))
 
     elif delete:
@@ -94,8 +97,8 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                 cluster=cluster, namespace=namespace)).read()
         if topic_exists:
             topic_yaml = os.popen(
-                'kubectl get kafkatopics {topic} -n {namespace} -o yaml'.format(topic=topic,
-                                                                                namespace=namespace)).read()
+                Kubectl().get().kafkatopics("{topic}").namespace("{namespace}").build().format(topic=topic,
+                                                                                               namespace=namespace)).read()
 
             file = io.StringIO(topic_yaml)
             topic_dict = yaml.full_load(file)
@@ -114,9 +117,10 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             topic_yaml = yaml.dump(topic_dict)
             print(topic_yaml)
             os.system(
-                'echo "{topic_yaml}" | kubectl apply -f - -n {namespace} '.format(strimzi_path=STRIMZI_PATH,
-                                                                                  topic_yaml=topic_yaml,
-                                                                                  namespace=namespace))
+                'echo "{topic_yaml}" | ' + Kubectl().apply().from_file("-").namespace("{namespace}").build().format(
+                    strimzi_path=STRIMZI_PATH,
+                    topic_yaml=topic_yaml,
+                    namespace=namespace))
     else:
         print_missing_options_for_command("topics")
 
