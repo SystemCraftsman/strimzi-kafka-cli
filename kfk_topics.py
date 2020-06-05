@@ -7,6 +7,7 @@ from kfk import kfk
 from option_extensions import NotRequiredIf, RequiredIf
 from commons import print_missing_options_for_command, download_strimzi_if_not_exists, delete_last_applied_configuration
 from constants import *
+from kubectl_command_builder import Kubectl
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -32,14 +33,13 @@ from constants import *
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
 def topics(topic, list, create, partitions, replication_factor, describe, output, delete, native, alter, config,
-           delete_config,
-           cluster,
-           namespace):
+           delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
-
     if list:
-        os.system('kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
-                                                                                                  namespace=namespace))
+        os.system(
+            Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace("{namespace}").build().format(
+                cluster=cluster,
+                namespace=namespace))
     elif create:
         download_strimzi_if_not_exists()
 
@@ -55,42 +55,43 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | kubectl create -f - -n {namespace}'.format(strimzi_path=STRIMZI_PATH,
-                                                                                  topic_yaml=topic_yaml,
-                                                                                  namespace=namespace))
+                'echo "{topic_yaml}" | ' + Kubectl().create().from_file("-").namespace("{namespace}").build().format(
+                    strimzi_path=STRIMZI_PATH,
+                    topic_yaml=topic_yaml,
+                    namespace=namespace))
 
     elif describe:
         if output is not None:
             os.system(
-                'kubectl get kafkausers -l strimzi.io/cluster={cluster} -n {namespace} -o {output}'.format(
-                    cluster=cluster,
-                    namespace=namespace, output=output))
+                Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(
+                    "{namespace}").build().output("{output}").format(cluster=cluster, namespace=namespace,
+                                                                     output=output))
         else:
             if native:
+                native_command = "bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topic}"
                 os.system(
-                    'kubectl exec -it {cluster}-kafka-0 -c kafka -n {namespace} -- bin/kafka-topics.sh --bootstrap-server '
-                    'localhost:9092 --describe --topic {topic} '.format(cluster=cluster, namespace=namespace,
-                                                                        topic=topic))
+                    Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace("{namespace}").exec_command(
+                        native_command).build().format(cluster=cluster, namespace=namespace, topic=topic))
             else:
                 topic_exists = topic in os.popen(
-                    'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
-                                                                                                    namespace=namespace)).read()
+                    Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(
+                        "{namespace}").build().format(cluster=cluster, namespace=namespace)).read()
                 if topic_exists:
-                    os.system(
-                        'kubectl describe kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
+                    os.system(Kubectl().describe().kafkatopics("{topic}").namespace("{namespace}").format(topic=topic,
+                                                                                                          namespace=namespace))
 
     elif delete:
         topic_exists = topic in os.popen(
-            'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
-                                                                                            namespace=namespace)).read()
+            Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace("{namespace}").build().format(
+                cluster=cluster, namespace=namespace)).read()
         if topic_exists:
-            os.system(
-                'kubectl delete kafkatopics {topic} -n {namespace}'.format(topic=topic, namespace=namespace))
+            os.system(Kubectl().delete().kafkatopics("{topic}").namespace("{namespace}").build().format(topic=topic,
+                                                                                                        namespace=namespace))
 
     elif alter:
         topic_exists = topic in os.popen(
-            'kubectl get kafkatopics -l strimzi.io/cluster={cluster} -n {namespace}'.format(cluster=cluster,
-                                                                                            namespace=namespace)).read()
+            Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace("{namespace}").build().format(
+                cluster=cluster, namespace=namespace)).read()
         if topic_exists:
             topic_yaml = os.popen(
                 'kubectl get kafkatopics {topic} -n {namespace} -o yaml'.format(topic=topic,
