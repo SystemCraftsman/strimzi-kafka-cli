@@ -109,11 +109,9 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             delete_topic_config(delete_config, topic_dict)
 
             topic_yaml = yaml.dump(topic_dict)
-            print(topic_yaml)
             os.system(
-                'echo "{topic_yaml}" | ' + Kubectl().apply().from_file("-").namespace(namespace).build().format(
-                    strimzi_path=STRIMZI_PATH,
-                    topic_yaml=topic_yaml))
+                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().apply().from_file("-").namespace(
+                    namespace).build())
     else:
         print_missing_options_for_command("topics")
 

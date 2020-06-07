@@ -41,9 +41,8 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | ' + Kubectl().create().from_file("-").namespace(namespace).build().format(
-                    strimzi_path=STRIMZI_PATH,
-                    topic_yaml=topic_yaml))
+                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().create().from_file("-").namespace(
+                    namespace).build())
 
     elif describe:
         if output is not None:
@@ -51,7 +50,7 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
                 Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
                     cluster=cluster)).read()
             if user_exists:
-                os.system(Kubectl().get().kafkausers(user).output(output).namespace(namespace).build)
+                os.system(Kubectl().get().kafkausers(user).output(output).namespace(namespace).build())
         else:
             user_exists = user in os.popen(
                 Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(
