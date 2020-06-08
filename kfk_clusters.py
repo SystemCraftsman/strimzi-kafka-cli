@@ -18,7 +18,7 @@ from kubectl_command_builder import Kubectl
 def clusters(cluster, list, describe, output, namespace):
     """The kafka cluster(s) to be created, altered or described. """
     if list:
-        os.system(Kubectl().get().kafkas().namespace("{namespace}").build().format(namespace=namespace))
+        os.system(Kubectl().get().kafkas().namespace(namespace).build())
     elif describe:
         if output is not None:
             os.system(

@@ -23,7 +23,7 @@ def download_strimzi_if_not_exists():
 
 
 def print_missing_options_for_command(command_str):
-    print("Missing options: kfk {command_str} [OPTIONS] \n Try 'kfk {command_str} --help' for help.".format(
+    print("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
         command_str=command_str))
 
 

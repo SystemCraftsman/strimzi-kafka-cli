@@ -43,6 +43,8 @@ class RequiredIf(click.Option):
 
         if other_present or we_are_present:
             self.required = True
+        else:
+            self.required = None
 
         return super(RequiredIf, self).handle_parse_result(
             ctx, opts, args)
