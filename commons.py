@@ -2,8 +2,10 @@ import os
 import wget
 import tarfile
 import ssl
+import io
 
 from constants import *
+from kubectl_command_builder import Kubectl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -30,3 +32,20 @@ def print_missing_options_for_command(command_str):
 def delete_last_applied_configuration(resource_dict):
     if "annotations" in resource_dict["metadata"]:
         del resource_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
+
+
+def resource_exists(resource_type, resource_name, cluster, namespace):
+    return resource_name in os.popen(
+        Kubectl().get().resource(resource_type).label("strimzi.io/cluster={cluster}").namespace(
+            namespace).build().format(
+            cluster=cluster)).read()
+
+
+def get_resource_yaml(resource_type, resource_name, namespace):
+    return os.popen(
+        Kubectl().get().resource(resource_type, resource_name).namespace(namespace).output("yaml").build()).read()
+
+
+def get_resource_as_file(resource_type, resource_name, namespace):
+    topic_yaml = get_resource_yaml(resource_type, resource_name, namespace)
+    return io.StringIO(topic_yaml)

@@ -1,13 +1,14 @@
 import click
 import os
-import io
 import yaml
 
 from kfk import kfk
 from option_extensions import NotRequiredIf, RequiredIf
-from commons import print_missing_options_for_command, download_strimzi_if_not_exists, delete_last_applied_configuration
+from commons import print_missing_options_for_command, download_strimzi_if_not_exists, \
+    delete_last_applied_configuration, resource_exists, get_resource_as_file
 from constants import *
 from kubectl_command_builder import Kubectl
+from utils import convert_string_to_type
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -54,18 +55,13 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | ' + Kubectl().create().from_file("-").namespace(namespace).build().format(
-                    strimzi_path=STRIMZI_PATH,
-                    topic_yaml=topic_yaml))
+                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().create().from_file("-").namespace(namespace).build())
 
     elif describe:
         if output is not None:
-            topic_exists = topic in os.popen(
-                Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
-                    cluster=cluster)).read()
-            if topic_exists:
+            if resource_exists("kafkatopics", topic, cluster, namespace):
                 os.system(
-                    Kubectl().get().kafkatopics(topic).output(output).namespace(namespace).build())
+                    Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
         else:
             if native:
                 native_command = "bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topic}"
@@ -73,28 +69,17 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                     Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
                         native_command).build().format(topic=topic, cluster=cluster))
             else:
-                topic_exists = topic in os.popen(
-                    Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(
-                        namespace).build().format(cluster=cluster)).read()
-                if topic_exists:
+                if resource_exists("kafkatopics", topic, cluster, namespace):
                     os.system(
                         Kubectl().describe().kafkatopics(topic).namespace(namespace).build())
 
     elif delete:
-        topic_exists = topic in os.popen(
-            Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
-                cluster=cluster)).read()
-        if topic_exists:
+        if resource_exists("kafkatopics", topic, cluster, namespace):
             os.system(Kubectl().delete().kafkatopics(topic).namespace(namespace).build())
 
     elif alter:
-        topic_exists = topic in os.popen(
-            Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
-                cluster=cluster)).read()
-        if topic_exists:
-            topic_yaml = os.popen(
-                Kubectl().get().kafkatopics(topic).namespace(namespace).output("yaml").build()).read()
-            file = io.StringIO(topic_yaml)
+        if resource_exists("kafkatopics", topic, cluster, namespace):
+            file = get_resource_as_file("kafkatopics", topic, namespace)
             topic_dict = yaml.full_load(file)
 
             if partitions is not None:
@@ -120,7 +105,7 @@ def add_topic_config(config, topic_dict):
     if type(config) is tuple:
         for config_str in config:
             config_arr = config_str.split('=')
-            topic_dict["spec"]["config"][config_arr[0]] = config_arr[1]
+            topic_dict["spec"]["config"][config_arr[0]] = convert_string_to_type(config_arr[1])
 
 
 def delete_topic_config(delete_config, topic_dict):

@@ -23,13 +23,13 @@ class TestKfkClusters(TestCase):
         mock_os.system.assert_called_with(Kubectl().get().kafkas().namespace(self.namespace).build())
 
     @mock.patch('kfk_clusters.os')
-    def test_describe_clusters(self, mock_os):
+    def test_describe_cluster(self, mock_os):
         result = self.runner.invoke(kfk, ['clusters', '--describe', '--cluster', self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build())
 
     @mock.patch('kfk_clusters.os')
-    def test_describe_clusters_output_yaml(self, mock_os):
+    def test_describe_cluster_output_yaml(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['clusters', '--describe', '--cluster', self.cluster, '-n', self.namespace, '-o',
                                      'yaml'])

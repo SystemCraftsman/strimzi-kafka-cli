@@ -4,7 +4,7 @@ from kfk_users import kfk
 from kubectl_command_builder import Kubectl
 
 
-class TestKfkClusters(TestCase):
+class TestKfkUsers(TestCase):
 
     def setUp(self):
         self.runner = CliRunner()
@@ -25,29 +25,29 @@ class TestKfkClusters(TestCase):
             Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(self.namespace).build().format(
                 cluster=self.cluster))
 
-    @mock.patch('kfk_users.user_exists')
+    @mock.patch('kfk_users.resource_exists')
     @mock.patch('kfk_users.os')
-    def test_describe_users(self, mock_os, mock_user_exists):
+    def test_describe_user(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk, ['users', '--describe', '--user', self.user, '-c', self.cluster, '-n',
                                           self.namespace])
         assert result.exit_code == 0
-        mock_user_exists.return_value = True
         mock_os.system.assert_called_with(Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
 
-    @mock.patch('kfk_users.user_exists')
+    @mock.patch('kfk_users.resource_exists')
     @mock.patch('kfk_users.os')
-    def test_describe_clusters_output_yaml(self, mock_os, mock_user_exists):
+    def test_describe_user_output_yaml(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
                                     ['users', '--describe', '--user', self.user, '-c', self.cluster, '-n',
                                      self.namespace, '-o',
                                      'yaml'])
         assert result.exit_code == 0
-        mock_user_exists.return_value = True
         mock_os.system.assert_called_with(
             Kubectl().get().kafkausers(self.user).namespace(self.namespace).output("yaml").build())
 
     @mock.patch('kfk_users.os')
-    def test_create_users(self, mock_os):
+    def test_create_user(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['users', '--create', '--user', self.user, '--authentication-type', 'tls', '-c',
                                      self.cluster, '-n',
@@ -59,26 +59,26 @@ class TestKfkClusters(TestCase):
                 'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().create().from_file("-").namespace(
                     self.namespace).build())
 
-    def test_create_users_with_wrong_auth_type(self):
+    def test_create_user_with_wrong_auth_type(self):
         result = self.runner.invoke(kfk,
                                     ['users', '--create', '--user', self.user, '--authentication-type', 'auth', '-c',
                                      self.cluster, '-n',
                                      self.namespace])
         assert result.exit_code == 2
 
-    def test_create_users_without_auth_type(self):
+    def test_create_user_without_auth_type(self):
         result = self.runner.invoke(kfk,
                                     ['users', '--create', '--user', self.user, '-c',
                                      self.cluster, '-n',
                                      self.namespace])
         assert result.exit_code == 2
 
-    @mock.patch('kfk_users.user_exists')
+    @mock.patch('kfk_users.resource_exists')
     @mock.patch('kfk_users.os')
-    def test_delete_users(self, mock_os, mock_user_exists):
+    def test_delete_user(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
                                     ['users', '--delete', '--user', self.user, '-c', self.cluster, '-n',
                                      self.namespace])
         assert result.exit_code == 0
-        mock_user_exists.return_value = True
         mock_os.system.assert_called_with(Kubectl().delete().kafkausers(self.user).namespace(self.namespace).build())

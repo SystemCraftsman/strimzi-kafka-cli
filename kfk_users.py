@@ -4,7 +4,7 @@ import yaml
 
 from kfk import kfk
 from option_extensions import NotRequiredIf, RequiredIf
-from commons import print_missing_options_for_command, download_strimzi_if_not_exists
+from commons import print_missing_options_for_command, download_strimzi_if_not_exists, resource_exists
 from constants import *
 from kubectl_command_builder import Kubectl
 
@@ -46,19 +46,13 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
 
     elif describe:
         if output is not None:
-            if user_exists(user, cluster, namespace):
+            if resource_exists("kafkausers", user, cluster, namespace):
                 os.system(Kubectl().get().kafkausers(user).namespace(namespace).output(output).build())
         else:
-            if user_exists(user, cluster, namespace):
+            if resource_exists("kafkausers", user, cluster, namespace):
                 os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
     elif delete:
-        if user_exists(user, cluster, namespace):
+        if resource_exists("kafkausers", user, cluster, namespace):
             os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
     else:
         print_missing_options_for_command("users")
-
-
-def user_exists(user, cluster, namespace):
-    return user in os.popen(
-        Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
-            cluster=cluster)).read()

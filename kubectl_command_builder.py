@@ -34,19 +34,16 @@ class Kubectl:
         return self
 
     def kafkas(self, *vals):
-        self.cmd_str = self.cmd_str + SPACE + "kafkas"
-        for val in vals:
-            self.cmd_str = self.cmd_str + SPACE + val
-        return self
+        return self.resource("kafkas", *vals)
 
     def kafkatopics(self, *vals):
-        self.cmd_str = self.cmd_str + SPACE + "kafkatopics"
-        for val in vals:
-            self.cmd_str = self.cmd_str + SPACE + val
-        return self
+        return self.resource("kafkatopics", *vals)
 
     def kafkausers(self, *vals):
-        self.cmd_str = self.cmd_str + SPACE + "kafkausers"
+        return self.resource("kafkausers", *vals)
+
+    def resource(self, resource_name, *vals):
+        self.cmd_str = self.cmd_str + SPACE + resource_name
         for val in vals:
             self.cmd_str = self.cmd_str + SPACE + val
         return self
