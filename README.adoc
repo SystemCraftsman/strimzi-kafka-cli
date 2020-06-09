@@ -8,9 +8,10 @@ Intention here is to ramp up Strimzi usage by creating a similar CLI experience 
 [width="100%",options="header,footer"]
 |====================
 | Native Command | Strimzi CLI Command
-| kafka-topics.sh |  kfk topics
-| kafka-configs.sh |  kfk configs
-| kafka-console-consumer.sh |  kfk console-consumer
+| $KAFKA_HOME/bin/kafka-topics.sh |  kfk topics
+| $KAFKA_HOME/bin/kafka-configs.sh |  kfk configs
+| $KAFKA_HOME/bin/kafka-console-consumer.sh |  kfk console-consumer
+| ... |  ...
 |====================
 
 
