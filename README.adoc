@@ -1,6 +1,6 @@
 = Strimzi Kafka CLI
 
-Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users -mostly administrators- to easily adapt https://strimzi.io/[Strimzi], a https://operatorhub.io/operator/strimzi-kafka-operator[Kubernetes operator] for https://kafka.apache.org/[Apache Kafka]. Strongly inspired by https://github.com/tektoncd/cli[Tekton CLI]
+Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users -mostly administrators- to easily adapt https://strimzi.io/[Strimzi], a https://operatorhub.io/operator/strimzi-kafka-operator[Kubernetes operator] for https://kafka.apache.org/[Apache Kafka]. Strongly inspired by https://github.com/tektoncd/cli[Tekton CLI].
 
 Intention here is to ramp up Strimzi usage by creating a similar CLI experience with traditional Apache Kafka binaries. For example:
 
