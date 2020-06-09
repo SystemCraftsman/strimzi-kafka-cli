@@ -35,3 +35,5 @@ Commands:
   topics            The kafka topic(s) to be created, altered or described.
   users             The kafka user(s) to be created, altered or described.
 ----
+
+More info will be added soon.
