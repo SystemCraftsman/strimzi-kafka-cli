@@ -17,7 +17,9 @@ Intention here is to ramp up Strimzi usage by creating a similar CLI experience 
 |====================
 
 
-*kfk* command stands for the traditional *kafka-** prefix of the Apache Kafka runnable files which are located in _bin_ directory. There are options provided like _topics_, __console-consumer__, etc. which also mostly stand for the rest of the runnable file names like _kafka-topic.sh_. However, because of the nature of Strimzi and its capabilities, there are also non-traditional options like _clusters_ which is used for cluster configuration or _users_ which is used for user management and configuration.
+*kfk* command stands for the traditional *kafka-** prefix of the Apache Kafka runnable files which are located in _bin_ directory. There are options provided like _topics_, __console-consumer__, etc. which also mostly stand for the rest of the runnable file names like _kafka-topic.sh_.
+
+However, because of the nature of Strimzi and its capabilities, there are also non-traditional options like _clusters_ which is used for cluster configuration or _users_ which is used for user management and configuration.
 
 Following is the high-level output of the Strimzi Kafka CLI:
 
