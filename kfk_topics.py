@@ -5,10 +5,10 @@ import yaml
 from kfk import kfk
 from option_extensions import NotRequiredIf, RequiredIf
 from commons import print_missing_options_for_command, download_strimzi_if_not_exists, \
-    delete_last_applied_configuration, resource_exists, get_resource_as_file
+    delete_last_applied_configuration, resource_exists, get_resource_as_file, add_resource_kv_config, \
+    delete_resource_config
 from constants import *
 from kubectl_command_builder import Kubectl
-from utils import convert_string_to_type
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -16,11 +16,11 @@ from utils import convert_string_to_type
 @click.option('--delete-config', help='A topic configuration override to be removed for an existing topic',
               multiple=True)
 @click.option('--config', help='A topic configuration override for the topic being created or altered.', multiple=True)
-@click.option('--alter', help='Alter the number of partitions, replica assignment, and/or configuration for the topic.',
+@click.option('--alter', help='Alter the number of partitions, replica assignment, and/or configuration of the topic.',
               is_flag=True)
+@click.option('--delete', help='Delete a topic.', is_flag=True)
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
               required_if='describe')
-@click.option('--delete', help='Delete a topic.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
@@ -33,7 +33,7 @@ from utils import convert_string_to_type
 @click.option('--list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def topics(topic, list, create, partitions, replication_factor, describe, output, delete, native, alter, config,
+def topics(topic, list, create, partitions, replication_factor, describe, output, native, delete, alter, config,
            delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
     if list:
@@ -51,11 +51,12 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             topic_dict["spec"]["partitions"] = int(partitions)
             topic_dict["spec"]["replicas"] = int(replication_factor)
 
-            add_topic_config(config, topic_dict)
+            add_resource_kv_config(config, topic_dict)
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
-                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().create().from_file("-").namespace(namespace).build())
+                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().create().from_file("-").namespace(
+                    namespace).build())
 
     elif describe:
         if output is not None:
@@ -90,8 +91,9 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
 
             delete_last_applied_configuration(topic_dict)
 
-            add_topic_config(config, topic_dict)
-            delete_topic_config(delete_config, topic_dict)
+            add_resource_kv_config(config, topic_dict["spec"]["config"])
+
+            delete_resource_config(delete_config, topic_dict["spec"]["config"])
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
@@ -99,17 +101,3 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                     namespace).build())
     else:
         print_missing_options_for_command("topics")
-
-
-def add_topic_config(config, topic_dict):
-    if type(config) is tuple:
-        for config_str in config:
-            config_arr = config_str.split('=')
-            topic_dict["spec"]["config"][config_arr[0]] = convert_string_to_type(config_arr[1])
-
-
-def delete_topic_config(delete_config, topic_dict):
-    if type(delete_config) is tuple:
-        for delete_config_str in delete_config:
-            if delete_config_str in topic_dict["spec"]["config"]:
-                del topic_dict["spec"]["config"][delete_config_str]

@@ -82,3 +82,77 @@ class TestKfkUsers(TestCase):
                                      self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().delete().kafkausers(self.user).namespace(self.namespace).build())
+
+    @mock.patch('commons.get_resource_yaml')
+    @mock.patch('kfk_users.resource_exists')
+    @mock.patch('kfk_users.os')
+    def test_alter_user_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
+        mock_resource_exists.return_value = True
+        with open(r'yaml/user_create.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '-c', self.cluster, '-n',
+                                         self.namespace])
+            assert result.exit_code == 0
+            mock_os.system.assert_called_with(
+                'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
+                    self.namespace).build())
+
+    @mock.patch('commons.get_resource_yaml')
+    @mock.patch('kfk_users.resource_exists')
+    @mock.patch('kfk_users.os')
+    def test_alter_user_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
+        mock_resource_exists.return_value = True
+        with open(r'yaml/user_create.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '--authentication-type',
+                                         'scram-sha-512', '-c', self.cluster, '-n',
+                                         self.namespace])
+            assert result.exit_code == 0
+            with open(r'yaml/user_alter_without_quotas.yaml') as file:
+                user_yaml = file.read()
+                mock_os.system.assert_called_with(
+                    'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
+                        self.namespace).build())
+
+    @mock.patch('commons.get_resource_yaml')
+    @mock.patch('kfk_users.resource_exists')
+    @mock.patch('kfk_users.os')
+    def test_alter_user_with_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
+        mock_resource_exists.return_value = True
+        with open(r'yaml/user_create.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '--quota', 'requestPercentage=55',
+                                         '-c', self.cluster, '-n',
+                                         self.namespace])
+            assert result.exit_code == 0
+            with open(r'yaml/user_alter_one_quota.yaml') as file:
+                user_yaml = file.read()
+                mock_os.system.assert_called_with(
+                    'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
+                        self.namespace).build())
+
+    @mock.patch('commons.get_resource_yaml')
+    @mock.patch('kfk_users.resource_exists')
+    @mock.patch('kfk_users.os')
+    def test_alter_user_with_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
+        mock_resource_exists.return_value = True
+        with open(r'yaml/user_create.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '--quota', 'requestPercentage=55',
+                                         '--quota', 'consumerByteRate=2097152',
+                                         '-c', self.cluster, '-n',
+                                         self.namespace])
+            assert result.exit_code == 0
+            with open(r'yaml/user_alter_two_quotas.yaml') as file:
+                user_yaml = file.read()
+                mock_os.system.assert_called_with(
+                    'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
+                        self.namespace).build())

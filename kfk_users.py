@@ -4,13 +4,17 @@ import yaml
 
 from kfk import kfk
 from option_extensions import NotRequiredIf, RequiredIf
-from commons import print_missing_options_for_command, download_strimzi_if_not_exists, resource_exists
+from commons import print_missing_options_for_command, download_strimzi_if_not_exists, resource_exists, \
+    get_resource_as_file, delete_last_applied_configuration, add_resource_kv_config, delete_resource_config
 from constants import *
 from kubectl_command_builder import Kubectl
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('--quota', help='User\'s network and CPU utilization quotas in the Kafka cluster.', multiple=True)
+@click.option('--alter', help='Alter authentication-type, quotas, etc. of the user.',
+              is_flag=True)
 @click.option('--delete', help='Delete a user.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
@@ -22,7 +26,7 @@ from kubectl_command_builder import Kubectl
 @click.option('--list', help='List all available users.', is_flag=True)
 @click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def users(user, list, create, authentication_type, describe, output, delete, cluster, namespace):
+def users(user, list, create, authentication_type, describe, output, delete, alter, quota, cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
     if list:
         os.system(
@@ -54,5 +58,25 @@ def users(user, list, create, authentication_type, describe, output, delete, clu
     elif delete:
         if resource_exists("kafkausers", user, cluster, namespace):
             os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
+    elif alter:
+        if resource_exists("kafkausers", user, cluster, namespace):
+            file = get_resource_as_file("kafkausers", user, namespace)
+            user_dict = yaml.full_load(file)
+
+            if authentication_type is not None:
+                user_dict["spec"]["authentication"]["type"] = authentication_type
+
+            delete_last_applied_configuration(user_dict)
+
+            if len(quota) > 0:
+                user_dict["spec"]["quotas"] = {}
+                add_resource_kv_config(quota, user_dict["spec"]["quotas"])
+
+            # TODO: add delete config
+
+            topic_yaml = yaml.dump(user_dict)
+            os.system(
+                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().apply().from_file("-").namespace(
+                    namespace).build())
     else:
         print_missing_options_for_command("users")

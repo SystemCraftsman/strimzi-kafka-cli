@@ -1,0 +1,12 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaUser
+metadata:
+  labels:
+    strimzi.io/cluster: my-cluster
+  name: my-user
+spec:
+  authentication:
+    type: tls
+  quotas:
+    consumerByteRate: 2097152
+    requestPercentage: 55
