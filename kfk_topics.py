@@ -2,13 +2,13 @@ import click
 import os
 import yaml
 
-from kfk import kfk
-from option_extensions import NotRequiredIf, RequiredIf
-from commons import print_missing_options_for_command, download_strimzi_if_not_exists, \
+from .kfk import kfk
+from .option_extensions import NotRequiredIf, RequiredIf
+from .commons import print_missing_options_for_command, download_strimzi_if_not_exists, \
     delete_last_applied_configuration, resource_exists, get_resource_as_file, add_resource_kv_config, \
     delete_resource_config
-from constants import *
-from kubectl_command_builder import Kubectl
+from .constants import *
+from .kubectl_command_builder import Kubectl
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)

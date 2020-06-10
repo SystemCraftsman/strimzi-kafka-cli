@@ -1,10 +1,10 @@
 import click
 import os
 
-from kfk import kfk
-from option_extensions import NotRequiredIf
-from commons import print_missing_options_for_command
-from kubectl_command_builder import Kubectl
+from .kfk import kfk
+from .option_extensions import NotRequiredIf
+from .commons import print_missing_options_for_command
+from .kubectl_command_builder import Kubectl
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
