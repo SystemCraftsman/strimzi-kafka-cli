@@ -6,7 +6,7 @@ metadata:
   name: my-user
 spec:
   authentication:
-    type: tls
+    type: scram-sha-512
   quotas:
     consumerByteRate: 2097152
     requestPercentage: 55

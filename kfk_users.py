@@ -12,6 +12,7 @@ from kubectl_command_builder import Kubectl
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('--delete-quota', help='User quotas to be removed.', multiple=True)
 @click.option('--quota', help='User\'s network and CPU utilization quotas in the Kafka cluster.', multiple=True)
 @click.option('--alter', help='Alter authentication-type, quotas, etc. of the user.',
               is_flag=True)
@@ -26,7 +27,8 @@ from kubectl_command_builder import Kubectl
 @click.option('--list', help='List all available users.', is_flag=True)
 @click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def users(user, list, create, authentication_type, describe, output, delete, alter, quota, cluster, namespace):
+def users(user, list, create, authentication_type, describe, output, delete, alter, quota, delete_quota, cluster,
+          namespace):
     """The kafka user(s) to be created, altered or described."""
     if list:
         os.system(
@@ -69,10 +71,13 @@ def users(user, list, create, authentication_type, describe, output, delete, alt
             delete_last_applied_configuration(user_dict)
 
             if len(quota) > 0:
-                user_dict["spec"]["quotas"] = {}
+                if user_dict["spec"].get("quotas") is None:
+                    user_dict["spec"]["quotas"] = {}
                 add_resource_kv_config(quota, user_dict["spec"]["quotas"])
 
-            # TODO: add delete config
+            if len(delete_quota) > 0:
+                if user_dict["spec"].get("quotas") is not None:
+                    delete_resource_config(delete_quota, user_dict["spec"]["quotas"])
 
             topic_yaml = yaml.dump(user_dict)
             os.system(

@@ -7,5 +7,4 @@ metadata:
 spec:
   authentication:
     type: scram-sha-512
-  quotas:
-    requestPercentage: 55
+  quotas: {}

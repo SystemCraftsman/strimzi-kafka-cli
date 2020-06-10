@@ -53,6 +53,9 @@ def delete_resource_config(config, dict_part):
     else:
         del dict_part[config]
 
+    if len(dict_part) is 0:
+        del dict_part
+
 
 def resource_exists(resource_type, resource_name, cluster, namespace):
     return resource_name in os.popen(

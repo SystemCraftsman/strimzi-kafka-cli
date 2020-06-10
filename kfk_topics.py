@@ -91,9 +91,14 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
 
             delete_last_applied_configuration(topic_dict)
 
-            add_resource_kv_config(config, topic_dict["spec"]["config"])
+            if len(config) > 0:
+                if topic_dict["spec"].get("config") is None:
+                    topic_dict["spec"]["config"] = {}
+                add_resource_kv_config(config, topic_dict["spec"]["config"])
 
-            delete_resource_config(delete_config, topic_dict["spec"]["config"])
+            if len(delete_config) > 0:
+                if topic_dict["spec"].get("config") is not None:
+                    delete_resource_config(delete_config, topic_dict["spec"]["config"])
 
             topic_yaml = yaml.dump(topic_dict)
             os.system(
