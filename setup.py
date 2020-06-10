@@ -1,6 +1,6 @@
 from setuptools import setup
 
-with open("README.adoc", "r") as file:
+with open("README.md", "r") as file:
     long_description = file.read()
 
 setup(
@@ -8,7 +8,7 @@ setup(
     version='0.1.0-rc1',
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
-    long_description_content_type="text/asciidoc",
+    long_description_content_type="text/markdown",
     py_modules=['strimzi_kafka_cli'],
     install_requires=[
         'Click',
