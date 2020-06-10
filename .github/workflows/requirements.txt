@@ -1,2 +1,11 @@
-click
-wget
+argcomplete==1.11.1
+click==7.1.2
+coverage==5.1
+executing==0.4.3
+importlib-metadata==1.6.0
+python-varname==0.1.1
+PyYAML==5.3.1
+six==1.15.0
+wget==3.2
+xmltodict==0.12.0
+zipp==3.1.0
