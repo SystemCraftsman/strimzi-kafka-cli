@@ -21,5 +21,5 @@ setup(
     ''',
 
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",
-    python_requires='>=3.6',
+    python_requires='>=3.5',
 )
