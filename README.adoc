@@ -1,4 +1,5 @@
-image::https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg[]
+image::https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg[] 
+image::https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg[]
 
 image::documentation/logo/strimzi_cli.png[]
 
