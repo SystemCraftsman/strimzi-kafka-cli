@@ -9,7 +9,7 @@ setup(
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    py_modules=['strimzi_kafka_cli'],
+    packages=[''],
     install_requires=[
         'Click',
         'PyYAML',
