@@ -2,7 +2,7 @@
 
 ![badge](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg)
 
-![strimzi cli](documentation/logo/strimzi_cli.png)
+![strimzi cli](https://raw.githubusercontent.com/systemcraftsman/strimzi-kafka-cli/master/documentation/logo/strimzi_cli.png)
 
 # Strimzi Kafka CLI
 
