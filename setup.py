@@ -18,7 +18,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        kfk=strimzi_kafka_cli:kfk
+        kfk=strimzi_kafka_cli.main:kfk
     ''',
 
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",
