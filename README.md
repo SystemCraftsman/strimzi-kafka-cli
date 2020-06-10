@@ -4,7 +4,7 @@
 
 ![strimzi cli](documentation/logo/strimzi_cli.png)
 
-#Strimzi Kafka CLI
+# Strimzi Kafka CLI
 
 Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users
 -mostly administrators- to easily adapt [Strimzi](https://strimzi.io/),
