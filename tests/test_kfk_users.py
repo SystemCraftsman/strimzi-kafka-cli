@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk_users import kfk
-from kubectl_command_builder import Kubectl
+from ..kfk_users import kfk
+from ..kubectl_command_builder import Kubectl
 
 
 class TestKfkUsers(TestCase):

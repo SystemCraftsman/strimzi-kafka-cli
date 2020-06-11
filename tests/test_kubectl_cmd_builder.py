@@ -1,5 +1,5 @@
 from unittest import TestCase
-from kubectl_command_builder import Kubectl
+from ..kubectl_command_builder import Kubectl
 
 
 class TestKubectl(TestCase):
