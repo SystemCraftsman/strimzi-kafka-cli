@@ -6,32 +6,8 @@ import ssl
 
 from kfk.constants import *
 from pathlib import Path
-from setuptools.command.install import install
-from setuptools.command.develop import develop
 
-
-class PostInstallCommand(install):
-    """Post-installation for installation mode."""
-
-    def run(self):
-        install.run(self)
-
-        ssl._create_default_https_context = ssl._create_unverified_context
-
-        download_kubectl_if_not_exists()
-        download_strimzi_if_not_exists()
-
-
-class PostDevelopCommand(develop):
-    """Post-installation for development mode."""
-
-    def run(self):
-        develop.run(self)
-
-        ssl._create_default_https_context = ssl._create_unverified_context
-
-        download_kubectl_if_not_exists()
-        download_strimzi_if_not_exists()
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def download_strimzi_if_not_exists():
