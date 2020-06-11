@@ -4,8 +4,8 @@ import yaml
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
-from kfk.commons import print_missing_options_for_command, download_strimzi_if_not_exists, resource_exists, \
-    get_resource_as_file, delete_last_applied_configuration, add_resource_kv_config, delete_resource_config
+from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_file, \
+    delete_last_applied_configuration, add_resource_kv_config, delete_resource_config
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
 
@@ -35,8 +35,6 @@ def users(user, list, create, authentication_type, describe, output, delete, alt
             Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
                 cluster=cluster))
     elif create:
-        download_strimzi_if_not_exists()
-
         with open(r'{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
                 version=STRIMZI_VERSION)) as file:
             user_dict = yaml.full_load(file)

@@ -1,9 +1,10 @@
-from kfk.constants import SPACE
+from kfk.constants import SPACE, KUBECTL_PATH
+
 
 class Kubectl:
 
     def __init__(self):
-        self.cmd_str = "kubectl"
+        self.cmd_str = KUBECTL_PATH
 
     def get(self):
         self.cmd_str = self.cmd_str + SPACE + "get"
