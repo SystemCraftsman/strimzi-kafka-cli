@@ -1,5 +1,5 @@
 from setuptools import setup
-from post_install import PostInstall
+from post_setup import PostInstallCommand, PostDevelopCommand
 
 with open("README.md", "r") as file:
     long_description = file.read()
@@ -25,6 +25,7 @@ setup(
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",
     python_requires='>=3.5',
     cmdclass={
-        'install': PostInstall,
+        'install': PostInstallCommand,
+        'develop': PostDevelopCommand,
     },
 )
