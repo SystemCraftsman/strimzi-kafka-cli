@@ -1,4 +1,4 @@
-from ..utils import convert_string_to_type
+from kfk.utils import convert_string_to_type
 from unittest import TestCase
 
 

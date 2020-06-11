@@ -5,12 +5,12 @@ with open("README.md", "r") as file:
 
 setup(
     name='strimzi-kafka-cli',
-    version='0.1.0-alpha2',
+    version='0.1.0-alpha3',
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=['strimzi_kafka_cli'],
-    package_dir={'strimzi_kafka_cli': ''},
+    packages=['kfk'],
+    package_dir={'kfk': 'kfk'},
     install_requires=[
         'Click',
         'PyYAML',
@@ -18,7 +18,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        kfk=strimzi_kafka_cli.main:kfk
+        kfk=kfk.main:kfk
     ''',
 
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",

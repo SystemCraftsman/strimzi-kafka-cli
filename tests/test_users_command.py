@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk.kfk_users import kfk
+from kfk.users_command import kfk
 from kfk.kubectl_command_builder import Kubectl
 
 
@@ -17,7 +17,7 @@ class TestKfkUsers(TestCase):
         assert result.exit_code == 0
         assert "Missing options: kfk users" in result.output
 
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.users_command.os')
     def test_list_users(self, mock_os):
         result = self.runner.invoke(kfk, ['users', '--list', '-c', self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
@@ -25,8 +25,8 @@ class TestKfkUsers(TestCase):
             Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(self.namespace).build().format(
                 cluster=self.cluster))
 
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_describe_user(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk, ['users', '--describe', '--user', self.user, '-c', self.cluster, '-n',
@@ -34,8 +34,8 @@ class TestKfkUsers(TestCase):
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
 
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_describe_user_output_yaml(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
@@ -46,7 +46,7 @@ class TestKfkUsers(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().get().kafkausers(self.user).namespace(self.namespace).output("yaml").build())
 
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.users_command.os')
     def test_create_user(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['users', '--create', '--user', self.user, '--authentication-type', 'tls', '-c',
@@ -73,8 +73,8 @@ class TestKfkUsers(TestCase):
                                      self.namespace])
         assert result.exit_code == 2
 
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_delete_user(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
@@ -83,9 +83,9 @@ class TestKfkUsers(TestCase):
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().delete().kafkausers(self.user).namespace(self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_create.yaml') as file:
@@ -99,9 +99,9 @@ class TestKfkUsers(TestCase):
                 'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
                     self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_without_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_create.yaml') as file:
@@ -118,9 +118,9 @@ class TestKfkUsers(TestCase):
                     'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
                         self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_with_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_create.yaml') as file:
@@ -137,9 +137,9 @@ class TestKfkUsers(TestCase):
                     'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
                         self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_with_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_create.yaml') as file:
@@ -157,9 +157,9 @@ class TestKfkUsers(TestCase):
                     'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
                         self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_with_two_quotas_delete_one_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_alter_two_quotas.yaml') as file:
@@ -175,9 +175,9 @@ class TestKfkUsers(TestCase):
                     'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().apply().from_file("-").namespace(
                         self.namespace).build())
 
-    @mock.patch('commons.get_resource_yaml')
-    @mock.patch('kfk.kfk_users.resource_exists')
-    @mock.patch('kfk.kfk_users.os')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_with_two_quotas_delete_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml):
         mock_resource_exists.return_value = True
         with open(r'yaml/user_alter_two_quotas.yaml') as file:
