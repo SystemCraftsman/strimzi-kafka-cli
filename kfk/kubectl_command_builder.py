@@ -1,4 +1,4 @@
-from .constants import SPACE
+from kfk.constants import SPACE
 
 class Kubectl:
 

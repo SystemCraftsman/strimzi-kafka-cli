@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from ..kfk_clusters import kfk
-from ..kubectl_command_builder import Kubectl
+from kfk.kfk_clusters import kfk
+from kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkClusters(TestCase):
@@ -16,19 +16,19 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         assert "Missing options: kfk clusters" in result.output
 
-    @mock.patch('kfk_clusters.os')
+    @mock.patch('kfk.kfk_clusters.os')
     def test_list_clusters(self, mock_os):
         result = self.runner.invoke(kfk, ['clusters', '--list', '-n', self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().get().kafkas().namespace(self.namespace).build())
 
-    @mock.patch('kfk_clusters.os')
+    @mock.patch('kfk.kfk_clusters.os')
     def test_describe_cluster(self, mock_os):
         result = self.runner.invoke(kfk, ['clusters', '--describe', '--cluster', self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build())
 
-    @mock.patch('kfk_clusters.os')
+    @mock.patch('kfk.kfk_clusters.os')
     def test_describe_cluster_output_yaml(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['clusters', '--describe', '--cluster', self.cluster, '-n', self.namespace, '-o',

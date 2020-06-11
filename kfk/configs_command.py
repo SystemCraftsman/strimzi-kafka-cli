@@ -1,4 +1,4 @@
-from .kfk import kfk
+from kfk.command import kfk
 
 
 @kfk.command()

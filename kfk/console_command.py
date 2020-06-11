@@ -1,8 +1,8 @@
 import click
 import os
 
-from .kfk import kfk
-from .kubectl_command_builder import Kubectl
+from kfk.command import kfk
+from kfk.kubectl_command_builder import Kubectl
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)

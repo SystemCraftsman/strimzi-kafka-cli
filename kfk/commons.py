@@ -4,9 +4,9 @@ import tarfile
 import ssl
 import io
 
-from .constants import *
-from .kubectl_command_builder import Kubectl
-from .utils import convert_string_to_type
+from kfk.constants import *
+from kfk.kubectl_command_builder import Kubectl
+from kfk.utils import convert_string_to_type
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
