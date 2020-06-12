@@ -37,4 +37,5 @@ def download_kubectl_if_not_exists():
         print("Downloading dependency: kubectl {version}...\n".format(version=KUBECTL_VERSION))
         wget.download(KUBECTL_RELEASE_URL, KUBECTL_PATH)
         print("\nDownload successfully completed!\n")
-        os.chmod(KUBECTL_PATH, stat.S_IEXEC)
+        current_stat = os.stat(KUBECTL_PATH)
+        os.chmod(KUBECTL_PATH, current_stat.st_mode | stat.S_IEXEC)
