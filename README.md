@@ -65,4 +65,7 @@ Please see [reqiurements.txt](https://github.com/systemcraftsman/strimzi-kafka-c
 - kubectl: kfk will automatically download kubectl binary. (This will be configurable to use which kubectl version to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 - Strimzi binaries: kfk will download it automatically. The yaml templates are used for create actions. (This will be configurable to use which binaries path to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 
+## Known Issues
+- [Python 3.6 ASCII encoding issue fix](https://forum.qiime2.org/t/runtimeerror-click-will-abort-further-execution-because-python-3-was-configured-to-use-ascii-as-encoding-for-the-environment/7460)
+
 More info will be added soon.
