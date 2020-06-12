@@ -48,5 +48,4 @@ def get_resource_yaml(resource_type, resource_name, namespace):
 
 def get_resource_as_file(resource_type, resource_name, namespace):
     topic_yaml = get_resource_yaml(resource_type, resource_name, namespace)
-    in_stream = io.BytesIO(topic_yaml.encode('utf-8'))
-    return io.TextIOWrapper(in_stream, encoding='utf-8')
+    return io.StringIO(topic_yaml)
