@@ -9,6 +9,7 @@ from kfk.commons import print_missing_options_for_command, delete_last_applied_c
     delete_resource_config
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
+from kfk.dependencies import download_strimzi_if_not_exists
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -41,6 +42,8 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             Kubectl().get().kafkatopics().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
                 cluster=cluster))
     elif create:
+        download_strimzi_if_not_exists()
+
         with open(r'{strimzi_path}/examples/topic/kafka-topic.yaml'.format(strimzi_path=STRIMZI_PATH).format(
                 version=STRIMZI_VERSION)) as file:
             topic_dict = yaml.full_load(file)

@@ -1,12 +1,11 @@
 from setuptools import setup
-from post_setup import download_strimzi_if_not_exists, download_kubectl_if_not_exists
 
 with open("README.md", "r") as file:
     long_description = file.read()
 
 setup(
     name='strimzi-kafka-cli',
-    version='0.1.0-alpha5',
+    version='0.1.0-alpha6',
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -25,6 +24,3 @@ setup(
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",
     python_requires='>=3.5',
 )
-
-download_kubectl_if_not_exists()
-download_strimzi_if_not_exists()
