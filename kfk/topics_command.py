@@ -6,7 +6,7 @@ from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, delete_last_applied_configuration, resource_exists, \
     get_resource_as_file, add_resource_kv_config, \
-    delete_resource_config
+    delete_resource_config, create_temp_file
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
 from kfk.dependencies import download_strimzi_if_not_exists
@@ -55,9 +55,11 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             add_resource_kv_config(config, topic_dict)
 
             topic_yaml = yaml.dump(topic_dict)
+            topic_temp_file = create_temp_file(topic_yaml)
             os.system(
-                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().create().from_file("-").namespace(
-                    namespace).build())
+                Kubectl().create().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
+                    topic_temp_file_path=topic_temp_file.name))
+            topic_temp_file.close()
 
     elif describe:
         if output is not None:
@@ -102,8 +104,10 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                     delete_resource_config(delete_config, topic_dict["spec"]["config"])
 
             topic_yaml = yaml.dump(topic_dict)
+            topic_temp_file = create_temp_file(topic_yaml)
             os.system(
-                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().apply().from_file("-").namespace(
-                    namespace).build())
+                Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
+                    topic_temp_file_path=topic_temp_file.name))
+            topic_temp_file.close()
     else:
         print_missing_options_for_command("topics")

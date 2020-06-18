@@ -1,5 +1,6 @@
 import os
 import io
+import tempfile
 
 from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type
@@ -49,3 +50,10 @@ def get_resource_yaml(resource_type, resource_name, namespace):
 def get_resource_as_file(resource_type, resource_name, namespace):
     topic_yaml = get_resource_yaml(resource_type, resource_name, namespace)
     return io.StringIO(topic_yaml)
+
+
+def create_temp_file(content):
+    temp_file = tempfile.NamedTemporaryFile(mode='w+')
+    temp_file.write(content)
+    temp_file.flush()
+    return temp_file

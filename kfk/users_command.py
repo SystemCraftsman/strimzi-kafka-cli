@@ -1,11 +1,12 @@
 import click
 import os
 import yaml
+import tempfile
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_file, \
-    delete_last_applied_configuration, add_resource_kv_config, delete_resource_config
+    delete_last_applied_configuration, add_resource_kv_config, delete_resource_config, create_temp_file
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
 from kfk.dependencies import download_strimzi_if_not_exists
@@ -47,9 +48,11 @@ def users(user, list, create, authentication_type, describe, output, delete, alt
             del user_dict["spec"]["authorization"]
 
             user_yaml = yaml.dump(user_dict)
+            user_temp_file = create_temp_file(user_yaml)
             os.system(
-                'echo "{user_yaml}" | '.format(user_yaml=user_yaml) + Kubectl().create().from_file("-").namespace(
-                    namespace).build())
+                Kubectl().create().from_file("{user_temp_file_path}").namespace(namespace).build().format(
+                    user_temp_file_path=user_temp_file.name))
+            user_temp_file.close()
 
     elif describe:
         if output is not None:
@@ -80,9 +83,11 @@ def users(user, list, create, authentication_type, describe, output, delete, alt
                 if user_dict["spec"].get("quotas") is not None:
                     delete_resource_config(delete_quota, user_dict["spec"]["quotas"])
 
-            topic_yaml = yaml.dump(user_dict)
+            user_yaml = yaml.dump(user_dict)
+            user_temp_file = create_temp_file(user_yaml)
             os.system(
-                'echo "{topic_yaml}" | '.format(topic_yaml=topic_yaml) + Kubectl().apply().from_file("-").namespace(
-                    namespace).build())
+                Kubectl().apply().from_file("{user_temp_file_path}").namespace(namespace).build().format(
+                    user_temp_file_path=user_temp_file.name))
+            user_temp_file.close()
     else:
         print_missing_options_for_command("users")
