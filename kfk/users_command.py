@@ -1,7 +1,6 @@
 import click
 import os
 import yaml
-import tempfile
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
