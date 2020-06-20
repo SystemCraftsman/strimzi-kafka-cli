@@ -2,7 +2,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 from kfk.topics_command import kfk
 from kfk.kubectl_command_builder import Kubectl
-from kfk.commons import create_temp_file
 
 
 class TestKfkTopics(TestCase):
@@ -57,32 +56,28 @@ class TestKfkTopics(TestCase):
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(topic=self.topic, cluster=self.cluster))
 
+    @mock.patch('kfk.topics_command.create_temp_file')
+    @mock.patch('kfk.topics_command.os')
+    def test_create_topic(self, mock_os, mock_create_temp_file):
+        result = self.runner.invoke(kfk,
+                                    ['topics', '--create', '--topic', self.topic, '--partitions', '12',
+                                     '--replication-factor', '3', '-c',
+                                     self.cluster, '-n',
+                                     self.namespace])
+
+        assert result.exit_code == 0
+
+        with open(r'yaml/topic_create.yaml') as file:
+            expected_topic_yaml = file.read()
+            result_topic_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_topic_yaml == result_topic_yaml
+
     def test_create_topic_without_required_params(self):
         result = self.runner.invoke(kfk,
                                     ['topics', '--create', '--topic', self.topic, '-c',
                                      self.cluster, '-n',
                                      self.namespace])
         assert result.exit_code == 2
-
-    @mock.patch('kfk.topics_command.create_temp_file')
-    @mock.patch('kfk.topics_command.os')
-    def test_create_topic(self, mock_os, mock_create_temp_file):
-        with open(r'yaml/topic_create.yaml') as file:
-            topic_yaml = file.read()
-            topic_temp_file = create_temp_file(topic_yaml)
-            mock_create_temp_file.return_value = topic_temp_file
-
-            result = self.runner.invoke(kfk,
-                                        ['topics', '--create', '--topic', self.topic, '--partitions', '12',
-                                         '--replication-factor', '3', '-c',
-                                         self.cluster, '-n',
-                                         self.namespace])
-            assert result.exit_code == 0
-
-            mock_os.system.assert_called_with(Kubectl().create().from_file(topic_temp_file.name).namespace(
-                self.namespace).build())
-
-            topic_temp_file.close()
 
     @mock.patch('kfk.topics_command.resource_exists')
     @mock.patch('kfk.topics_command.os')
@@ -91,7 +86,9 @@ class TestKfkTopics(TestCase):
         result = self.runner.invoke(kfk,
                                     ['topics', '--delete', '--topic', self.topic, '-c', self.cluster, '-n',
                                      self.namespace])
+
         assert result.exit_code == 0
+
         mock_os.system.assert_called_with(Kubectl().delete().kafkatopics(self.topic).namespace(self.namespace).build())
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -103,19 +100,18 @@ class TestKfkTopics(TestCase):
         mock_resource_exists.return_value = True
 
         with open(r'yaml/topic_create.yaml') as file:
-            topic_yaml = file.read()
-            topic_temp_file = create_temp_file(topic_yaml)
-
-            mock_get_resource_yaml.return_value = topic_yaml
-            mock_create_temp_file.return_value = topic_temp_file
+            expected_topic_yaml = file.read()
+            mock_get_resource_yaml.return_value = expected_topic_yaml
 
             result = self.runner.invoke(kfk,
                                         ['topics', '--alter', '--topic', self.topic, '-c', self.cluster, '-n',
                                          self.namespace])
+
             assert result.exit_code == 0
-            mock_os.system.assert_called_with(
-                Kubectl().apply().from_file(topic_temp_file.name).namespace(self.namespace).build())
-            topic_temp_file.close()
+
+            result_topic_yaml = mock_create_temp_file.call_args[0][0]
+
+            assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -129,19 +125,17 @@ class TestKfkTopics(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
+            result = self.runner.invoke(kfk,
+                                        ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
+                                         '--replication-factor', '3', '-c', self.cluster, '-n', self.namespace])
+
+            assert result.exit_code == 0
+
             with open(r'yaml/topic_alter_without_config.yaml') as file:
-                topic_yaml = file.read()
-                topic_temp_file = create_temp_file(topic_yaml)
-                mock_create_temp_file.return_value = topic_temp_file
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
 
-                result = self.runner.invoke(kfk,
-                                            ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
-                                             '--replication-factor', '3', '-c', self.cluster, '-n', self.namespace])
-                assert result.exit_code == 0
-
-                mock_os.system.assert_called_with(
-                    Kubectl().apply().from_file(topic_temp_file.name).namespace(self.namespace).build())
-                topic_temp_file.close()
+                assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -155,19 +149,18 @@ class TestKfkTopics(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
-            with open(r'yaml/topic_alter_with_one_config.yaml') as file:
-                topic_yaml = file.read()
-                topic_temp_file = create_temp_file(topic_yaml)
-                mock_create_temp_file.return_value = topic_temp_file
-                result = self.runner.invoke(kfk,
-                                            ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
-                                             '--replication-factor', '3', '--config', 'min.insync.replicas=3', '-c',
-                                             self.cluster, '-n',
-                                             self.namespace])
-                assert result.exit_code == 0
+            result = self.runner.invoke(kfk,
+                                        ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
+                                         '--replication-factor', '3', '--config', 'min.insync.replicas=3', '-c',
+                                         self.cluster, '-n', self.namespace])
 
-                mock_os.system.assert_called_with(Kubectl().apply().from_file(topic_temp_file.name).namespace(
-                    self.namespace).build())
+            assert result.exit_code == 0
+
+            with open(r'yaml/topic_alter_with_one_config.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -181,20 +174,19 @@ class TestKfkTopics(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
-            with open(r'yaml/topic_alter_with_two_configs.yaml') as file:
-                topic_yaml = file.read()
-                topic_temp_file = create_temp_file(topic_yaml)
-                mock_create_temp_file.return_value = topic_temp_file
-                result = self.runner.invoke(kfk,
-                                            ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
-                                             '--replication-factor', '3', '--config', 'min.insync.replicas=3',
-                                             '--config',
-                                             'cleanup.policy=compact', '-c', self.cluster, '-n',
-                                             self.namespace])
-                assert result.exit_code == 0
+            result = self.runner.invoke(kfk,
+                                        ['topics', '--alter', '--topic', self.topic, '--partitions', '24',
+                                         '--replication-factor', '3', '--config', 'min.insync.replicas=3',
+                                         '--config', 'cleanup.policy=compact', '-c', self.cluster, '-n',
+                                         self.namespace])
 
-                mock_os.system.assert_called_with(Kubectl().apply().from_file(topic_temp_file.name).namespace(
-                    self.namespace).build())
+            assert result.exit_code == 0
+
+            with open(r'yaml/topic_alter_with_two_configs.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -208,18 +200,17 @@ class TestKfkTopics(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
-            with open(r'yaml/topic_alter_with_one_config.yaml') as file:
-                topic_yaml = file.read()
-                topic_temp_file = create_temp_file(topic_yaml)
-                mock_create_temp_file.return_value = topic_temp_file
-                result = self.runner.invoke(kfk,
-                                            ['topics', '--alter', '--topic', self.topic, '--delete-config',
-                                             'cleanup.policy', '-c', self.cluster, '-n',
-                                             self.namespace])
-                assert result.exit_code == 0
+            result = self.runner.invoke(kfk,
+                                        ['topics', '--alter', '--topic', self.topic, '--delete-config',
+                                         'cleanup.policy', '-c', self.cluster, '-n', self.namespace])
 
-                mock_os.system.assert_called_with(Kubectl().apply().from_file(topic_temp_file.name).namespace(
-                    self.namespace).build())
+            assert result.exit_code == 0
+
+            with open(r'yaml/topic_alter_with_one_config.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -233,15 +224,15 @@ class TestKfkTopics(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
+            result = self.runner.invoke(kfk,
+                                        ['topics', '--alter', '--topic', self.topic, '--delete-config',
+                                         'cleanup.policy', '--delete-config',
+                                         'min.insync.replicas', '-c', self.cluster, '-n', self.namespace])
+
+            assert result.exit_code == 0
+
             with open(r'yaml/topic_alter_without_config.yaml') as file:
-                topic_yaml = file.read()
-                topic_temp_file = create_temp_file(topic_yaml)
-                mock_create_temp_file.return_value = topic_temp_file
-                result = self.runner.invoke(kfk,
-                                            ['topics', '--alter', '--topic', self.topic, '--delete-config',
-                                             'cleanup.policy', '--delete-config',
-                                             'min.insync.replicas', '-c', self.cluster, '-n',
-                                             self.namespace])
-                assert result.exit_code == 0
-                mock_os.system.assert_called_with(Kubectl().apply().from_file(topic_temp_file.name).namespace(
-                    self.namespace).build())
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_topic_yaml == result_topic_yaml

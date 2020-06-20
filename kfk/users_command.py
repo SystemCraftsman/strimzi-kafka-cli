@@ -15,20 +15,21 @@ from kfk.dependencies import download_strimzi_if_not_exists
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
 @click.option('--delete-quota', help='User quotas to be removed.', multiple=True)
 @click.option('--quota', help='User\'s network and CPU utilization quotas in the Kafka cluster.', multiple=True)
-@click.option('--alter', help='Alter authentication-type, quotas, etc. of the user.',
-              is_flag=True)
+@click.option('--alter', help='Alter authentication-type, quotas, etc. of the user.', is_flag=True)
 @click.option('--delete', help='Delete a user.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
 @click.option('--describe', help='List details for the given user.', is_flag=True)
+@click.option('--authorization-type', type=click.Choice(['simple'], case_sensitive=True), cls=RequiredIf,
+              required_if='create')
 @click.option('--authentication-type', type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
               required_if='create')
 @click.option('--create', help='Create a new user.', is_flag=True)
 @click.option('--list', help='List all available users.', is_flag=True)
 @click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def users(user, list, create, authentication_type, describe, output, delete, alter, quota, delete_quota, cluster,
+def users(user, list, create, authentication_type, authorization_type, describe, output, delete, alter, quota, delete_quota, cluster,
           namespace):
     """The kafka user(s) to be created, altered or described."""
     if list:
@@ -44,7 +45,8 @@ def users(user, list, create, authentication_type, describe, output, delete, alt
 
             user_dict["metadata"]["name"] = user
             user_dict["spec"]["authentication"]["type"] = authentication_type
-            del user_dict["spec"]["authorization"]
+            user_dict["spec"]["authorization"]["type"] = authorization_type
+            del user_dict["spec"]["authorization"]["acls"]
 
             user_yaml = yaml.dump(user_dict)
             user_temp_file = create_temp_file(user_yaml)
