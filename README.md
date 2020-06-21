@@ -18,6 +18,7 @@ experience with traditional Apache Kafka binaries. For example:
 | $KAFKA\_HOME/bin/kafka-topics.sh           | kfk topics           |
 | $KAFKA\_HOME/bin/kafka-configs.sh          | kfk configs          |
 | $KAFKA\_HOME/bin/kafka-console-consumer.sh | kfk console-consumer |
+| ... | ... |
 
 **kfk** command stands for the usual **kafka-**\* prefix of the
 Apache Kafka runnable files which are located in *bin* directory. There
