@@ -27,7 +27,7 @@ mostly stand for the rest of the runnable file names like
 *kafka-topic.sh*.
 
 However, because of the nature of Strimzi and its capabilities, there
-are also non-traditional options like *clusters* which is used for
+are also unusual options like *clusters* which is used for
 cluster configuration or *users* which is used for user management and
 configuration.
 
