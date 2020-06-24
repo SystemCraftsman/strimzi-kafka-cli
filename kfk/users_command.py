@@ -48,6 +48,11 @@ def users(user, list, create, authentication_type, authorization_type, describe,
             user_dict["spec"]["authorization"]["type"] = authorization_type
             del user_dict["spec"]["authorization"]["acls"]
 
+            if len(quota) > 0:
+                if user_dict["spec"].get("quotas") is None:
+                    user_dict["spec"]["quotas"] = {}
+                add_resource_kv_config(quota, user_dict["spec"]["quotas"])
+
             user_yaml = yaml.dump(user_dict)
             user_temp_file = create_temp_file(user_yaml)
             os.system(

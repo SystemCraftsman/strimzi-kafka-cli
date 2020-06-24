@@ -5,8 +5,7 @@ import yaml
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, delete_last_applied_configuration, resource_exists, \
-    get_resource_as_file, add_resource_kv_config, \
-    delete_resource_config, create_temp_file
+    get_resource_as_file, add_resource_kv_config, delete_resource_config, create_temp_file
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
 from kfk.dependencies import download_strimzi_if_not_exists
@@ -52,7 +51,10 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
             topic_dict["spec"]["partitions"] = int(partitions)
             topic_dict["spec"]["replicas"] = int(replication_factor)
 
-            add_resource_kv_config(config, topic_dict)
+            if len(config) > 0:
+                if topic_dict["spec"].get("config") is None:
+                    topic_dict["spec"]["config"] = {}
+                add_resource_kv_config(config, topic_dict["spec"]["config"])
 
             topic_yaml = yaml.dump(topic_dict)
             topic_temp_file = create_temp_file(topic_yaml)
