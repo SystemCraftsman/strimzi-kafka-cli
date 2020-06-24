@@ -18,15 +18,16 @@ experience with traditional Apache Kafka binaries. For example:
 | $KAFKA\_HOME/bin/kafka-topics.sh           | kfk topics           |
 | $KAFKA\_HOME/bin/kafka-configs.sh          | kfk configs          |
 | $KAFKA\_HOME/bin/kafka-console-consumer.sh | kfk console-consumer |
+| ... | ... |
 
-**kfk** command stands for the traditional **kafka-**\* prefix of the
+**kfk** command stands for the usual **kafka-**\* prefix of the
 Apache Kafka runnable files which are located in *bin* directory. There
 are options provided like *topics*, *console-consumer*, etc. which also
 mostly stand for the rest of the runnable file names like
 *kafka-topic.sh*.
 
 However, because of the nature of Strimzi and its capabilities, there
-are also non-traditional options like *clusters* which is used for
+are also unusual options like *clusters* which is used for
 cluster configuration or *users* which is used for user management and
 configuration.
 
