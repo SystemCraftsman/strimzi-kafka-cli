@@ -61,7 +61,7 @@ Project requires: Python >=3.5
 
 ## Dependencies
 ### Python Dependencies
-Please see [reqiurements.txt](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/requirements.txt) file.
+Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/requirements.txt) file.
 ### External Dependencies
 - kubectl: kfk will automatically download kubectl binary. (This will be configurable to use which kubectl version to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 - Strimzi binaries: kfk will download it automatically. The yaml templates are used for create actions. (This will be configurable to use which binaries path to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
