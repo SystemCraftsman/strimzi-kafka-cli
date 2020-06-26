@@ -19,9 +19,11 @@ def delete_last_applied_configuration(resource_dict):
 def add_resource_kv_config(config, dict_part):
     if type(config) is tuple:
         for config_str in config:
+            # TODO: exception here
             config_arr = config_str.split('=')
             dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
     else:
+        # TODO: exception here
         config_arr = config.split('=')
         dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
 

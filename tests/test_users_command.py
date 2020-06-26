@@ -50,8 +50,8 @@ class TestKfkUsers(TestCase):
     @mock.patch('kfk.users_command.os')
     def test_create_user(self, mock_os, mock_create_temp_file):
         result = self.runner.invoke(kfk,
-                                        ['users', '--create', '--user', self.user, '--authentication-type', 'tls',
-                                         '--authorization-type', 'simple', '-c', self.cluster, '-n', self.namespace])
+                                    ['users', '--create', '--user', self.user, '--authentication-type', 'tls', '-c',
+                                     self.cluster, '-n', self.namespace])
 
         assert result.exit_code == 0
 
@@ -59,6 +59,15 @@ class TestKfkUsers(TestCase):
             expected_user_yaml = file.read()
             result_user_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_user_yaml == result_user_yaml
+
+    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.users_command.os')
+    def test_create_user_with_authorization_without_acls(self, mock_os, mock_create_temp_file):
+        result = self.runner.invoke(kfk,
+                                    ['users', '--create', '--user', self.user, '--authentication-type', 'tls',
+                                     '--authorization-type', 'simple', '-c', self.cluster, '-n', self.namespace])
+
+        assert result.exit_code == 1
 
     def test_create_user_without_auth(self):
         result = self.runner.invoke(kfk,
@@ -112,7 +121,7 @@ class TestKfkUsers(TestCase):
     @mock.patch('kfk.users_command.resource_exists')
     @mock.patch('kfk.users_command.os')
     def test_alter_user_for_authentication_type(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                 mock_create_temp_file):
+                                                mock_create_temp_file):
         mock_resource_exists.return_value = True
 
         with open(r'yaml/user.yaml') as file:
@@ -157,7 +166,7 @@ class TestKfkUsers(TestCase):
     @mock.patch('kfk.users_command.resource_exists')
     @mock.patch('kfk.users_command.os')
     def test_alter_user_for_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                        mock_create_temp_file):
+                                       mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'yaml/user.yaml') as file:
             user_yaml = file.read()

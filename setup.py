@@ -5,7 +5,7 @@ with open("README.md", "r") as file:
 
 setup(
     name='strimzi-kafka-cli',
-    version='0.1.0-alpha14',
+    version='0.1.0-alpha15',
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,7 +18,8 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        kfk=kfk.main:kfk
+        kfk=kfk.
+        :kfk
     ''',
 
     url="https://github.com/systemcraftsman/strimzi-kafka-cli",
