@@ -6,7 +6,7 @@ from kfk.console_command import console_consumer, console_producer
 from kfk.configs_command import configs
 from kfk.version_command import version
 from kfk.acls_command import acls
-from kfk.setup import setup
+from kfk.setup_kfk import setup
 
 
 setup()
