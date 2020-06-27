@@ -39,7 +39,7 @@ def acls(list, topic, cluster, group, add, allow_principal, remove, kafka_cluste
         allow_principal_arr = allow_principal.split(":")
         principal_type = allow_principal_arr[0]
         principal_name = allow_principal_arr[1]
-        if principal_type is "User":
+        if principal_type == "User":
             users_command.alter_option(principal_name, None, tuple(), tuple(), kafka_cluster, namespace)
     elif remove:
         print("Not implemented")
