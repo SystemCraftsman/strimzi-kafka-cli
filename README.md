@@ -42,12 +42,14 @@ Options:
   --help  Show this message and exit.
 
 Commands:
+  acls              This tool helps to manage ACLs on Kafka.
   clusters          The kafka cluster(s) to be created, altered or...
   configs           Add/Remove entity config for a topic, client, user or...
   console-consumer  The console consumer is a tool that reads data from...
   console-producer  The console producer is a tool that reads data from...
   topics            The kafka topic(s) to be created, altered or described.
   users             The kafka user(s) to be created, altered or described.
+  version           Prints the version of Strimzi Kafka CLI
 ```
 
 ## Installation
@@ -66,7 +68,5 @@ Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-c
 - kubectl: kfk will automatically download kubectl binary. (This will be configurable to use which kubectl version to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 - Strimzi binaries: kfk will download it automatically. The yaml templates are used for create actions. (This will be configurable to use which binaries path to use. Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 
-## Known Issues
-- [Python 3.6 ASCII encoding issue fix](https://forum.qiime2.org/t/runtimeerror-click-will-abort-further-execution-because-python-3-was-configured-to-use-ascii-as-encoding-for-the-environment/7460)
 
 More info will be added soon.
