@@ -20,16 +20,25 @@ from kfk.kubectl_command_builder import Kubectl
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
 @click.option('--describe', help='List details for the given user.', is_flag=True)
-@click.option('--authorization-type', type=click.Choice(['simple'], case_sensitive=True))
-@click.option('--authentication-type', type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
-              required_if='create')
+@click.option('--resource-pattern-type',
+              help="The type of the resource pattern or <ANY|MATCH|LITERAL|PREFIXED> pattern filter. When adding "
+                   "acls, this should be a specific pattern type, e.g. 'literal' or 'prefixed'.", default='literal')
+@click.option('--resource-name', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
+@click.option('--resource-type', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
+@click.option('--host', help='Host which User will have access', default='*')
+@click.option('--operation', help='Operation that is being allowed or denied (default: All).', default='All')
+@click.option('--delete-acl', help='Delete ACL of User')
+@click.option('--add-acl', help='Add ACL to User', is_flag=True)
+@click.option('--authorization-type', help='Authorization type for user',
+              type=click.Choice(['simple'], case_sensitive=True))
+@click.option('--authentication-type', help='Authentication type for user',
+              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf, required_if=['create'])
 @click.option('--create', help='Create a new user.', is_flag=True)
 @click.option('--list', help='List all available users.', is_flag=True)
 @click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
 @kfk.command()
-def users(user, list, create, authentication_type, authorization_type, describe, output, delete, alter, quota,
-          delete_quota, cluster,
-          namespace):
+def users(user, list, create, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
+          resource_name, resource_pattern_type, describe, output, delete, alter, quota, delete_quota, cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
     if list:
         list_option(cluster, namespace)
@@ -40,7 +49,8 @@ def users(user, list, create, authentication_type, authorization_type, describe,
     elif delete:
         delete_option(cluster, namespace, user)
     elif alter:
-        alter_option(user, authentication_type, quota, delete_quota, cluster, namespace)
+        alter_option(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
+                     resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace)
     else:
         print_missing_options_for_command("users")
 
@@ -62,7 +72,7 @@ def create_option(user, authentication_type, authorization_type, quota, cluster,
 
         del user_dict["spec"]["authorization"]
 
-        if authorization_type:
+        if authorization_type is not None:
             user_dict["spec"]["authorization"]["type"] = authorization_type
 
         if len(quota) > 0:
@@ -92,13 +102,28 @@ def delete_option(cluster, namespace, user):
         os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
 
 
-def alter_option(user, authentication_type, quota, delete_quota, cluster, namespace):
+def alter_option(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
+                 resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace):
     if resource_exists("kafkausers", user, cluster, namespace):
         file = get_resource_as_file("kafkausers", user, namespace)
         user_dict = yaml.full_load(file)
 
         if authentication_type is not None:
             user_dict["spec"]["authentication"]["type"] = authentication_type
+
+        if authorization_type is not None:
+            if user_dict["spec"].get("authorization") is None:
+                user_dict["spec"]["authorization"] = {}
+            user_dict["spec"]["authorization"]["type"] = authorization_type
+
+        if add_acl:
+            acl_dict = {'operation': operation, 'host': host, 'resource': {'type': resource_type, 'name': resource_name,
+                                                                           'patternType': resource_pattern_type}}
+            if user_dict["spec"].get("authorization") is None:
+                user_dict["spec"]["authorization"] = {}
+            if user_dict["spec"]["authorization"].get("acls") is None:
+                user_dict["spec"]["authorization"]["acls"] = []
+            user_dict["spec"]["authorization"]["acls"].append(acl_dict)
 
         delete_last_applied_configuration(user_dict)
 

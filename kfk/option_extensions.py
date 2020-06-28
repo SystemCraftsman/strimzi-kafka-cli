@@ -39,7 +39,10 @@ class RequiredIf(click.Option):
 
     def handle_parse_result(self, ctx, opts, args):
         we_are_present = self.name in opts
-        other_present = self.required_if in opts
+        for required_if in self.required_if:
+            other_present = required_if in opts
+            if other_present is True:
+                break
 
         if other_present or we_are_present:
             self.required = True
