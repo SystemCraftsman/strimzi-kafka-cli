@@ -53,8 +53,11 @@ class Kubectl:
         self.cmd_str = self.cmd_str + SPACE + "-l" + SPACE + val
         return self
 
-    def namespace(self, val):
-        self.cmd_str = self.cmd_str + SPACE + "-n" + SPACE + val
+    def namespace(self, *vals):
+        if len(vals) > 0 and vals[0]:
+            self.cmd_str = self.cmd_str + SPACE + "-n" + SPACE + vals[0]
+        else:
+            self.cmd_str = self.cmd_str + SPACE + "--all-namespaces"
         return self
 
     def container(self, val):

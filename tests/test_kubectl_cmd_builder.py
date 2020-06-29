@@ -53,6 +53,9 @@ class TestKubectl(TestCase):
     def test_namespace(self):
         self.assertEqual(Kubectl().get().kafkatopics().namespace("test").build(), "{kubectl} get kafkatopics -n test".format(kubectl=KUBECTL_PATH))
 
+    def test_namespace_all(self):
+        self.assertEqual(Kubectl().get().kafkatopics().namespace().build(), "{kubectl} get kafkatopics --all-namespaces".format(kubectl=KUBECTL_PATH))
+
     def test_label_namespace(self):
         self.assertEqual(Kubectl().get().kafkatopics().label("app=test").namespace("test").build(),
                          "{kubectl} get kafkatopics -l app=test -n test".format(kubectl=KUBECTL_PATH))

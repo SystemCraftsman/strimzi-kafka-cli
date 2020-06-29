@@ -7,7 +7,7 @@ from kfk.commons import print_missing_options_for_command
 from kfk.kubectl_command_builder import Kubectl
 
 
-@click.option('-n', '--namespace', help='Namespace to use', required=True)
+@click.option('-n', '--namespace', help='Namespace to use')
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')

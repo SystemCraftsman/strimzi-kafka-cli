@@ -5,7 +5,7 @@ import yaml
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, delete_last_applied_configuration, resource_exists, \
-    get_resource_as_file, add_resource_kv_config, delete_resource_config, create_temp_file
+    get_resource_as_file, add_resource_kv_config, delete_resource_config, create_temp_file, print_resource_found_msg
 from kfk.constants import *
 from kfk.kubectl_command_builder import Kubectl
 
@@ -109,5 +109,7 @@ def topics(topic, list, create, partitions, replication_factor, describe, output
                 Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
                     topic_temp_file_path=topic_temp_file.name))
             topic_temp_file.close()
+        else:
+            print_resource_found_msg(cluster, namespace)
     else:
         print_missing_options_for_command("topics")

@@ -60,15 +60,6 @@ class TestKfkUsers(TestCase):
             result_user_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
-    @mock.patch('kfk.users_command.os')
-    def test_create_user_with_authorization_without_acls(self, mock_os, mock_create_temp_file):
-        result = self.runner.invoke(kfk,
-                                    ['users', '--create', '--user', self.user, '--authentication-type', 'tls',
-                                     '--authorization-type', 'simple', '-c', self.cluster, '-n', self.namespace])
-
-        assert result.exit_code == 1
-
     def test_create_user_without_auth(self):
         result = self.runner.invoke(kfk,
                                     ['users', '--create', '--user', self.user, '-c', self.cluster, '-n',
