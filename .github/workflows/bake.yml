@@ -2,8 +2,8 @@
 name: Bake
 
 on:
-  watch:
-    types: [started]
+  release:
+    types: [published]
 
 jobs:
   bake:
