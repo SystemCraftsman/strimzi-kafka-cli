@@ -12,7 +12,8 @@ from kfk.kubectl_command_builder import Kubectl
 @kfk.command()
 def console_consumer(topic, cluster, from_beginning, namespace):
     """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
-    native_command = "bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic {topic} {from_beginning}"
+    native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic {" \
+                     "topic} {from_beginning}"
     os.system(
         Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
             native_command).build().format(cluster=cluster, topic=topic,
@@ -25,7 +26,7 @@ def console_consumer(topic, cluster, from_beginning, namespace):
 @kfk.command()
 def console_producer(topic, cluster, namespace):
     """The console producer is a tool that reads data from standard input and publish it to Kafka."""
-    native_command = "bin/kafka-console-producer.sh --broker-list localhost:9092 --topic {topic}"
+    native_command = "bin/kafka-console-producer.sh --broker-list my-cluster-kafka-brokers:9092 --topic {topic}"
     os.system(
         Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
             native_command).build().format(cluster=cluster, topic=topic))
