@@ -3,7 +3,7 @@ name: Bake
 
 on:
   release:
-    types: [published]
+    types: [released]
 
 jobs:
   bake:
