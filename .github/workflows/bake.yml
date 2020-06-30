@@ -34,7 +34,7 @@ jobs:
         # Docker repository to tag the image with
         repository: systemcraftsman/strimzi-kafka-cli
         # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
-        tags: latest,$STRIMZI_CLI_VERSION
+        tags: latest,${{ env.STRIMZI_CLI_VERSION }}
         # Path to the build context
         path: .
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
