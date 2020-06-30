@@ -30,3 +30,28 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+    - name: Sleep for 5 mins
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '300s'
+    - name: Get version
+        run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
+    - name: Bake and push image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        # Username used to log in to a Docker registry. If not set then no login will occur
+        username: ${{ secrets.QUAY_USERNAME }}
+        # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
+        password: ${{ secrets.QUAY_PASSWORD }}
+        # Server address of Docker registry. If not set then will default to Docker Hub
+        registry: quay.io
+        # Docker repository to tag the image with
+        repository: systemcraftsman/strimzi-kafka-cli
+        # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
+        tags: latest,${{ env.STRIMZI_CLI_VERSION }}
+        # Path to the build context
+        path: .
+        # Path to the Dockerfile (Default is '{path}/Dockerfile')
+        dockerfile: ./Dockerfile
+        # Whether to push the image
+        push: true
