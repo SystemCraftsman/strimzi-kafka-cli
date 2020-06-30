@@ -14,6 +14,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Get release version
+      run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+    - name: Get code version
+      run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
+    - name: Compare release and code version
+      if: ${{ env.RELEASE_VERSION != env.STRIMZI_CLI_VERSION }}
+      run: exit 1
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -34,8 +41,6 @@ jobs:
       uses: jakejarvis/wait-action@master
       with:
         time: '300s'
-    - name: Get version
-      run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
     - name: Bake and push image
       uses: docker/build-push-action@v1.1.0
       with:
