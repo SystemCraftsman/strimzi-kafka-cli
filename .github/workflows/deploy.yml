@@ -35,7 +35,7 @@ jobs:
       with:
         time: '300s'
     - name: Get version
-        run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
+      run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
     - name: Bake and push image
       uses: docker/build-push-action@v1.1.0
       with:
