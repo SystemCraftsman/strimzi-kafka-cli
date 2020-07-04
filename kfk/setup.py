@@ -4,7 +4,7 @@ import wget
 import tarfile
 import ssl
 
-from kfk.constants import *
+from kfk.config import *
 from pathlib import Path
 
 ssl._create_default_https_context = ssl._create_unverified_context

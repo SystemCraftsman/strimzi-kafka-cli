@@ -7,7 +7,7 @@ from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_file, \
     delete_last_applied_configuration, add_resource_kv_config, delete_resource_config, create_temp_file, \
     print_resource_found_msg
-from kfk.constants import *
+from kfk.config import *
 from kfk.kubectl_command_builder import Kubectl
 
 
@@ -64,7 +64,7 @@ def list_option(cluster, namespace):
 
 
 def create_option(user, authentication_type, quota, cluster, namespace):
-    with open(r'{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
+    with open('{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
         user_dict = yaml.full_load(file)
 

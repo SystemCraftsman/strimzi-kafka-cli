@@ -55,7 +55,7 @@ class TestKfkUsers(TestCase):
 
         assert result.exit_code == 0
 
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             expected_user_yaml = file.read()
             result_user_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_user_yaml == result_user_yaml
@@ -95,7 +95,7 @@ class TestKfkUsers(TestCase):
     def test_alter_user_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                        mock_create_temp_file):
         mock_resource_exists.return_value = True
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             expected_user_yaml = file.read()
             mock_get_resource_yaml.return_value = expected_user_yaml
 
@@ -115,7 +115,7 @@ class TestKfkUsers(TestCase):
                                                 mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -124,7 +124,7 @@ class TestKfkUsers(TestCase):
                                          'scram-sha-512', '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_authentication.yaml') as file:
+            with open(r'files/yaml/user_with_authentication.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 
@@ -138,7 +138,7 @@ class TestKfkUsers(TestCase):
                                           mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -148,7 +148,7 @@ class TestKfkUsers(TestCase):
                                          '--resource-name', 'my-topic', '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_authorization.yaml') as file:
+            with open(r'files/yaml/user_with_authorization.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 
@@ -160,7 +160,7 @@ class TestKfkUsers(TestCase):
     @mock.patch('kfk.users_command.os')
     def test_alter_user_for_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -170,7 +170,7 @@ class TestKfkUsers(TestCase):
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_one_quota.yaml') as file:
+            with open(r'files/yaml/user_with_one_quota.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 
@@ -183,7 +183,7 @@ class TestKfkUsers(TestCase):
     def test_alter_user_for_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                        mock_create_temp_file):
         mock_resource_exists.return_value = True
-        with open(r'yaml/user.yaml') as file:
+        with open(r'files/yaml/user.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -194,7 +194,7 @@ class TestKfkUsers(TestCase):
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_two_quotas.yaml') as file:
+            with open(r'files/yaml/user_with_two_quotas.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 
@@ -207,7 +207,7 @@ class TestKfkUsers(TestCase):
     def test_alter_user_with_two_quotas_delete_one_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                                          mock_create_temp_file):
         mock_resource_exists.return_value = True
-        with open(r'yaml/user_with_two_quotas.yaml') as file:
+        with open(r'files/yaml/user_with_two_quotas.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -217,7 +217,7 @@ class TestKfkUsers(TestCase):
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_one_quota.yaml') as file:
+            with open(r'files/yaml/user_with_one_quota.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 
@@ -230,7 +230,7 @@ class TestKfkUsers(TestCase):
     def test_alter_user_with_two_quotas_delete_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                                           mock_create_temp_file):
         mock_resource_exists.return_value = True
-        with open(r'yaml/user_with_two_quotas.yaml') as file:
+        with open(r'files/yaml/user_with_two_quotas.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -241,7 +241,7 @@ class TestKfkUsers(TestCase):
                                          self.namespace])
             assert result.exit_code == 0
 
-            with open(r'yaml/user_with_quotas_empty.yaml') as file:
+            with open(r'files/yaml/user_with_quotas_empty.yaml') as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
 

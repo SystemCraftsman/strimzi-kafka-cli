@@ -1,6 +1,6 @@
 from unittest import TestCase
 from kfk.kubectl_command_builder import Kubectl
-from kfk.constants import KUBECTL_PATH
+from kfk.config import KUBECTL_PATH
 
 
 class TestKubectl(TestCase):
@@ -23,7 +23,7 @@ class TestKubectl(TestCase):
         self.assertEqual(
             Kubectl().exec("-it", "test-pod").container("test-container").namespace("test-namespace").exec_command(
                 "echo 'test'").build(),
-            "{kubectl} exec -it test-pod -c test-container -n test-namespace -- echo 'test'".format(kubectl=KUBECTL_PATH))
+            "{kubectl} exec -it test-pod -c test-container -n test-namespace -- bash -c \"echo 'test'\"".format(kubectl=KUBECTL_PATH))
 
     def test_kafkas_all(self):
         self.assertEqual(Kubectl().get().kafkas().build(), "{kubectl} get kafkas".format(kubectl=KUBECTL_PATH))

@@ -24,13 +24,16 @@ def delete_last_applied_configuration(resource_dict):
 def add_resource_kv_config(config, dict_part):
     if type(config) is tuple:
         for config_str in config:
-            # TODO: exception here
-            config_arr = config_str.split('=')
+            config_arr = get_kv_config_arr(config_str)
             dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
     else:
-        # TODO: exception here
-        config_arr = config.split('=')
+        config_arr = get_kv_config_arr(config)
         dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
+
+
+def get_kv_config_arr(config_str):
+    # TODO: exception here
+    return config_str.split('=')
 
 
 def delete_resource_config(config, dict_part):
@@ -64,3 +67,13 @@ def create_temp_file(content):
     temp_file.write(content)
     temp_file.flush()
     return temp_file
+
+
+def transfer_file_to_container(source_file_path, dest_file_path, container, pod, namespace):
+    os.system(Kubectl().cp(source_file_path, "{namespace}/{pod}:" + dest_file_path).container(container).build().format(
+        namespace=namespace, pod=pod))
+
+
+class SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'

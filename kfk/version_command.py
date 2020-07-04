@@ -2,7 +2,7 @@ import click
 import pkg_resources
 
 from kfk.command import kfk
-from kfk.constants import KUBECTL_VERSION, STRIMZI_VERSION
+from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
 
 
 @kfk.command()
