@@ -26,44 +26,45 @@ from kfk.kubectl_command_builder import Kubectl
 @click.option('--add-acl', help='Add ACL to User', is_flag=True)
 @click.option('--authorization-type', help='Authorization type for user',
               type=click.Choice(['simple'], case_sensitive=True))
-@click.option('--alter', help='Alter authentication-type, quotas, etc. of the user.', is_flag=True)
-@click.option('--delete', help='Delete a user.', is_flag=True)
+@click.option('--alter', 'is_alter', help='Alter authentication-type, quotas, etc. of the user.', is_flag=True)
+@click.option('--delete', 'is_delete', help='Delete a user.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
-@click.option('--describe', help='List details for the given user.', is_flag=True)
+@click.option('--describe', 'is_describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', help='Authentication type for user',
-              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf, required_if=['create'])
-@click.option('--create', help='Create a new user.', is_flag=True)
-@click.option('--list', help='List all available users.', is_flag=True)
-@click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='list')
+              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf, required_if=['is_create'])
+@click.option('--create', 'is_create', help='Create a new user.', is_flag=True)
+@click.option('--list', 'is_list', help='List all available users.', is_flag=True)
+@click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='is_list')
 @kfk.command()
-def users(user, list, create, authentication_type, describe, output, delete, alter, authorization_type, add_acl,
+def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type, add_acl,
           delete_acl, operation, host, resource_type, resource_name, resource_pattern_type, quota, delete_quota,
           cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
-    if list:
-        list_option(cluster, namespace)
-    elif create:
-        create_option(user, authentication_type, quota, cluster, namespace)
-    elif describe:
-        describe_option(user, output, cluster, namespace)
-    elif delete:
-        delete_option(cluster, namespace, user)
-    elif alter:
-        alter_option(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
+    if is_list:
+        list(cluster, namespace)
+
+    elif is_create:
+        create(user, authentication_type, quota, cluster, namespace)
+    elif is_describe:
+        describe(user, output, cluster, namespace)
+    elif is_delete:
+        delete(cluster, namespace, user)
+    elif is_alter:
+        alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
                      resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace)
     else:
         print_missing_options_for_command("users")
 
 
-def list_option(cluster, namespace):
+def list(cluster, namespace):
     os.system(
         Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(namespace).build().format(
             cluster=cluster))
 
 
-def create_option(user, authentication_type, quota, cluster, namespace):
+def create(user, authentication_type, quota, cluster, namespace):
     with open('{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
         user_dict = yaml.full_load(file)
@@ -87,7 +88,7 @@ def create_option(user, authentication_type, quota, cluster, namespace):
         user_temp_file.close()
 
 
-def describe_option(user, output, cluster, namespace):
+def describe(user, output, cluster, namespace):
     if output is not None:
         if resource_exists("kafkausers", user, cluster, namespace):
             os.system(Kubectl().get().kafkausers(user).namespace(namespace).output(output).build())
@@ -96,12 +97,12 @@ def describe_option(user, output, cluster, namespace):
             os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
 
 
-def delete_option(cluster, namespace, user):
+def delete(cluster, namespace, user):
     if resource_exists("kafkausers", user, cluster, namespace):
         os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
 
 
-def alter_option(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
+def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
                  resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace):
     if resource_exists("kafkausers", user, cluster, namespace):
         file = get_resource_as_file("kafkausers", user, namespace)
