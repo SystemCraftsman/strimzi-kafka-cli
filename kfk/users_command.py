@@ -44,7 +44,6 @@ def users(user, is_list, is_create, authentication_type, is_describe, output, is
     """The kafka user(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
-
     elif is_create:
         create(user, authentication_type, quota, cluster, namespace)
     elif is_describe:
