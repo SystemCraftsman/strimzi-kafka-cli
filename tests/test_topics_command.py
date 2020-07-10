@@ -124,7 +124,6 @@ class TestKfkTopics(TestCase):
             assert result.exit_code == 0
 
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
             assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -148,7 +147,6 @@ class TestKfkTopics(TestCase):
             with open(r'files/yaml/topic_without_config.yaml') as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
                 assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -173,7 +171,6 @@ class TestKfkTopics(TestCase):
             with open(r'files/yaml/topic_with_one_config.yaml') as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
                 assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -199,7 +196,6 @@ class TestKfkTopics(TestCase):
             with open(r'files/yaml/topic_with_two_configs.yaml') as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
                 assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -223,7 +219,6 @@ class TestKfkTopics(TestCase):
             with open(r'files/yaml/topic_with_one_config.yaml') as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
                 assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch('kfk.topics_command.create_temp_file')
@@ -248,5 +243,4 @@ class TestKfkTopics(TestCase):
             with open(r'files/yaml/topic_without_config.yaml') as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
-
                 assert expected_topic_yaml == result_topic_yaml
