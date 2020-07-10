@@ -13,16 +13,17 @@ from kfk.kubectl_command_builder import Kubectl
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
-@click.option('--delete-quota', help='User quotas to be removed.', multiple=True)
-@click.option('--quota', help='User\'s network and CPU utilization quotas in the Kafka cluster.', multiple=True)
+@click.option('--delete-quota', 'delete_quota_tuple', help='User quotas to be removed.', multiple=True)
+@click.option('--quota', 'quota_tuple', help='User\'s network and CPU utilization quotas in the Kafka cluster.', multiple=True)
 @click.option('--resource-pattern-type',
               help="The type of the resource pattern or <ANY|MATCH|LITERAL|PREFIXED> pattern filter. When adding "
                    "acls, this should be a specific pattern type, e.g. 'literal' or 'prefixed'.", default='literal')
 @click.option('--resource-name', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
 @click.option('--resource-type', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
 @click.option('--host', help='Host which User will have access. (default: *)', default='*')
-@click.option('--operation', help='Operation that is being allowed or denied. (default: All)', default='All')
-@click.option('--delete-acl', help='Delete ACL of User')
+@click.option('--operation', 'operation_tuple', help='Operation that is being allowed or denied. (default: All)',
+              default=["All"], multiple=True)
+@click.option('--delete-acl', help='Delete ACL of User', is_flag=True)
 @click.option('--add-acl', help='Add ACL to User', is_flag=True)
 @click.option('--authorization-type', help='Authorization type for user',
               type=click.Choice(['simple'], case_sensitive=True))
@@ -33,26 +34,27 @@ from kfk.kubectl_command_builder import Kubectl
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', help='Authentication type for user',
-              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf, required_if=['is_create'])
+              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
+              required_if=['is_create'])
 @click.option('--create', 'is_create', help='Create a new user.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available users.', is_flag=True)
 @click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if='is_list')
 @kfk.command()
-def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type, add_acl,
-          delete_acl, operation, host, resource_type, resource_name, resource_pattern_type, quota, delete_quota,
-          cluster, namespace):
+def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type,
+          add_acl, delete_acl, operation_tuple, host, resource_type, resource_name, resource_pattern_type, quota_tuple,
+          delete_quota_tuple, cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
     elif is_create:
-        create(user, authentication_type, quota, cluster, namespace)
+        create(user, authentication_type, quota_tuple, cluster, namespace)
     elif is_describe:
         describe(user, output, cluster, namespace)
     elif is_delete:
         delete(cluster, namespace, user)
     elif is_alter:
-        alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
-                     resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace)
+        alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, resource_type,
+              resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace)
     else:
         print_missing_options_for_command("users")
 
@@ -101,8 +103,8 @@ def delete(cluster, namespace, user):
         os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
 
 
-def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation, host, resource_type,
-                 resource_name, resource_pattern_type, quota, delete_quota, cluster, namespace):
+def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, resource_type,
+          resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace):
     if resource_exists("kafkausers", user, cluster, namespace):
         file = get_resource_as_file("kafkausers", user, namespace)
         user_dict = yaml.full_load(file)
@@ -118,18 +120,18 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         if add_acl:
             if user_dict["spec"].get("authorization") is None:
                 user_dict["spec"]["authorization"] = {}
-            add_acl_option(user_dict, operation, host, resource_type, resource_name, resource_pattern_type)
+            add_acl_option(user_dict, operation_tuple, host, resource_type, resource_name, resource_pattern_type)
 
         delete_last_applied_configuration(user_dict)
 
-        if len(quota) > 0:
+        if len(quota_tuple) > 0:
             if user_dict["spec"].get("quotas") is None:
                 user_dict["spec"]["quotas"] = {}
-            add_resource_kv_config(quota, user_dict["spec"]["quotas"])
+            add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"])
 
-        if len(delete_quota) > 0:
+        if len(delete_quota_tuple) > 0:
             if user_dict["spec"].get("quotas") is not None:
-                delete_resource_config(delete_quota, user_dict["spec"]["quotas"])
+                delete_resource_config(delete_quota_tuple, user_dict["spec"]["quotas"])
 
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
@@ -142,8 +144,9 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
 
 
 def add_acl_option(user_dict, operation, host, resource_type, resource_name, resource_pattern_type):
-    acl_dict = {'operation': operation, 'host': host, 'resource': {'type': resource_type, 'name': resource_name,
-                                                                   'patternType': resource_pattern_type}}
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
-    user_dict["spec"]["authorization"]["acls"].append(acl_dict)
+    for operation_str in operation:
+        acl_dict = {'operation': operation_str, 'host': host, 'resource': {'type': resource_type, 'name': resource_name,
+                                                                           'patternType': resource_pattern_type}}
+        user_dict["spec"]["authorization"]["acls"].append(acl_dict)
