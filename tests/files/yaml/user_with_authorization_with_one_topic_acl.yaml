@@ -15,4 +15,5 @@ spec:
         name: my-topic
         patternType: literal
         type: topic
+      type: allow
     type: simple

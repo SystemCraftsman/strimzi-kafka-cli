@@ -13,7 +13,7 @@ from kfk.kubectl_command_builder import Kubectl
                    '|jsonpath-file.')
 @click.option('--describe', help='List details for the given cluster.', is_flag=True)
 @click.option('--list', help='List all available clusters.', required=True, is_flag=True)
-@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if='list')
+@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['list'])
 @kfk.command()
 def clusters(cluster, list, describe, output, namespace):
     """The kafka cluster(s) to be created, altered or described. """

@@ -15,7 +15,8 @@ from kfk.kubectl_command_builder import Kubectl
 @click.option('--delete-config', help='A topic configuration override to be removed for an existing topic',
               multiple=True)
 @click.option('--config', help='A topic configuration override for the topic being created or altered.', multiple=True)
-@click.option('--alter', 'is_alter', help='Alter the number of partitions, replica assignment, and/or configuration of the topic.',
+@click.option('--alter', 'is_alter',
+              help='Alter the number of partitions, replica assignment, and/or configuration of the topic.',
               is_flag=True)
 @click.option('--delete', 'is_delete', help='Delete a topic.', is_flag=True)
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
@@ -30,9 +31,10 @@ from kfk.kubectl_command_builder import Kubectl
               required_if=['is_create'])
 @click.option('--create', 'is_create', help='Create a new topic.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
-@click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if='is_list')
+@click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
-def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, is_delete, is_alter, config,
+def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, is_delete, is_alter,
+           config,
            delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
     if is_list:
@@ -85,7 +87,8 @@ def describe(topic, output, native, cluster, namespace):
                 Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
     else:
         if native:
-            native_command = "bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topic}"
+            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe " \
+                             "--topic {topic} "
             os.system(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
                     native_command).build().format(topic=topic, cluster=cluster))

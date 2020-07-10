@@ -15,16 +15,19 @@ spec:
         name: my-topic
         patternType: literal
         type: topic
+      type: allow
     - host: '*'
       operation: Write
       resource:
         name: my-topic
         patternType: literal
         type: topic
+      type: allow
     - host: '*'
       operation: Describe
       resource:
         name: my-topic
         patternType: literal
         type: topic
+      type: allow
     type: simple

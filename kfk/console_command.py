@@ -16,17 +16,16 @@ from kfk.constants import *
 @kfk.command()
 def console_consumer(topic, consumer_config, from_beginning, cluster, namespace):
     """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
-    native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:{port} --topic {" \
+    native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-bootstrap:{port} --topic {" \
                      "topic} {from_beginning}"
     pod = cluster + "-kafka-0"
     container = "kafka"
     if consumer_config is not None:
         native_command = apply_client_config_from_file(native_command, consumer_config, "--consumer-property",
                                                        container, pod, namespace)
-        print(native_command)
     os.system(
         Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
-            native_command).build().format(port=KAFKA_PORT, topic=topic,
+            native_command).build().format(port=KAFKA_PORT, topic=topic, cluster=cluster,
                                            from_beginning=(from_beginning and '--from-beginning' or '')))
 
 
@@ -37,7 +36,7 @@ def console_consumer(topic, consumer_config, from_beginning, cluster, namespace)
 @kfk.command()
 def console_producer(topic, producer_config, cluster, namespace):
     """The console producer is a tool that reads data from standard input and publish it to Kafka."""
-    native_command = "bin/kafka-console-producer.sh --broker-list my-cluster-kafka-brokers:{port} --topic {topic}"
+    native_command = "bin/kafka-console-producer.sh --broker-list {cluster}-kafka-brokers:{port} --topic {topic}"
     pod = cluster + "-kafka-0"
     container = "kafka"
     if producer_config is not None:
@@ -45,7 +44,7 @@ def console_producer(topic, producer_config, cluster, namespace):
                                                        container, pod, namespace)
     os.system(
         Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
-            native_command).build().format(port=KAFKA_PORT, topic=topic))
+            native_command).build().format(port=KAFKA_PORT, topic=topic, cluster=cluster))
 
 
 def apply_client_config_from_file(native_command, config_file_path, property_flag, container, pod, namespace):
