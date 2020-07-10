@@ -51,7 +51,8 @@ class TestKfkTopics(TestCase):
         result = self.runner.invoke(kfk, ['topics', '--describe', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace, '--native'])
         assert result.exit_code == 0
-        native_command = "bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topic}"
+        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe --topic {" \
+                         "topic}"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(topic=self.topic, cluster=self.cluster))

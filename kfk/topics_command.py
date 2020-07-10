@@ -88,7 +88,7 @@ def describe(topic, output, native, cluster, namespace):
     else:
         if native:
             native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe " \
-                             "--topic {topic} "
+                             "--topic {topic}"
             os.system(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
                     native_command).build().format(topic=topic, cluster=cluster))
