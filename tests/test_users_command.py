@@ -181,6 +181,58 @@ class TestKfkUsers(TestCase):
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.users_command.resource_exists')
     @mock.patch('kfk.users_command.os')
+    def test_alter_user_for_authorization_delete_acls_for_one_operation(self, mock_os, mock_resource_exists,
+                                                                 mock_get_resource_yaml,
+                                                                 mock_create_temp_file):
+        mock_resource_exists.return_value = True
+
+        with open(r'files/yaml/user_with_authorization_with_three_topic_acls.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '--authorization-type',
+                                         'simple', '--delete-acl', '--operation', 'Describe',
+                                         '--resource-type', 'topic', '--resource-name', 'my-topic', '-c', self.cluster,
+                                         '-n', self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/user_with_authorization_with_two_topic_acls.yaml') as file:
+                expected_user_yaml = file.read()
+                result_user_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_user_yaml == result_user_yaml
+
+    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
+    def test_alter_user_for_authorization_delete_acls_for_two_operation(self, mock_os, mock_resource_exists,
+                                                                 mock_get_resource_yaml,
+                                                                 mock_create_temp_file):
+        mock_resource_exists.return_value = True
+
+        with open(r'files/yaml/user_with_authorization_with_three_topic_acls.yaml') as file:
+            user_yaml = file.read()
+            mock_get_resource_yaml.return_value = user_yaml
+
+            result = self.runner.invoke(kfk,
+                                        ['users', '--alter', '--user', self.user, '--authorization-type',
+                                         'simple', '--delete-acl', '--operation', 'Describe', '--operation', 'Write',
+                                         '--resource-type', 'topic', '--resource-name', 'my-topic', '-c', self.cluster,
+                                         '-n', self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/user_with_authorization_with_one_topic_acl.yaml') as file:
+                expected_user_yaml = file.read()
+                result_user_yaml = mock_create_temp_file.call_args[0][0]
+
+                assert expected_user_yaml == result_user_yaml
+
+    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
     def test_alter_user_for_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/user.yaml') as file:

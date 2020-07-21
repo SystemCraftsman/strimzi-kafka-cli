@@ -127,6 +127,11 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
                 user_dict["spec"]["authorization"] = {}
             add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
 
+        if delete_acl:
+            if user_dict["spec"].get("authorization") is None:
+                user_dict["spec"]["authorization"] = {}
+            delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
+
         delete_last_applied_configuration(user_dict)
 
         if len(quota_tuple) > 0:
@@ -155,3 +160,16 @@ def add_acl_option(user_dict, operation, host, type, resource_type, resource_nam
         acl_dict = {'operation': operation_str, 'host': host, 'type': type,
                     'resource': {'type': resource_type, 'name': resource_name, 'patternType': resource_pattern_type}}
         user_dict["spec"]["authorization"]["acls"].append(acl_dict)
+
+
+def delete_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):
+    if user_dict["spec"]["authorization"].get("acls") is None:
+        user_dict["spec"]["authorization"]["acls"] = []
+    for operation_str in operation:
+        for acl_dict in user_dict["spec"]["authorization"]["acls"]:
+            acl_dict_to_be_deleted = {'operation': operation_str, 'host': host, 'type': type,
+                        'resource': {'type': resource_type, 'name': resource_name, 'patternType': resource_pattern_type}}
+            if acl_dict == acl_dict_to_be_deleted:
+                user_dict["spec"]["authorization"]["acls"].remove(acl_dict)
+
+
