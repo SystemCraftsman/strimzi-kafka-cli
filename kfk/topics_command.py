@@ -57,7 +57,7 @@ def list(cluster, namespace):
 
 
 def create(topic, partitions, replication_factor, config, cluster, namespace):
-    with open('{strimzi_path}/examples/topic/kafka-topic.yaml'.format(strimzi_path=STRIMZI_PATH).format(
+    with open('{strimzi_path}/examples/topic/kafka-topic_12_partitions.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
         topic_dict = yaml.full_load(file)
 
