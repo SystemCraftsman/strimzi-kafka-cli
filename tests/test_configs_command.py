@@ -13,7 +13,8 @@ class TestKfkConfigs(TestCase):
         self.topic = "my-topic"
 
     def test_no_option(self):
-        result = self.runner.invoke(kfk, ['configs', '-c', self.cluster, '-n', self.namespace])
+        result = self.runner.invoke(kfk, ['configs', '--entity-type', 'topics', '--entity-name', self.topic, '-c',
+                                    self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
         assert "Missing options: kfk configs" in result.output
 
@@ -24,7 +25,7 @@ class TestKfkConfigs(TestCase):
     def test_add_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'files/yaml/topic_24_partitions.yaml') as file:
+        with open(r'files/yaml/topic_without_config.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -45,7 +46,7 @@ class TestKfkConfigs(TestCase):
     def test_add_two_topic_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'files/yaml/topic_24_partitions.yaml') as file:
+        with open(r'files/yaml/topic_without_config.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
