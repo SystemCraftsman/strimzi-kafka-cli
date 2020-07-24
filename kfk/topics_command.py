@@ -34,8 +34,7 @@ from kfk.kubectl_command_builder import Kubectl
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
 def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, is_delete, is_alter,
-           config,
-           delete_config, cluster, namespace):
+           config, delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
