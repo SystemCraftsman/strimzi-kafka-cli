@@ -21,7 +21,7 @@ class TestKfkConfigs(TestCase):
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.topics_command.os')
     def test_add_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -42,7 +42,7 @@ class TestKfkConfigs(TestCase):
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.topics_command.os')
     def test_add_two_topic_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 

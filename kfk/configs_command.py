@@ -1,6 +1,4 @@
 import click
-import os
-import yaml
 
 from kfk.command import kfk
 from kfk import topics_command
