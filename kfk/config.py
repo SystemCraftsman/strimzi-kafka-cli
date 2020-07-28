@@ -7,7 +7,7 @@ from pathlib import Path
 BASE_FOLDER = ".strimzi-kafka-cli"
 BASE_PATH = (str(Path.home()) + "/" + BASE_FOLDER) if os.environ.get(
     'STRIMZI_KAFKA_CLI_BASE_PATH') is None else os.environ.get('STRIMZI_KAFKA_CLI_BASE_PATH')
-STRIMZI_VERSION = "0.18.0" if os.environ.get('STRIMZI_KAFKA_CLI_STRIMZI_VERSION') is None else os.environ.get('STRIMZI_KAFKA_CLI_STRIMZI_VERSION')
+STRIMZI_VERSION = "0.19.0" if os.environ.get('STRIMZI_KAFKA_CLI_STRIMZI_VERSION') is None else os.environ.get('STRIMZI_KAFKA_CLI_STRIMZI_VERSION')
 STRIMZI_PATH = (BASE_PATH + "/strimzi-{version}".format(version=STRIMZI_VERSION)) if os.environ.get(
     'STRIMZI_KAFKA_CLI_STRIMZI_PATH') is None else os.environ.get('STRIMZI_KAFKA_CLI_STRIMZI_PATH')
 STRIMZI_RELEASE_URL = "https://github.com/strimzi/strimzi-kafka-operator/releases/download/{version}/strimzi-{version}.tar.gz".format(
