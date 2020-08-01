@@ -5,7 +5,7 @@ with open("README.md", "r") as file:
 
 setup(
     name='strimzi-kafka-cli',
-    version='0.1.0-alpha24',
+    version='0.1.0-alpha25',
     description="Command Line Interface for Strimzi Kafka Operator",
     long_description=long_description,
     long_description_content_type="text/markdown",
