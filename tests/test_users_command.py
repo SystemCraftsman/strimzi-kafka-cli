@@ -241,7 +241,7 @@ class TestKfkUsers(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['users', '--alter', '--user', self.user, '--authentication-type',
-                                         'scram-sha-512', '--quota', 'requestPercentage=55',
+                                         'scram-sha-512', '--quota', 'request_percentage=55',
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -263,8 +263,8 @@ class TestKfkUsers(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['users', '--alter', '--user', self.user, '--authentication-type',
-                                         'scram-sha-512', '--quota', 'requestPercentage=55',
-                                         '--quota', 'consumerByteRate=2097152',
+                                         'scram-sha-512', '--quota', 'request_percentage=55',
+                                         '--quota', 'consumer_byte_rate=2097152',
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -286,7 +286,7 @@ class TestKfkUsers(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['users', '--alter', '--user', self.user, '--delete-quota',
-                                         'consumerByteRate',
+                                         'consumer_byte_rate',
                                          '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 

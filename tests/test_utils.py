@@ -1,4 +1,4 @@
-from kfk.utils import convert_string_to_type
+from kfk.utils import convert_string_to_type, snake_to_camel_case
 from unittest import TestCase
 
 
@@ -20,3 +20,8 @@ class TestUtils(TestCase):
     def test_convert_string_to_str(self):
         val_str = "test"
         self.assertEqual(convert_string_to_type(val_str), "test")
+
+    def test_snake_to_camel_case(self):
+        val_str = "this_is_the_test_string"
+        self.assertEqual(snake_to_camel_case(val_str), "thisIsTheTestString")
+

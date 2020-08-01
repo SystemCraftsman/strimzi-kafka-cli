@@ -9,6 +9,7 @@ from kfk.commons import print_missing_options_for_command, resource_exists, get_
     print_resource_found_msg
 from kfk.config import *
 from kfk.kubectl_command_builder import Kubectl
+from kfk.utils import snake_to_camel_case
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -137,11 +138,11 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         if len(quota_tuple) > 0:
             if user_dict["spec"].get("quotas") is None:
                 user_dict["spec"]["quotas"] = {}
-            add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"])
+            add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
 
         if len(delete_quota_tuple) > 0:
             if user_dict["spec"].get("quotas") is not None:
-                delete_resource_config(delete_quota_tuple, user_dict["spec"]["quotas"])
+                delete_resource_config(delete_quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
 
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)

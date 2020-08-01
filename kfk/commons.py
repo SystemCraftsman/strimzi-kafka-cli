@@ -21,9 +21,11 @@ def delete_last_applied_configuration(resource_dict):
         del resource_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
 
 
-def add_resource_kv_config(config, dict_part):
+def add_resource_kv_config(config, dict_part, *converters):
     if type(config) is tuple:
         for config_str in config:
+            for converter in converters:
+                config_str = converter(config_str)
             config_arr = get_kv_config_arr(config_str)
             dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
     else:
@@ -36,9 +38,11 @@ def get_kv_config_arr(config_str):
     return config_str.split('=')
 
 
-def delete_resource_config(config, dict_part):
+def delete_resource_config(config, dict_part, *converters):
     if type(config) is tuple:
         for config_str in config:
+            for converter in converters:
+                config_str = converter(config_str)
             if config_str in dict_part:
                 del dict_part[config_str]
     else:
