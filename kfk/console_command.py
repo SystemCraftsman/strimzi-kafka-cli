@@ -1,4 +1,5 @@
 import click
+import os
 import ntpath
 
 from kfk.command import kfk

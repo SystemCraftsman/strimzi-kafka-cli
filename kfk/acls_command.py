@@ -49,14 +49,14 @@ def acls(list, topic, cluster, group, add, allow_principal, deny_principal, oper
                                                cluster=(cluster and '--cluster ' + cluster or ''),
                                                group=(group and '--group ' + group or '')))
     elif add or remove:
-        alter_acl(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
-                  resource_pattern_type, kafka_cluster, namespace)
+        alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
+              resource_pattern_type, kafka_cluster, namespace)
     else:
         print_missing_options_for_command("acls")
 
 
-def alter_acl(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
-              resource_pattern_type, kafka_cluster, namespace):
+def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
+          resource_pattern_type, kafka_cluster, namespace):
     resource_type_dict = get_resource_type_dict(topic, cluster, group)
     if allow_principal:
         type = "allow"
