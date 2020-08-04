@@ -34,11 +34,8 @@ def configs(entity_type, entity_name, add_config, delete_config, describe, nativ
             if native:
                 native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:{port} --entity-type " \
                                  "{entity_type} --entity-name {entity_name} --describe"
-                pod = cluster + "-kafka-0"
-                container = "kafka"
-
                 os.system(
-                    Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
+                    Kubectl().exec("-it", cluster + "-kafka-0").container("kafka").namespace(namespace).exec_command(
                         native_command).build().format(cluster=cluster, port=KAFKA_PORT, entity_type=entity_type,
                                                        entity_name=entity_name))
             else:
