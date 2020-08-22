@@ -39,7 +39,7 @@ def configs(entity_type, entity_name, add_config, delete_config, describe, nativ
                         native_command).build().format(cluster=cluster, port=KAFKA_PORT, entity_type=entity_type,
                                                        entity_name=entity_name))
             else:
-                click.echo("Not implemented")
+                topics_command.describe(entity_name, None, False, cluster, namespace)
         elif entity_type == "users":
             click.echo("Not implemented")
         elif entity_type == "clusters":
