@@ -7,6 +7,8 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.commons import print_missing_options_for_command
 from kfk import users_command
 
+PRINCIPAL_SPLIT_CHAR = ":"
+
 
 @click.option('-n', '--namespace', help='Namespace to use.', required=True)
 @click.option('-c', '--kafka-cluster', help='Cluster to use.', required=True)
@@ -58,17 +60,18 @@ def acls(list, topic, cluster, group, add, allow_principal, deny_principal, oper
 def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
           resource_pattern_type, kafka_cluster, namespace):
     resource_type_dict = get_resource_type_dict(topic, cluster, group)
+
     if allow_principal:
         type = "allow"
         # TODO: click exception here
-        allow_principal_arr = allow_principal.split(":")
+        allow_principal_arr = allow_principal.split(PRINCIPAL_SPLIT_CHAR)
         principal_type = allow_principal_arr[0]
         principal_name = allow_principal_arr[1]
         host = allow_host
     else:
         type = "deny"
         # TODO: click exception here
-        deny_principal_arr = deny_principal.split(":")
+        deny_principal_arr = deny_principal.split(PRINCIPAL_SPLIT_CHAR)
         principal_type = deny_principal_arr[0]
         principal_name = deny_principal_arr[1]
         host = deny_host
