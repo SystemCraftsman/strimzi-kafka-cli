@@ -7,6 +7,10 @@ class Kubectl:
     def __init__(self):
         self.cmd_str = KUBECTL_PATH
 
+    def version(self):
+        self.cmd_str = self.cmd_str + SPACE + "version"
+        return self
+
     def get(self):
         self.cmd_str = self.cmd_str + SPACE + "get"
         return self
