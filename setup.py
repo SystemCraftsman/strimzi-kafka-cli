@@ -12,9 +12,9 @@ setup(
     packages=['kfk'],
     package_dir={'kfk': 'kfk'},
     install_requires=[
-        'Click',
-        'PyYAML',
-        'wget',
+        'Click==7.1.2',
+        'PyYAML==5.3.1',
+        'wget==3.2',
     ],
     entry_points='''
         [console_scripts]

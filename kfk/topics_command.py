@@ -1,13 +1,14 @@
 import click
 import os
 import yaml
+import ntpath
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
-from kfk.commons import print_missing_options_for_command, delete_last_applied_configuration, resource_exists, \
-    get_resource_as_file, add_resource_kv_config, delete_resource_config, create_temp_file, print_resource_found_msg
+from kfk.commons import *
 from kfk.config import *
 from kfk.kubectl_command_builder import Kubectl
+from kfk.constants import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -19,6 +20,8 @@ from kfk.kubectl_command_builder import Kubectl
               help='Alter the number of partitions, replica assignment, and/or configuration of the topic.',
               is_flag=True)
 @click.option('--delete', 'is_delete', help='Delete a topic.', is_flag=True)
+@click.option('--command-config',
+              help='Property file containing configs to be config property file passed to Admin Client.')
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
               required_if=['is_describe'])
 @click.option('-o', '--output',
@@ -33,15 +36,15 @@ from kfk.kubectl_command_builder import Kubectl
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
-def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, is_delete, is_alter,
-           config, delete_config, cluster, namespace):
+def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, command_config,
+           is_delete, is_alter, config, delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
     elif is_create:
         create(topic, partitions, replication_factor, config, cluster, namespace)
     elif is_describe:
-        describe(topic, output, native, cluster, namespace)
+        describe(topic, output, native, command_config, cluster, namespace)
     elif is_delete:
         delete(topic, cluster, namespace)
     elif is_alter:
@@ -79,7 +82,7 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_temp_file.close()
 
 
-def describe(topic, output, native, cluster, namespace):
+def describe(topic, output, native, command_config, cluster, namespace):
     if output is not None:
         if resource_exists("kafkatopics", topic, cluster, namespace):
             os.system(
@@ -132,3 +135,25 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
         topic_temp_file.close()
     else:
         print_resource_found_msg(cluster, namespace)
+
+
+def apply_client_config_from_file(native_command, config_file_path, property_flag, container, pod, namespace):
+    port = KAFKA_PORT
+    delete_file_command = ""
+    with open(config_file_path) as file:
+        for cnt, producer_property in enumerate(file):
+            producer_property = producer_property.strip()
+            if "security.protocol" in producer_property:
+                producer_property_arr = get_kv_config_arr(producer_property)
+                if producer_property_arr[1] == KAFKA_SSL:
+                    port = KAFKA_SECURE_PORT
+            if "ssl.truststore.location" in producer_property or "ssl.keystore.location" in producer_property:
+                producer_property_arr = get_kv_config_arr(producer_property)
+                file_path = producer_property_arr[1]
+                file_name = ntpath.basename(file_path)
+                new_file_path = "/tmp/" + file_name
+                transfer_file_to_container(file_path, new_file_path, container, pod, namespace)
+                producer_property = producer_property_arr[0] + "=" + new_file_path
+                delete_file_command = delete_file_command + "rm -rf" + SPACE + new_file_path + SEMICOLON
+            native_command = native_command + SPACE + property_flag + SPACE + producer_property
+    return native_command.format_map(SafeDict(port=port)) + SEMICOLON + delete_file_command
