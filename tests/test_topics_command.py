@@ -57,6 +57,20 @@ class TestKfkTopics(TestCase):
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(topic=self.topic, cluster=self.cluster))
 
+    @mock.patch('kfk.commons.transfer_file_to_container')
+    @mock.patch('kfk.topics_command.os')
+    def test_describe_topic_native_with_command_config(self, mock_os, mock_transfer_file_to_container):
+        result = self.runner.invoke(kfk, ['topics', '--describe', '--topic', self.topic, '--command-config',
+                                          'files/client.properties', '-c', self.cluster, '-n', self.namespace,
+                                          '--native'])
+        assert result.exit_code == 0
+        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9093 --describe --topic {" \
+                         "topic} --command-config /tmp/client.properties;rm -rf /tmp/truststore.jks;rm -rf " \
+                         "/tmp/user.p12;rm -rf /tmp/client.properties;"
+        mock_os.system.assert_called_with(
+            Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
+                native_command).build().format(topic=self.topic, cluster=self.cluster))
+
     @mock.patch('kfk.topics_command.create_temp_file')
     @mock.patch('kfk.topics_command.os')
     def test_create_topic(self, mock_os, mock_create_temp_file):
@@ -78,7 +92,8 @@ class TestKfkTopics(TestCase):
     def test_create_topic_with_config(self, mock_os, mock_create_temp_file):
         result = self.runner.invoke(kfk,
                                     ['topics', '--create', '--topic', self.topic, '--partitions', '24',
-                                     '--replication-factor', '3', '--config', 'min.insync.replicas=3', '-c', self.cluster, '-n', self.namespace])
+                                     '--replication-factor', '3', '--config', 'min.insync.replicas=3', '-c',
+                                     self.cluster, '-n', self.namespace])
 
         assert result.exit_code == 0
 
