@@ -1,7 +1,6 @@
 import click
 import os
 import yaml
-import ntpath
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
@@ -89,11 +88,16 @@ def describe(topic, output, native, command_config, cluster, namespace):
                 Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
     else:
         if native:
-            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe " \
+            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:{port} --describe " \
                              "--topic {topic}"
+            pod = cluster + "-kafka-0"
+            container = "kafka"
+            if command_config is not None:
+                native_command = apply_client_config_from_file(native_command, command_config, "--command-config",
+                                                               container, pod, namespace)
             os.system(
-                Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
-                    native_command).build().format(topic=topic, cluster=cluster))
+                Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
+                    native_command).build().format(port=KAFKA_PORT, topic=topic, cluster=cluster))
         else:
             if resource_exists("kafkatopics", topic, cluster, namespace):
                 os.system(
@@ -135,25 +139,3 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
         topic_temp_file.close()
     else:
         print_resource_found_msg(cluster, namespace)
-
-
-def apply_client_config_from_file(native_command, config_file_path, property_flag, container, pod, namespace):
-    port = KAFKA_PORT
-    delete_file_command = ""
-    with open(config_file_path) as file:
-        for cnt, producer_property in enumerate(file):
-            producer_property = producer_property.strip()
-            if "security.protocol" in producer_property:
-                producer_property_arr = get_kv_config_arr(producer_property)
-                if producer_property_arr[1] == KAFKA_SSL:
-                    port = KAFKA_SECURE_PORT
-            if "ssl.truststore.location" in producer_property or "ssl.keystore.location" in producer_property:
-                producer_property_arr = get_kv_config_arr(producer_property)
-                file_path = producer_property_arr[1]
-                file_name = ntpath.basename(file_path)
-                new_file_path = "/tmp/" + file_name
-                transfer_file_to_container(file_path, new_file_path, container, pod, namespace)
-                producer_property = producer_property_arr[0] + "=" + new_file_path
-                delete_file_command = delete_file_command + "rm -rf" + SPACE + new_file_path + SEMICOLON
-            native_command = native_command + SPACE + property_flag + SPACE + producer_property
-    return native_command.format_map(SafeDict(port=port)) + SEMICOLON + delete_file_command
