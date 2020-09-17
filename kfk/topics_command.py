@@ -4,10 +4,10 @@ import yaml
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
-from kfk.commons import print_missing_options_for_command, delete_last_applied_configuration, resource_exists, \
-    get_resource_as_file, add_resource_kv_config, delete_resource_config, create_temp_file, print_resource_found_msg
+from kfk.commons import *
 from kfk.config import *
 from kfk.kubectl_command_builder import Kubectl
+from kfk.constants import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -19,6 +19,8 @@ from kfk.kubectl_command_builder import Kubectl
               help='Alter the number of partitions, replica assignment, and/or configuration of the topic.',
               is_flag=True)
 @click.option('--delete', 'is_delete', help='Delete a topic.', is_flag=True)
+@click.option('--command-config',
+              help='Property file containing configs to be config property file passed to Admin Client.')
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
               required_if=['is_describe'])
 @click.option('-o', '--output',
@@ -33,15 +35,15 @@ from kfk.kubectl_command_builder import Kubectl
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
-def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, is_delete, is_alter,
-           config, delete_config, cluster, namespace):
+def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, command_config,
+           is_delete, is_alter, config, delete_config, cluster, namespace):
     """The kafka topic(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
     elif is_create:
         create(topic, partitions, replication_factor, config, cluster, namespace)
     elif is_describe:
-        describe(topic, output, native, cluster, namespace)
+        describe(topic, output, native, command_config, cluster, namespace)
     elif is_delete:
         delete(topic, cluster, namespace)
     elif is_alter:
@@ -79,18 +81,23 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_temp_file.close()
 
 
-def describe(topic, output, native, cluster, namespace):
+def describe(topic, output, native, command_config, cluster, namespace):
     if output is not None:
         if resource_exists("kafkatopics", topic, cluster, namespace):
             os.system(
                 Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
     else:
         if native:
-            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe " \
+            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:{port} --describe " \
                              "--topic {topic}"
+            pod = cluster + "-kafka-0"
+            container = "kafka"
+            if command_config is not None:
+                native_command = apply_client_config_from_file(native_command, command_config, "--command-config",
+                                                               container, pod, namespace)
             os.system(
-                Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(namespace).exec_command(
-                    native_command).build().format(topic=topic, cluster=cluster))
+                Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
+                    native_command).build().format(port=KAFKA_PORT, topic=topic, cluster=cluster))
         else:
             if resource_exists("kafkatopics", topic, cluster, namespace):
                 os.system(
