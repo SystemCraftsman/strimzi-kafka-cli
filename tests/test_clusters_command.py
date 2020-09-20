@@ -42,3 +42,33 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         mock_os.system.assert_called_with(
             Kubectl().get().kafkas(self.cluster).namespace(self.namespace).output("yaml").build())
+
+    @mock.patch('kfk.clusters_command.os')
+    def test_alter_cluster(self, mock_os):
+        result = self.runner.invoke(kfk, ['clusters', '--alter', '--cluster', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(Kubectl().edit().kafkas(self.cluster).namespace(self.namespace).build())
+
+    @mock.patch('kfk.clusters_command.click.confirm')
+    @mock.patch('kfk.clusters_command.os')
+    def test_delete_cluster(self, mock_os, mock_click_confirm):
+        mock_click_confirm.return_value = True
+        result = self.runner.invoke(kfk, ['clusters', '--delete', '--cluster', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(Kubectl().delete().kafkas(self.cluster).namespace(self.namespace).build())
+
+    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.clusters_command.open_file_in_system_editor')
+    @mock.patch('kfk.clusters_command.click.confirm')
+    @mock.patch('kfk.clusters_command.os')
+    def test_create_cluster(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor, mock_create_temp_file):
+        mock_click_confirm.return_value = True
+
+        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
+            expected_kafka_yaml = file.read()
+
+            result = self.runner.invoke(kfk, ['clusters', '--create', '--cluster', self.cluster, '-n', self.namespace])
+            assert result.exit_code == 0
+
+            result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_kafka_yaml == result_kafka_yaml

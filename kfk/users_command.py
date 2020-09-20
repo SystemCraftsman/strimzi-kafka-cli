@@ -4,7 +4,7 @@ import yaml
 
 from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
-from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_file, \
+from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_stream, \
     delete_last_applied_configuration, add_resource_kv_config, delete_resource_config, create_temp_file, \
     print_resource_found_msg
 from kfk.config import *
@@ -112,8 +112,8 @@ def delete(cluster, namespace, user):
 def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, type,
           resource_type, resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace):
     if resource_exists("kafkausers", user, cluster, namespace):
-        file = get_resource_as_file("kafkausers", user, namespace)
-        user_dict = yaml.full_load(file)
+        stream = get_resource_as_stream("kafkausers", user, namespace)
+        user_dict = yaml.full_load(stream)
 
         if authentication_type is not None:
             user_dict["spec"]["authentication"]["type"] = authentication_type

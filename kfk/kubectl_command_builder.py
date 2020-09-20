@@ -31,6 +31,10 @@ class Kubectl:
         self.cmd_str = self.cmd_str + SPACE + "delete"
         return self
 
+    def edit(self):
+        self.cmd_str = self.cmd_str + SPACE + "edit"
+        return self
+
     def exec(self, flag, pod_name):
         self.cmd_str = self.cmd_str + SPACE + "exec" + SPACE + flag + SPACE + pod_name
         return self

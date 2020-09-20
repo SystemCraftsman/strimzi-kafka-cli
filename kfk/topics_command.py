@@ -111,8 +111,8 @@ def delete(topic, cluster, namespace):
 
 def alter(topic, partitions, replication_factor, config, delete_config, cluster, namespace):
     if resource_exists("kafkatopics", topic, cluster, namespace):
-        file = get_resource_as_file("kafkatopics", topic, namespace)
-        topic_dict = yaml.full_load(file)
+        stream = get_resource_as_stream("kafkatopics", topic, namespace)
+        topic_dict = yaml.full_load(stream)
 
         if partitions is not None:
             topic_dict["spec"]["partitions"] = int(partitions)

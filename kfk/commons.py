@@ -6,6 +6,7 @@ import ntpath
 from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type
 from kfk.constants import *
+from subprocess import call
 
 
 def print_missing_options_for_command(command_str):
@@ -63,7 +64,7 @@ def get_resource_yaml(resource_type, resource_name, namespace):
         Kubectl().get().resource(resource_type, resource_name).namespace(namespace).output("yaml").build()).read()
 
 
-def get_resource_as_file(resource_type, resource_name, namespace):
+def get_resource_as_stream(resource_type, resource_name, namespace):
     topic_yaml = get_resource_yaml(resource_type, resource_name, namespace)
     return io.StringIO(topic_yaml)
 
@@ -75,6 +76,10 @@ def create_temp_file(content):
     return temp_file
 
 
+def open_file_in_system_editor(file):
+    call([os.environ.get('EDITOR', 'vim'), file])
+
+
 def transfer_file_to_container(source_file_path, dest_file_path, container, pod, namespace):
     os.system(Kubectl().cp(source_file_path, "{namespace}/{pod}:" + dest_file_path).container(container).build().format(
         namespace=namespace, pod=pod))
@@ -84,8 +89,7 @@ def apply_client_config_from_file(native_command, config_file_path, config_file_
     port = KAFKA_PORT
     delete_file_command = ""
     with open(config_file_path) as file:
-        data = file.read()
-        temp_file = create_temp_file(data)
+        temp_file = create_temp_file(file.read())
         lines = []
         with open(temp_file.name) as temp_file:
             for cnt, producer_property in enumerate(temp_file):
