@@ -10,13 +10,13 @@ from kfk.config import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use')
-@click.option('-o', '--output',
-              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
-                   '|jsonpath-file.')
 @click.option('--alter', help='Alter the cluster.', is_flag=True)
 @click.option('--delete', help='Delete the cluster.', is_flag=True)
 @click.option('--create', help='Create the cluster.', is_flag=True)
 @click.option('--describe', help='List details for the given cluster.', is_flag=True)
+@click.option('-o', '--output',
+              help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
+                   '|jsonpath-file.')
 @click.option('--list', help='List all available clusters.', required=True, is_flag=True)
 @click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['list'])
 @kfk.command()
