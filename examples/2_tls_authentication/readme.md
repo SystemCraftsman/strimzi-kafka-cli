@@ -152,8 +152,26 @@ kfk users --describe --user my-user -n kafka -c my-cluster
 At the bottom of the details of the user; in the status section, you can see a secret and a username definition:
 
 ```
+Name:         my-user
+Namespace:    kafka
+Labels:       strimzi.io/cluster=my-cluster
+Annotations:  <none>
+API Version:  kafka.strimzi.io/v1beta1
+Kind:         KafkaUser
+Metadata:
+  Creation Timestamp:  2020-09-21T12:54:52Z
+  Generation:          3
+  Resource Version:    53996010
+  Self Link:           /apis/kafka.strimzi.io/v1beta1/namespaces/kafka/kafkausers/my-user
+  UID:                 1c1dad0c-4e7a-4e63-933c-a785e6941021
+Spec:
+  Authentication:
+    Type:  tls
+Status:
+  Observed Generation:     3
   Secret:                  my-user
   Username:                CN=my-user
+Events:                    <none>
 ```
 
 This means that a secret named `my-user` is created for this user and with the username `CN=my-user` as a common name definition.
