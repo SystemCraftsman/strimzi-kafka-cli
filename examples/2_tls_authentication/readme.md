@@ -1,4 +1,4 @@
-# TLS Authentication with Strimzi using Strimzi Kafka CLI
+# TLS Authentication on Strimzi by using Strimzi Kafka CLI
 
 In this example we will demonstrate setting up TLS authentication for Strimzi using Strimzi Kafka CLI. So let's get started!
 
@@ -218,7 +218,7 @@ ssl.keystore.location=./user.p12
 ssl.keystore.password=123456
 ```
 
-Since the get_keys.sh script sets the store passwords as `123456` we use it in the config file.
+Since the `get_keys.sh` script sets the store passwords as `123456` we use it in the config file.
 
 Save it as client.properties (or just use the one that is already created in this directory with the name `client.properties`)
 
