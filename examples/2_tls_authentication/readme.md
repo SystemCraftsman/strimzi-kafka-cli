@@ -123,7 +123,7 @@ When we check the first pod logs that we ran the producer and consumer
 commands we can see the failed authentication message:
 
 ```shell
-oc logs -f my-cluster-kafka-0 -c kafka -n kafka
+kubectl logs -f my-cluster-kafka-0 -c kafka -n kafka
 ```
 
     2020-09-22 11:18:33,122 INFO [SocketServer brokerId=0] Failed authentication with /10.130.2.58 (Unexpected Kafka request of type METADATA during SASL handshake.) (org.apache.kafka.common.network.Selector) [data-plane-kafka-network-thread-0-ListenerName(PLAIN-9092)-SASL_PLAINTEXT-3]
@@ -161,7 +161,7 @@ This means that a secret named `my-user` is created for this user and with the u
 In the secrets there are private and public keys that should be imported in the truststore and the keystore files that will be created shortly.
 
 ```shell
-oc describe secret/my-user -n kafka
+kubectl describe secret/my-user -n kafka
 ```
 
 ```
