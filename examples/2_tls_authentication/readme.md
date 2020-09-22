@@ -9,7 +9,7 @@ First lets list the clusters and see our clusters list.
 kfk clusters --list
 ```
     
-Assuming we have a cluster already set up for us let's list the topics in the cluster
+Assuming we have a cluster called `my-cluster` already set up for us let's list the topics in the cluster
 
 ```shell
 kfk topics --list -n kafka -c my-cluster
@@ -18,7 +18,7 @@ kfk topics --list -n kafka -c my-cluster
 ---
 **NOTE**
 
-If you don't have any Kafka cluster that is created on your OpenShift/Kubernetes, pls. see the [Strimzi Quick Start](https://strimzi.io/quickstarts/) document or simply use
+If you don't have any Kafka cluster that is created on your OpenShift/Kubernetes, pls. see the [Strimzi Quick Start](https://strimzi.io/quickstarts/) document or simply use:
 
 ```shell
 kfk clusters --create -n kafka
@@ -139,3 +139,113 @@ In order to login this cluster via SSL authentication we have to;
 * Create truststore and keystore files by getting the certificates from Openshift/Kubernetes cluster
 * Create a client.properties file that is to be used by producer and consumer clients in order to be able to authenticate via TLS
 
+Let's first create the user with the name `my-user`:
+
+```shell
+kfk users --create --user my-user --authentication-type tls -n kafka -c my-cluster
+```
+
+After creating the user let's describe it to view a few attributes:
+
+```shell
+kfk users --describe --user my-user -n kafka -c my-cluster
+```
+At the bottom of the details of the user; in the status section, you can see a secret and a username definition:
+
+```
+  Secret:                  my-user
+  Username:                CN=my-user
+```
+
+This means that a secret named `my-user` is created for this user and with the username `CN=my-user` as a common name definition.
+
+In the secrets there are private and public keys that should be imported in the truststore and the keystore files that will be created shortly.
+
+```shell
+oc describe secret/my-user -n kafka
+```
+
+```
+Name:         my-user
+Namespace:    kafka
+Labels:       app.kubernetes.io/instance=my-user
+              app.kubernetes.io/managed-by=strimzi-user-operator
+              app.kubernetes.io/name=strimzi-user-operator
+              app.kubernetes.io/part-of=strimzi-my-user
+              strimzi.io/cluster=my-cluster
+              strimzi.io/kind=KafkaUser
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+ca.crt:         1164 bytes
+user.crt:       1009 bytes
+user.key:       1704 bytes
+user.p12:       2364 bytes
+user.password:  12 bytes
+```
+
+In order create the truststore and keystore files just run the get_keys.sh file in the example directory:
+
+```shell
+chmod a+x ./get_keys.sh;./get_keys.sh 
+```
+
+This will generate two files:
+
+* `truststore.jks` for the client's truststore definition
+* `user.p12` for the client's keystore definition
+
+TLS authentications are made with bidirectional TLS handshake. In order to do this apart from a truststore that has the public key imported, a keystore file that has both the public and private keys has to be created and defined in the client configuration file.
+
+So let's create our client configuration file. 
+
+Our client configuration should have a few definitions like:
+
+* Security protocol
+* Truststore location and password
+* Keystore location and password
+
+Security protocol should be `SSL` and since the truststore and keystore files are located in the example directory the client config file should be something like this:
+
+```properties
+security.protocol=SSL
+ssl.truststore.location=./examples/2_tls_authentication/truststore.jks
+ssl.truststore.password=123456
+ssl.keystore.location=./examples/2_tls_authentication/user.p12
+ssl.keystore.password=123456
+```
+
+Save it as client.properties (or just use the one that is already created in this directory with the name `client.properties`)
+
+Now it's time to test it. Let's call the console producer and consumer again, but this time with the client configuration:
+
+```shell
+kfk console-producer --topic message-topic -n kafka -c my-cluster --producer.config client.properties
+```
+The console producer seems to be working just fine since we can produce messages. 
+
+```
+>message1
+>message2
+>message3
+>
+```
+
+Let's run the console consumer to consume the just produced messages:
+
+```shell
+kfk console-consumer --topic message-topic -n kafka -c my-cluster --consumer.config client.properties
+```
+
+```
+message1
+message2
+message3
+```
+
+Worked like a charm!
+
+We are able to configure the Strimzi cluster and use the client configurations for TLS authentication easily with Strimzi Kafka CLI.
