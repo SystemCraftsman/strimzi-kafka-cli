@@ -116,8 +116,7 @@ kfk console-producer --topic my-topic -n kafka -c my-cluster
 kfk console-consumer --topic my-topic -n kafka -c my-cluster
 ```
 
-You got some WARN log messages saying
-`disconnected (org.apache.kafka.clients.NetworkClient)` from both
+You got some WARN log messages saying `disconnected (org.apache.kafka.clients.NetworkClient)` from both
 producer and consumer right?
 
 When we check the first pod logs that we ran the producer and consumer
