@@ -45,7 +45,7 @@ Run console consumer to consume messages from `my-topic`
 kfk console-consumer --topic my-topic -n kafka -c my-cluster
 ```
 
-Now lets enable the authentication for TLS. In Strimzi, if you want to
+After being sure to produce and consume messages without a problem, now lets enable the authentication for TLS. In Strimzi, if you want to
 enable authentication, there are listeners configurations that provides
 a couple of authentication methodologies like `scram-sha-512`, `oauth`
 and `tls`.
