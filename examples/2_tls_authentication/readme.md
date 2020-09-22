@@ -16,7 +16,7 @@ kfk topics --list -n kafka -c my-cluster
 ```
     
 ---
-**NOTE**
+**IMPORTANT**
 
 If you don't have any Kafka cluster that is created on your OpenShift/Kubernetes, pls. see the [Strimzi Quick Start](https://strimzi.io/quickstarts/) document or simply use:
 
@@ -212,15 +212,24 @@ Security protocol should be `SSL` and since the truststore and keystore files ar
 
 ```properties
 security.protocol=SSL
-ssl.truststore.location=./examples/2_tls_authentication/truststore.jks
+ssl.truststore.location=./truststore.jks
 ssl.truststore.password=123456
-ssl.keystore.location=./examples/2_tls_authentication/user.p12
+ssl.keystore.location=./user.p12
 ssl.keystore.password=123456
 ```
+
+Since the get_keys.sh script sets the store passwords as `123456` we use it in the config file.
 
 Save it as client.properties (or just use the one that is already created in this directory with the name `client.properties`)
 
 Now it's time to test it. Let's call the console producer and consumer again, but this time with the client configuration:
+
+---
+**IMPORTANT**
+
+Be careful to run producer and consumer commands from example's directory. Otherwise you have to change the truststore and keystore paths in the client.properties file.
+
+---
 
 ```shell
 kfk console-producer --topic message-topic -n kafka -c my-cluster --producer.config client.properties
