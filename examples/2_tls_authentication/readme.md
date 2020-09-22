@@ -74,8 +74,8 @@ listeners:
 ```
 
 If you want to fully secure your cluster you have to also change the
-plain listener for authentication because with the upper configuration
-if we don’t use a client configuration that doesn’t use SSL security
+plain listener for authentication, because with the upper configuration
+unless we use a client configuration that doesn’t use SSL security
 protocol it will use the plain one which doesn’t require any
 authentication. In order to do that, we can tell the plain listener in
 cluster config to use one of the authentication methodologies among
