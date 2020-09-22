@@ -29,7 +29,7 @@ def clusters(cluster, list, create, describe, delete, alter, output, namespace):
                 version=STRIMZI_VERSION)) as file:
             cluster_temp_file = create_temp_file(file.read())
             open_file_in_system_editor(cluster_temp_file.name)
-            is_confirmed = click.confirm("Are you sure you want to create the cluster?")
+            is_confirmed = click.confirm("Are you sure you want to create the cluster with the saved configuration?")
             if is_confirmed:
                 os.system(Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                     cluster_temp_file_path=cluster_temp_file.name))
