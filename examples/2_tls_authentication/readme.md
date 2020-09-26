@@ -252,7 +252,7 @@ Be careful to run producer and consumer commands from example's directory. Other
 ---
 
 ```shell
-kfk console-producer --topic message-topic -n kafka -c my-cluster --producer.config client.properties
+kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
 ```
 The console producer seems to be working just fine since we can produce messages. 
 
@@ -266,7 +266,7 @@ The console producer seems to be working just fine since we can produce messages
 Let's run the console consumer to consume the just produced messages:
 
 ```shell
-kfk console-consumer --topic message-topic -n kafka -c my-cluster --consumer.config client.properties
+kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
 ```
 
 ```
