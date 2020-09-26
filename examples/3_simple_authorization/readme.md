@@ -1,0 +1,1 @@
+# Simple ACL Authorization on Strimzi by using Strimzi Kafka CLI
