@@ -9,12 +9,6 @@ First lets list the clusters and see our clusters list.
 kfk clusters --list
 ```
     
-Assuming we have a cluster called `my-cluster` already set up for us let's list the topics in the cluster
-
-```shell
-kfk topics --list -n kafka -c my-cluster
-```
-    
 ---
 **IMPORTANT**
 
@@ -25,6 +19,15 @@ kfk clusters --create -n kafka
 ```
 
 ---
+
+
+Assuming we have a cluster called `my-cluster` already set up for us let's list the topics in the cluster
+
+```shell
+kfk topics --list -n kafka -c my-cluster
+```
+
+If it is a new cluster probably there is no topic living in the cluster yet. So let's create a new topic for our example.
 
 Create a topic called `my-topic` with 12 partitions and replication
 factor 3 in `my-cluster` cluster
