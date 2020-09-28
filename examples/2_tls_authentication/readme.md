@@ -207,7 +207,7 @@ user.p12:       2364 bytes
 user.password:  12 bytes
 ```
 
-In order create the truststore and keystore files just run the get_keys.sh file in the example directory:
+In order create the truststore and keystore files just run the get_keys.sh file in the [example directory](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/examples/2_tls_authentication/get_keys.sh):
 
 ```shell
 chmod a+x ./get_keys.sh;./get_keys.sh 
