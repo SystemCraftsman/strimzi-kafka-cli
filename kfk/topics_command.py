@@ -28,9 +28,9 @@ from kfk.constants import *
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given topic.', is_flag=True)
 @click.option('--replication-factor', help='The replication factor for each partition in the topic being created.',
-              cls=RequiredIf, required_if=['is_create'])
+              cls=RequiredIf, required_if=['is_create'], type=int)
 @click.option('--partitions', help='The number of partitions for the topic being created or altered ', cls=RequiredIf,
-              required_if=['is_create'])
+              required_if=['is_create'], type=int)
 @click.option('--create', 'is_create', help='Create a new topic.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
 @click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
