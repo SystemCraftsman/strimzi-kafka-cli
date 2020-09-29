@@ -61,6 +61,10 @@ pip install strimzi-kafka-cli
 ```
 Project requires: Python >=3.5
 
+## Examples
+
+You can access the examples from [here](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples).
+
 ## Dependencies
 ### Python Dependencies
 Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/requirements.txt) file.
