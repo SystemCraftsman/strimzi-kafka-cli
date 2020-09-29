@@ -53,18 +53,31 @@ authorization:
   type: simple
 ```
 
-After saving the cluster configuration wait for the brokers to be rollin updated by checking their status:
+After saving the cluster configuration wait for the brokers to be rolling updated by checking their status:
 
 ```shell
 watch kubectl get pods -n kafka
 ```
 
+Now it's time to run the producer and consumer to check if authorization is enabled:
+
 ```shell
 kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
 ```
 
+```
+ERROR Error when sending message to topic my-topic with key: null, value: 4 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
+org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [my-topic]
+```
+
 ```shell
 kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
+```
+
+```
+ERROR Error processing message, terminating consumer process:  (kafka.tools.ConsoleConsumer$)
+org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [my-topic]
+Processed a total of 0 messages
 ```
 
 ```shell
@@ -79,8 +92,21 @@ kfk users --describe --user my-user -n kafka -c my-cluster -o yaml
 kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
 ```
 
+```
+>message1
+>message2
+>message3
+>
+```
+
 ```shell
 kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
+```
+
+```
+ERROR Error processing message, terminating consumer process:  (kafka.tools.ConsoleConsumer$)
+org.apache.kafka.common.errors.GroupAuthorizationException: Not authorized to access group: console-consumer-96150
+Processed a total of 0 messages
 ```
 
 ```shell
@@ -88,9 +114,5 @@ kfk acls --add --allow-principal User:my-user --group my-group --operation Read 
 ```
 
 ```shell
-kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
-```
-
-```shell
-kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
+kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties --from-beginning
 ```
