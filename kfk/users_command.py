@@ -6,7 +6,7 @@ from kfk.command import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_stream, \
     delete_last_applied_configuration, add_resource_kv_config, delete_resource_config, create_temp_file, \
-    print_resource_found_msg
+    print_resource_not_found_msg
 from kfk.config import *
 from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import snake_to_camel_case
@@ -47,8 +47,7 @@ from kfk.utils import snake_to_camel_case
 @kfk.command()
 def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type,
           add_acl, delete_acl, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type,
-          quota_tuple,
-          delete_quota_tuple, cluster, namespace):
+          quota_tuple, delete_quota_tuple, cluster, namespace):
     """The kafka user(s) to be created, altered or described."""
     if is_list:
         list(cluster, namespace)
@@ -151,7 +150,7 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
                 user_temp_file_path=user_temp_file.name))
         user_temp_file.close()
     else:
-        print_resource_found_msg(cluster, namespace)
+        print_resource_not_found_msg(cluster, namespace)
 
 
 def add_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):

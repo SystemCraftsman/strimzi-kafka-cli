@@ -14,7 +14,7 @@ def print_missing_options_for_command(command_str):
         command_str=command_str))
 
 
-def print_resource_found_msg(cluster, namespace):
+def print_resource_not_found_msg(cluster, namespace):
     print("No resource found in Kafka cluster: {cluster}, namespace: {namespace}".format(
         cluster=cluster, namespace=namespace))
 

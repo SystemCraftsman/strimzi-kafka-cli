@@ -138,4 +138,4 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
                 topic_temp_file_path=topic_temp_file.name))
         topic_temp_file.close()
     else:
-        print_resource_found_msg(cluster, namespace)
+        print_resource_not_found_msg(cluster, namespace)
