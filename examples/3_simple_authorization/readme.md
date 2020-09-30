@@ -213,7 +213,7 @@ ssl.truststore.location=./truststore.jks
 ssl.truststore.password=123456
 ssl.keystore.location=./user.p12
 ssl.keystore.password=123456
-*group.id=my-group*
+group.id=my-group
 ```
 
 Running the consumer again with the updated client configuration -this time consuming from the beginning- let's see the previously produced logs: 
