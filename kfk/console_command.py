@@ -17,7 +17,7 @@ from kfk.constants import *
 @kfk.command()
 def console_consumer(topic, consumer_config, from_beginning, cluster, namespace):
     """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
-    native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-bootstrap:{port} --topic {" \
+    native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-brokers:{port} --topic {" \
                      "topic} {from_beginning}"
     pod = cluster + "-kafka-0"
     container = "kafka"

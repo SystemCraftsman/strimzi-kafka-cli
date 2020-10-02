@@ -88,7 +88,7 @@ def describe(topic, output, native, command_config, cluster, namespace):
                 Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
     else:
         if native:
-            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:{port} --describe " \
+            native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:{port} --describe " \
                              "--topic {topic}"
             pod = cluster + "-kafka-0"
             container = "kafka"
