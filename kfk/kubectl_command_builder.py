@@ -43,7 +43,6 @@ class Kubectl:
         self.cmd_str = self.cmd_str + SPACE + "--" + SPACE + "bash -c" + SPACE + "\"" + command + "\""
         return self
 
-
     def cp(self, source_path, destination_path):
         self.cmd_str = self.cmd_str + SPACE + "cp" + SPACE + source_path + SPACE + destination_path
         return self
