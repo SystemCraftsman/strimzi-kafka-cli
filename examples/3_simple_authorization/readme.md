@@ -7,13 +7,19 @@ Let's first see our cluster list.
 ```shell
 kfk clusters --list
 ```
-
-You should have a cluster called `my-cluster` on the namespace `kafka` we created before. If you don't have the cluster and haven't yet done the authentication part please go back to the previous example and do it first since for authorization you will need authentication to be set up before.
-
 ```
 NAMESPACE    NAME              DESIRED KAFKA REPLICAS   DESIRED ZK REPLICAS
 kafka        my-cluster        3                        3
 ```
+
+---
+**IMPORTANT**
+
+You should have a cluster called `my-cluster` on the namespace `kafka` we created before. If you don't have the cluster and haven't yet done the authentication part please go back to the previous example and do it first since for authorization you will need authentication to be set up before. 
+
+Also please copy the `truststore.jks` and the `user.p12` files or recreate them as explained in the previous example and put it along the example folder which we ignore in git.
+
+---
 
 Considering you have the cluster `my-cluster` on namespace `kafka`, let's list our topics to see the topic we created before:
 
