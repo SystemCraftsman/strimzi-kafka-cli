@@ -18,7 +18,7 @@ class TestKfkConsole(TestCase):
                                           self.namespace])
         assert result.exit_code == 0
 
-        native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic {" \
+        native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-brokers:9092 --topic {" \
                          "topic} "
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
@@ -31,7 +31,7 @@ class TestKfkConsole(TestCase):
                                           'files/client.properties', '-c', self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
 
-        native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-bootstrap:9093 --topic {" \
+        native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-brokers:9093 --topic {" \
                          "topic}  --consumer.config /tmp/client.properties;rm -rf /tmp/truststore.jks;rm -rf " \
                          "/tmp/user.p12;rm -rf /tmp/client.properties;"
         mock_os.system.assert_called_with(
@@ -45,7 +45,7 @@ class TestKfkConsole(TestCase):
                                           self.namespace, '--from-beginning'])
         assert result.exit_code == 0
 
-        native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic {" \
+        native_command = "bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-brokers:9092 --topic {" \
                          "topic} {from_beginning}"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(

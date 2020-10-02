@@ -31,7 +31,7 @@ from kfk.utils import snake_to_camel_case
 @click.option('--delete-acl', help='Delete ACL of User', is_flag=True)
 @click.option('--add-acl', help='Add ACL to User', is_flag=True)
 @click.option('--authorization-type', help='Authorization type for user',
-              type=click.Choice(['simple'], case_sensitive=True))
+              type=click.Choice(['none', 'simple'], case_sensitive=True))
 @click.option('--alter', 'is_alter', help='Alter authentication-type, quotas, etc. of the user.', is_flag=True)
 @click.option('--delete', 'is_delete', help='Delete a user.', is_flag=True)
 @click.option('-o', '--output',
@@ -39,7 +39,7 @@ from kfk.utils import snake_to_camel_case
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', help='Authentication type for user',
-              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
+              type=click.Choice(['none', 'tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
               required_if=['is_create'])
 @click.option('--create', 'is_create', help='Create a new user.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available users.', is_flag=True)
@@ -77,7 +77,8 @@ def create(user, authentication_type, quota, cluster, namespace):
 
         user_dict["metadata"]["name"] = user
         user_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
-        user_dict["spec"]["authentication"]["type"] = authentication_type
+        if authentication_type is not "none":
+            user_dict["spec"]["authentication"]["type"] = authentication_type
 
         del user_dict["spec"]["authorization"]
 
@@ -115,12 +116,18 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         user_dict = yaml.full_load(stream)
 
         if authentication_type is not None:
-            user_dict["spec"]["authentication"]["type"] = authentication_type
+            if authorization_type is not "none":
+                user_dict["spec"]["authentication"]["type"] = authentication_type
+            else:
+                del user_dict["spec"]["authentication"]
 
         if authorization_type is not None:
-            if user_dict["spec"].get("authorization") is None:
-                user_dict["spec"]["authorization"] = {}
-            user_dict["spec"]["authorization"]["type"] = authorization_type
+            if authorization_type is not "none":
+                if user_dict["spec"].get("authorization") is None:
+                    user_dict["spec"]["authorization"] = {}
+                user_dict["spec"]["authorization"]["type"] = authorization_type
+            else:
+                del user_dict["spec"]["authorization"]
 
         if add_acl:
             if user_dict["spec"].get("authorization") is None:
@@ -130,7 +137,8 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         if delete_acl:
             if user_dict["spec"].get("authorization") is None:
                 user_dict["spec"]["authorization"] = {}
-            delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
+            delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
+                              resource_pattern_type)
 
         delete_last_applied_configuration(user_dict)
 
@@ -168,8 +176,7 @@ def delete_acl_option(user_dict, operation, host, type, resource_type, resource_
     for operation_str in operation:
         for acl_dict in user_dict["spec"]["authorization"]["acls"]:
             acl_dict_to_be_deleted = {'operation': operation_str, 'host': host, 'type': type,
-                        'resource': {'type': resource_type, 'name': resource_name, 'patternType': resource_pattern_type}}
+                                      'resource': {'type': resource_type, 'name': resource_name,
+                                                   'patternType': resource_pattern_type}}
             if acl_dict == acl_dict_to_be_deleted:
                 user_dict["spec"]["authorization"]["acls"].remove(acl_dict)
-
-

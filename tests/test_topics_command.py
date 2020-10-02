@@ -51,7 +51,7 @@ class TestKfkTopics(TestCase):
         result = self.runner.invoke(kfk, ['topics', '--describe', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace, '--native'])
         assert result.exit_code == 0
-        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9092 --describe --topic {" \
+        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:9092 --describe --topic {" \
                          "topic}"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
@@ -64,7 +64,7 @@ class TestKfkTopics(TestCase):
                                           'files/client.properties', '-c', self.cluster, '-n', self.namespace,
                                           '--native'])
         assert result.exit_code == 0
-        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-bootstrap:9093 --describe --topic {" \
+        native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:9093 --describe --topic {" \
                          "topic} --command-config /tmp/client.properties;rm -rf /tmp/truststore.jks;rm -rf " \
                          "/tmp/user.p12;rm -rf /tmp/client.properties;"
         mock_os.system.assert_called_with(
