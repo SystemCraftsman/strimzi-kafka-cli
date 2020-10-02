@@ -16,8 +16,8 @@ from kfk.constants import *
 @click.option('--delete-config', help='Config keys to remove', multiple=True)
 @click.option('--add-config', help='Key Value pairs of configs to add.', multiple=True)
 @click.option('--entity-name', help='Name of entity', required=True)
-@click.option('--entity-type', help='Type of entity (topics/users/clusters)',
-              type=click.Choice(['topics', 'users', 'clusters'], case_sensitive=True))
+@click.option('--entity-type', help='Type of entity (topics/users/brokers)',
+              type=click.Choice(['topics', 'users', 'brokers'], case_sensitive=True))
 @kfk.command()
 def configs(entity_type, entity_name, add_config, delete_config, describe, native, cluster, namespace):
     """Add/Remove entity config for a topic, client, user or cluster"""
@@ -27,7 +27,7 @@ def configs(entity_type, entity_name, add_config, delete_config, describe, nativ
         elif entity_type == "users":
             users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
                                 add_config, delete_config, cluster, namespace)
-        elif entity_type == "clusters":
+        elif entity_type == "brokers":
             click.echo("Not implemented")
     elif describe:
         if entity_type == "topics":
@@ -42,7 +42,7 @@ def configs(entity_type, entity_name, add_config, delete_config, describe, nativ
                 topics_command.describe(entity_name, None, False, None, cluster, namespace)
         elif entity_type == "users":
             click.echo("Not implemented")
-        elif entity_type == "clusters":
+        elif entity_type == "brokers":
             click.echo("Not implemented")
 
     else:
