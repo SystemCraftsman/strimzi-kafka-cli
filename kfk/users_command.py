@@ -21,8 +21,10 @@ from kfk.utils import snake_to_camel_case
               help="The type of the resource pattern or <ANY|MATCH|LITERAL|PREFIXED> pattern filter. When adding "
                    "acls, this should be a specific pattern type, e.g. 'literal' or 'prefixed'. (default: literal)",
               default='literal')
-@click.option('--resource-name', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
-@click.option('--resource-type', help='', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
+@click.option('--resource-name', help='ACL resource name.', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
+@click.option('--resource-type', help='ACL resource type.',
+              type=click.Choice(['topic', 'group', 'cluster'], case_sensitive=True), cls=RequiredIf,
+              required_if=['add_acl', 'delete_acl'])
 @click.option('--type', help='Operation type for ACL. (default: allow)',
               type=click.Choice(['allow', 'deny'], case_sensitive=True), default='allow')
 @click.option('--host', help='Host which User will have access. (default: *)', default='*')
