@@ -79,7 +79,7 @@ def create(user, authentication_type, quota, cluster, namespace):
 
         user_dict["metadata"]["name"] = user
         user_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
-        if authentication_type is not "none":
+        if authentication_type != "none":
             user_dict["spec"]["authentication"]["type"] = authentication_type
 
         del user_dict["spec"]["authorization"]
@@ -118,13 +118,13 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         user_dict = yaml.full_load(stream)
 
         if authentication_type is not None:
-            if authorization_type is not "none":
+            if authorization_type != "none":
                 user_dict["spec"]["authentication"]["type"] = authentication_type
             else:
                 del user_dict["spec"]["authentication"]
 
         if authorization_type is not None:
-            if authorization_type is not "none":
+            if authorization_type != "none":
                 if user_dict["spec"].get("authorization") is None:
                     user_dict["spec"]["authorization"] = {}
                 user_dict["spec"]["authorization"]["type"] = authorization_type
