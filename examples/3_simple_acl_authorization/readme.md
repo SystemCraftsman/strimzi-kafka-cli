@@ -211,6 +211,43 @@ In the `acls` section of the YAML you can see the entries are added:
       type: allow
 ```
 
+You can list the ACLs with the following command as well which lists all the ACLs Kafka natively:
+
+```shell
+kfk acls --list -n kafka -c my-cluster
+```
+
+```
+Current ACLs for resource `ResourcePattern(resourceType=GROUP, name=my-group, patternType=LITERAL)`:
+ 	(principal=User:CN=my-user, host=*, operation=READ, permissionType=ALLOW)
+
+Current ACLs for resource `ResourcePattern(resourceType=TOPIC, name=my-topic, patternType=LITERAL)`:
+ 	(principal=User:CN=my-user, host=*, operation=ALL, permissionType=ALLOW)
+```
+
+Or you can list topic and group ACLs seperately:
+
+```shell
+kfk acls --list --topic my-topic -n kafka -c my-cluster
+```
+
+```
+Current ACLs for resource `ResourcePattern(resourceType=TOPIC, name=my-topic, patternType=LITERAL)`:
+ 	(principal=User:CN=my-user, host=*, operation=ALL, permissionType=ALLOW)
+```
+
+For the group ACLs:
+
+```shell
+kfk acls --list --group my-group -n kafka -c my-cluster
+```
+
+```
+Current ACLs for resource `ResourcePattern(resourceType=GROUP, name=my-group, patternType=LITERAL)`:
+ 	(principal=User:CN=my-user, host=*, operation=READ, permissionType=ALLOW)
+```
+
+
 The only thing we have to do right now is to put the group id definition in our `client.properties` file:
 
 ```
