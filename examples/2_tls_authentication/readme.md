@@ -15,7 +15,7 @@ kfk clusters --list
 If you don't have any Kafka cluster that is created on your OpenShift/Kubernetes, pls. see the [Strimzi Quick Start](https://strimzi.io/quickstarts/) document or simply use:
 
 ```shell
-kfk clusters --create -n kafka
+kfk clusters --create --cluster my-cluster -n kafka
 ```
 
 ---
