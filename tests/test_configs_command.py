@@ -120,7 +120,7 @@ class TestKfkConfigs(TestCase):
     def test_add_one_user_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'files/yaml/user_with_authentication.yaml') as file:
+        with open(r'files/yaml/user_with_authentication_scram.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -141,7 +141,7 @@ class TestKfkConfigs(TestCase):
     def test_add_two_user_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
-        with open(r'files/yaml/user_with_authentication.yaml') as file:
+        with open(r'files/yaml/user_with_authentication_scram.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 

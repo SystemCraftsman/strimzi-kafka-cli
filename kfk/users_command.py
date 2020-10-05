@@ -41,7 +41,7 @@ from kfk.utils import snake_to_camel_case
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', help='Authentication type for user',
-              type=click.Choice(['none', 'tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
+              type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
               required_if=['is_create'])
 @click.option('--create', 'is_create', help='Create a new user.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available users.', is_flag=True)
@@ -79,9 +79,8 @@ def create(user, authentication_type, quota, cluster, namespace):
 
         user_dict["metadata"]["name"] = user
         user_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
-        if authentication_type != "none":
-            user_dict["spec"]["authentication"]["type"] = authentication_type
 
+        user_dict["spec"]["authentication"]["type"] = authentication_type
         del user_dict["spec"]["authorization"]
 
         if len(quota) > 0:
@@ -118,28 +117,25 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         user_dict = yaml.full_load(stream)
 
         if authentication_type is not None:
-            if authorization_type != "none":
-                user_dict["spec"]["authentication"]["type"] = authentication_type
-            else:
-                del user_dict["spec"]["authentication"]
+            if user_dict["spec"].get("authentication") is None:
+                user_dict["spec"]["authentication"] = {}
+            user_dict["spec"]["authentication"]["type"] = authentication_type
 
         if authorization_type is not None:
+            if user_dict["spec"].get("authorization") is None:
+                user_dict["spec"]["authorization"] = {}
             if authorization_type != "none":
-                if user_dict["spec"].get("authorization") is None:
-                    user_dict["spec"]["authorization"] = {}
                 user_dict["spec"]["authorization"]["type"] = authorization_type
             else:
                 del user_dict["spec"]["authorization"]
 
         if add_acl:
-            if user_dict["spec"].get("authorization") is None:
-                user_dict["spec"]["authorization"] = {}
-            add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
+            if user_dict["spec"].get("authorization") is not None:
+                add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
 
         if delete_acl:
-            if user_dict["spec"].get("authorization") is None:
-                user_dict["spec"]["authorization"] = {}
-            delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
+            if user_dict["spec"].get("authorization") is not None:
+                delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
                               resource_pattern_type)
 
         delete_last_applied_configuration(user_dict)
