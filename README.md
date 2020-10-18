@@ -52,6 +52,8 @@ Commands:
   version           Prints the version of Strimzi Kafka CLI
 ```
 
+Please take a look at the relevant article [Strimzi Kafka CLI: Managing Strimzi in a Kafka Native Way](https://www.systemcraftsman.com/2020/08/25/strimzi-kafka-cli-managing-strimzi-in-a-kafka-native-way/) for more details.
+
 ## Installation
 
 Strimzi Kafka CLI can be installed via pip (python package installer).
