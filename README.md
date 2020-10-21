@@ -52,6 +52,8 @@ Commands:
   version           Prints the version of Strimzi Kafka CLI
 ```
 
+Please take a look at the relevant article [Strimzi Kafka CLI: Managing Strimzi in a Kafka Native Way](https://www.systemcraftsman.com/2020/08/25/strimzi-kafka-cli-managing-strimzi-in-a-kafka-native-way/) for more details.
+
 ## Installation
 
 Strimzi Kafka CLI can be installed via pip (python package installer).
@@ -86,6 +88,3 @@ Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-c
 ### External Dependencies
 - kubectl: kfk will automatically download kubectl binary which is configurable to use which kubectl version to use. (Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
 - Strimzi binaries: kfk will download it automatically. The yaml templates are used for create actions. This is configurable to use which binaries path to use. (Pls see [issue-19](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/19))
-
-
-More info will be added soon.
