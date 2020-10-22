@@ -69,9 +69,9 @@ def get_resource_as_stream(resource_type, resource_name, namespace):
     return io.StringIO(topic_yaml)
 
 
-def create_temp_file(content):
+def create_temp_file(stream):
     temp_file = tempfile.NamedTemporaryFile(mode='w+')
-    temp_file.write(content)
+    temp_file.write(stream)
     temp_file.flush()
     return temp_file
 
