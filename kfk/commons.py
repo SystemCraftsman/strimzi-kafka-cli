@@ -2,6 +2,7 @@ import os
 import io
 import tempfile
 import ntpath
+import click
 
 from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type
@@ -10,12 +11,12 @@ from subprocess import call
 
 
 def print_missing_options_for_command(command_str):
-    print("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
+    click.echo("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
         command_str=command_str))
 
 
 def print_resource_not_found_msg(cluster, namespace):
-    print("No resource found in Kafka cluster: {cluster}, namespace: {namespace}".format(
+    click.echo("No resource found in Kafka cluster: {cluster}, namespace: {namespace}".format(
         cluster=cluster, namespace=namespace))
 
 

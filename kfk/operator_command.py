@@ -9,9 +9,10 @@ from kfk.config import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
+@click.option('--uninstall', help='Installs Strimzi Kafka Operator', is_flag=True)
 @click.option('--install', help='Installs Strimzi Kafka Operator', is_flag=True)
 @kfk.command()
-def operator(install, namespace):
+def operator(install, uninstall, namespace):
     """Install/Uninstall Strimzi Kafka Operator"""
     if install:
         for directory_name, dirs, files in os.walk("{strimzi_path}/install/cluster-operator/".format(
@@ -28,6 +29,7 @@ def operator(install, namespace):
 
                 os.system(
                     Kubectl().apply().from_file(file_path).namespace(namespace).build())
-
+    elif uninstall:
+        click.echo("Not implemented")
     else:
         print_missing_options_for_command("operator")
