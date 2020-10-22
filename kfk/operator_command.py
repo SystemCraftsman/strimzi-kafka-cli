@@ -1,6 +1,4 @@
 import click
-import os
-import yaml
 
 from kfk.command import kfk
 from kfk.commons import print_missing_options_for_command, create_temp_file
