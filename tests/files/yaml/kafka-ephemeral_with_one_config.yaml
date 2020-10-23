@@ -8,18 +8,24 @@ spec:
     userOperator: {}
   kafka:
     config:
-      log.message.format.version: '2.5'
+      log.message.format.version: '2.6'
       offsets.topic.replication.factor: 3
       transaction.state.log.min.isr: 2
       transaction.state.log.replication.factor: 3
       unclean.leader.election.enable: true
     listeners:
-      plain: {}
-      tls: {}
+    - name: plain
+      port: 9092
+      tls: false
+      type: internal
+    - name: tls
+      port: 9093
+      tls: true
+      type: internal
     replicas: 3
     storage:
       type: ephemeral
-    version: 2.5.0
+    version: 2.6.0
   zookeeper:
     replicas: 3
     storage:
