@@ -28,7 +28,7 @@ def download_kubectl_if_not_exists():
 
 def update_kubectl_if_new_version_exists():
     if os.path.exists(KUBECTL_PATH) and KUBECTL_VERSION not in subprocess.check_output(
-            Kubectl().version().build() + "; exit 0", shell=True, stderr=subprocess.STDOUT).decode("utf-8"):
+            Kubectl().version("--client=true").build() + "; exit 0", shell=True, stderr=subprocess.STDOUT).decode("utf-8"):
         os.rename(KUBECTL_PATH, KUBECTL_PATH + "_old")
         __download_kubectl()
 
