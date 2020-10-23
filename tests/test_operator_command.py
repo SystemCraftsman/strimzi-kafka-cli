@@ -10,10 +10,10 @@ class TestKfkOperator(TestCase):
         self.runner = CliRunner()
         self.cluster = "my-cluster"
         self.namespace = "kafka"
-        self.operator_file_count = 22
+        self.installation_file_count = 22
 
     @mock.patch('kfk.operator_command.os.system')
     def test_install_strimzi(self, mock_os_system):
         result = self.runner.invoke(kfk, ['operator', '--install', '-n', self.namespace])
         assert result.exit_code == 0
-        assert mock_os_system.call_count == self.operator_file_count
+        assert mock_os_system.call_count == self.installation_file_count
