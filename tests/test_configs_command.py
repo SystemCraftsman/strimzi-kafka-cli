@@ -177,6 +177,17 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
+    @mock.patch('kfk.users_command.resource_exists')
+    @mock.patch('kfk.users_command.os')
+    def test_describe_user_config(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
+        result = self.runner.invoke(kfk,
+                                    ['configs', '--describe', '--entity-type', 'users',
+                                     '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(
+            Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
+
     @mock.patch('kfk.clusters_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.clusters_command.resource_exists')
