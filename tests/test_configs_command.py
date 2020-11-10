@@ -36,7 +36,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = topic_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'min.insync.replicas=3', '--entity-type', 'topics',
+                                        ['configs', '--alter', '--add-config', 'min.insync.replicas=3', '--entity-type', 'topics',
                                          '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -57,7 +57,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = topic_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'min.insync.replicas=3', '--add-config',
+                                        ['configs', '--alter', '--add-config', 'min.insync.replicas=3', '--add-config',
                                          'cleanup.policy=compact', '--entity-type', 'topics',
                                          '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
@@ -80,7 +80,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = topic_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--delete-config', 'cleanup.policy', '--entity-type', 'topics',
+                                        ['configs', '--alter', '--delete-config', 'cleanup.policy', '--entity-type', 'topics',
                                          '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -125,7 +125,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = user_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'request_percentage=55', '--entity-type', 'users',
+                                        ['configs', '--alter', '--add-config', 'request_percentage=55', '--entity-type', 'users',
                                          '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -146,7 +146,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = user_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'request_percentage=55', '--add-config',
+                                        ['configs', '--alter', '--add-config', 'request_percentage=55', '--add-config',
                                          'consumer_byte_rate=2097152', '--entity-type', 'users',
                                          '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
@@ -168,7 +168,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = user_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--delete-config', 'consumer_byte_rate', '--entity-type', 'users',
+                                        ['configs', '--alter', '--delete-config', 'consumer_byte_rate', '--entity-type', 'users',
                                          '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -187,7 +187,7 @@ class TestKfkConfigs(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'unclean.leader.election.enable=true',
+                                        ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
                                          '--entity-type', 'brokers', '--entity-name', 'another_name', '-c', self.cluster,
                                          '-n', self.namespace])
             assert result.exit_code == 0
@@ -203,7 +203,7 @@ class TestKfkConfigs(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
             result = self.runner.invoke(kfk,
-                                        ['configs', '--add-config', 'unclean.leader.election.enable=true',
+                                        ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
                                          '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
                                          '-n', self.namespace])
             assert result.exit_code == 0
@@ -223,7 +223,7 @@ class TestKfkConfigs(TestCase):
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
             result = self.runner.invoke(kfk,
-                                        ['configs', '--delete-config', 'unclean.leader.election.enable',
+                                        ['configs', '--alter', '--delete-config', 'unclean.leader.election.enable',
                                          '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
                                          '-n', self.namespace])
             assert result.exit_code == 0
