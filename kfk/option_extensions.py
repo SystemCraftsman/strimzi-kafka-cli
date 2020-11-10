@@ -13,6 +13,7 @@ class NotRequiredIf(click.Option):
 
     def handle_parse_result(self, ctx, opts, args):
         we_are_present = self.name in opts
+        other_present = False
 
         for not_required_if in self.not_required_if:
             other_present = not_required_if in opts
@@ -43,6 +44,8 @@ class RequiredIf(click.Option):
 
     def handle_parse_result(self, ctx, opts, args):
         we_are_present = self.name in opts
+        other_present = False
+
         for required_if in self.required_if:
             other_present = required_if in opts
             if other_present is True:

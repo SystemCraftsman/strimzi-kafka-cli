@@ -176,3 +176,59 @@ class TestKfkConfigs(TestCase):
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
+
+    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.clusters_command.resource_exists')
+    @mock.patch('kfk.clusters_command.os')
+    def test_add_one_broker_config_with_wrong_entity_name(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
+        mock_resource_exists.return_value = True
+        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
+            topic_yaml = file.read()
+            mock_get_resource_yaml.return_value = topic_yaml
+            result = self.runner.invoke(kfk,
+                                        ['configs', '--add-config', 'unclean.leader.election.enable=true',
+                                         '--entity-type', 'brokers', '--entity-name', 'another_name', '-c', self.cluster,
+                                         '-n', self.namespace])
+            assert result.exit_code == 0
+            assert "`entity-name` for brokers should be set as `all`" in result.output
+
+    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.clusters_command.resource_exists')
+    @mock.patch('kfk.clusters_command.os')
+    def test_add_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
+        mock_resource_exists.return_value = True
+        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
+            topic_yaml = file.read()
+            mock_get_resource_yaml.return_value = topic_yaml
+            result = self.runner.invoke(kfk,
+                                        ['configs', '--add-config', 'unclean.leader.election.enable=true',
+                                         '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
+                                         '-n', self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_topic_yaml == result_topic_yaml
+
+    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.clusters_command.resource_exists')
+    @mock.patch('kfk.clusters_command.os')
+    def test_delete_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
+        mock_resource_exists.return_value = True
+        with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
+            topic_yaml = file.read()
+            mock_get_resource_yaml.return_value = topic_yaml
+            result = self.runner.invoke(kfk,
+                                        ['configs', '--delete-config', 'unclean.leader.election.enable',
+                                         '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
+                                         '-n', self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_topic_yaml == result_topic_yaml

@@ -5,6 +5,7 @@ from kfk.command import kfk
 from kfk.kubectl_command_builder import Kubectl
 from kfk import topics_command
 from kfk import users_command
+from kfk import clusters_command
 from kfk.commons import print_missing_options_for_command
 from kfk.constants import *
 
@@ -28,7 +29,10 @@ def configs(entity_type, entity_name, add_config, delete_config, describe, nativ
             users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
                                 add_config, delete_config, cluster, namespace)
         elif entity_type == "brokers":
-            click.echo("Not implemented")
+            if entity_name == "all":
+                clusters_command.alter(cluster, add_config, delete_config, namespace)
+            else:
+                click.echo("`entity-name` for brokers should be set as `all`", err=True)
     elif describe:
         if entity_type == "topics":
             if native:
