@@ -22,7 +22,7 @@ from kfk.constants import *
               type=click.Choice(['topics', 'users', 'brokers'], case_sensitive=True))
 @kfk.command()
 def configs(entity_type, entity_name, describe, native, alter, add_config, delete_config, cluster, namespace):
-    """Add/Remove entity config for a topic, client, user or cluster"""
+    """Add/Remove entity config for a topic, client, user or brokers"""
     if describe:
         if entity_type == "topics":
             if native:
