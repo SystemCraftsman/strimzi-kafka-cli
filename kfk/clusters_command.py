@@ -31,7 +31,9 @@ def clusters(cluster, list, create, describe, delete, alter, config, delete_conf
     elif create:
         with open('{strimzi_path}/examples/kafka/kafka-ephemeral.yaml'.format(strimzi_path=STRIMZI_PATH).format(
                 version=STRIMZI_VERSION)) as file:
-            cluster_temp_file = create_temp_file(file.read())
+
+            stream = file.read().replace('my-cluster', cluster)
+            cluster_temp_file = create_temp_file(stream)
             open_file_in_system_editor(cluster_temp_file.name)
             is_confirmed = click.confirm("Are you sure you want to create the cluster with the saved configuration?")
             if is_confirmed:

@@ -20,8 +20,7 @@ def operator(install, uninstall, namespace):
 
                 if "RoleBinding" in file_name:
                     with open(file_path) as file:
-                        stream = file.read()
-                        stream = stream.replace("myproject", namespace)
+                        stream = file.read().replace("myproject", namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
 
