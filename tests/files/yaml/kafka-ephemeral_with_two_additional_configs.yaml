@@ -1,0 +1,33 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+  kafka:
+    config:
+      log.message.format.version: '2.6'
+      log.retention.hours: 168
+      offsets.topic.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      transaction.state.log.replication.factor: 3
+      unclean.leader.election.enable: true
+    listeners:
+    - name: plain
+      port: 9092
+      tls: false
+      type: internal
+    - name: tls
+      port: 9093
+      tls: true
+      type: internal
+    replicas: 3
+    storage:
+      type: ephemeral
+    version: 2.6.0
+  zookeeper:
+    replicas: 3
+    storage:
+      type: ephemeral

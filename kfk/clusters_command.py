@@ -63,7 +63,7 @@ def clusters(cluster, list, create, describe, delete, alter, config, delete_conf
 
                 if len(delete_config) > 0:
                     if cluster_dict["spec"]["kafka"].get("config") is not None:
-                        delete_resource_config(delete_config, cluster_dict["spec"]["config"])
+                        delete_resource_config(delete_config, cluster_dict["spec"]["kafka"]["config"])
 
                 cluster_yaml = yaml.dump(cluster_dict)
                 cluster_temp_file = create_temp_file(cluster_yaml)
