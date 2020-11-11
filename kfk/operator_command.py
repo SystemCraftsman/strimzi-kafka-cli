@@ -7,7 +7,7 @@ from kfk.config import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
-@click.option('--uninstall', 'is_uninstall', help='Installs Strimzi Kafka Operator', is_flag=True)
+@click.option('--uninstall', 'is_uninstall', help='Uninstalls Strimzi Kafka Operator', is_flag=True)
 @click.option('--install', 'is_install', help='Installs Strimzi Kafka Operator', is_flag=True)
 @kfk.command()
 def operator(is_install, is_uninstall, namespace):
