@@ -129,12 +129,12 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
 
         if add_acl:
             if user_dict["spec"].get("authorization") is not None:
-                add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
+                _add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
 
         if delete_acl:
             if user_dict["spec"].get("authorization") is not None:
-                delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
-                              resource_pattern_type)
+                _delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
+                                   resource_pattern_type)
 
         delete_last_applied_configuration(user_dict)
 
@@ -157,7 +157,7 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         print_resource_not_found_msg(cluster, namespace)
 
 
-def add_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):
+def _add_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
     for operation_str in operation:
@@ -166,7 +166,7 @@ def add_acl_option(user_dict, operation, host, type, resource_type, resource_nam
         user_dict["spec"]["authorization"]["acls"].append(acl_dict)
 
 
-def delete_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):
+def _delete_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
     for operation_str in operation:

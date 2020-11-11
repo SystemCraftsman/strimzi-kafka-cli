@@ -7,12 +7,12 @@ from kfk.config import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
-@click.option('--uninstall', help='Installs Strimzi Kafka Operator', is_flag=True)
-@click.option('--install', help='Installs Strimzi Kafka Operator', is_flag=True)
+@click.option('--uninstall', 'is_uninstall', help='Installs Strimzi Kafka Operator', is_flag=True)
+@click.option('--install', 'is_install', help='Installs Strimzi Kafka Operator', is_flag=True)
 @kfk.command()
-def operator(install, uninstall, namespace):
+def operator(is_install, is_uninstall, namespace):
     """Install/Uninstall Strimzi Kafka Operator"""
-    if install:
+    if is_install:
         for directory_name, dirs, files in os.walk("{strimzi_path}/install/cluster-operator/".format(
                 strimzi_path=STRIMZI_PATH)):
             for file_name in files:
@@ -23,10 +23,19 @@ def operator(install, uninstall, namespace):
                         stream = file.read().replace("myproject", namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
+                os.system(Kubectl().apply().from_file(file_path).namespace(namespace).build())
+    elif is_uninstall:
+        # TODO: refactor here
+        for directory_name, dirs, files in os.walk("{strimzi_path}/install/cluster-operator/".format(
+                strimzi_path=STRIMZI_PATH)):
+            for file_name in files:
+                file_path = os.path.join(directory_name, file_name)
 
-                os.system(
-                    Kubectl().apply().from_file(file_path).namespace(namespace).build())
-    elif uninstall:
-        click.echo("Not implemented")
+                if "RoleBinding" in file_name:
+                    with open(file_path) as file:
+                        stream = file.read().replace("myproject", namespace)
+                        temp_file = create_temp_file(stream)
+                        file_path = temp_file.name
+                os.system(Kubectl().delete().from_file(file_path).namespace(namespace).build())
     else:
         print_missing_options_for_command("operator")

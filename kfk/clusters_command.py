@@ -72,29 +72,26 @@ def delete(cluster, namespace):
 
 def alter(cluster, config, delete_config, namespace):
     if len(config) > 0 or len(delete_config) > 0:
-        if resource_exists("kafkas", cluster, cluster, namespace):
-            stream = get_resource_as_stream("kafkas", cluster, namespace)
-            cluster_dict = yaml.full_load(stream)
+        stream = get_resource_as_stream("kafkas", cluster, namespace)
+        cluster_dict = yaml.full_load(stream)
 
-            delete_last_applied_configuration(cluster_dict)
+        delete_last_applied_configuration(cluster_dict)
 
-            if len(config) > 0:
-                if cluster_dict["spec"]["kafka"].get("config") is None:
-                    cluster_dict["spec"]["kafka"]["config"] = {}
-                add_resource_kv_config(config, cluster_dict["spec"]["kafka"]["config"])
+        if len(config) > 0:
+            if cluster_dict["spec"]["kafka"].get("config") is None:
+                cluster_dict["spec"]["kafka"]["config"] = {}
+            add_resource_kv_config(config, cluster_dict["spec"]["kafka"]["config"])
 
-            if len(delete_config) > 0:
-                if cluster_dict["spec"]["kafka"].get("config") is not None:
-                    delete_resource_config(delete_config, cluster_dict["spec"]["kafka"]["config"])
+        if len(delete_config) > 0:
+            if cluster_dict["spec"]["kafka"].get("config") is not None:
+                delete_resource_config(delete_config, cluster_dict["spec"]["kafka"]["config"])
 
-            cluster_yaml = yaml.dump(cluster_dict)
-            cluster_temp_file = create_temp_file(cluster_yaml)
-            os.system(
-                Kubectl().apply().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
-                    cluster_temp_file_path=cluster_temp_file.name))
-            cluster_temp_file.close()
-        else:
-            print_resource_not_found_msg(cluster, namespace)
+        cluster_yaml = yaml.dump(cluster_dict)
+        cluster_temp_file = create_temp_file(cluster_yaml)
+        os.system(
+            Kubectl().apply().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
+                cluster_temp_file_path=cluster_temp_file.name))
+        cluster_temp_file.close()
     else:
         os.system(Kubectl().edit().kafkas(cluster).namespace(namespace).build())
 

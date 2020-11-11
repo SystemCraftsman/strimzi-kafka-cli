@@ -12,6 +12,7 @@ class TestKfkConfigs(TestCase):
         self.namespace = "kafka"
         self.topic = "my-topic"
         self.user = "my-user"
+        self.broker_count = 3
 
     def test_no_option(self):
         result = self.runner.invoke(kfk, ['configs', '--entity-type', 'topics', '--entity-name', self.topic, '-c',
@@ -89,6 +90,17 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+    @mock.patch('kfk.topics_command.resource_exists')
+    @mock.patch('kfk.topics_command.os')
+    def test_describe_topic_config(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
+        result = self.runner.invoke(kfk,
+                                    ['configs', '--describe', '--entity-type', 'topics',
+                                     '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(
+            Kubectl().describe().kafkatopics(self.topic).namespace(self.namespace).build())
+
     @mock.patch('kfk.configs_command.os')
     def test_describe_topic_config_native(self, mock_os):
         result = self.runner.invoke(kfk,
@@ -101,17 +113,6 @@ class TestKfkConfigs(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.topic))
-
-    @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.topics_command.os')
-    def test_describe_topic_config(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
-        result = self.runner.invoke(kfk,
-                                    ['configs', '--describe', '--entity-type', 'topics',
-                                     '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
-        assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().describe().kafkatopics(self.topic).namespace(self.namespace).build())
 
     @mock.patch('kfk.users_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -188,6 +189,19 @@ class TestKfkConfigs(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
 
+    @mock.patch('kfk.configs_command.os')
+    def test_describe_user_config_native(self, mock_os):
+        result = self.runner.invoke(kfk,
+                                    ['configs', '--describe', '--entity-type', 'users',
+                                     '--entity-name', self.user, '--native', '-c', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+
+        native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
+                         "users --entity-name {entity_name} --describe"
+        mock_os.system.assert_called_with(
+            Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
+                native_command).build().format(cluster=self.cluster, entity_name=self.user))
+
     @mock.patch('kfk.clusters_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.clusters_command.resource_exists')
@@ -243,3 +257,32 @@ class TestKfkConfigs(TestCase):
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
+
+    @mock.patch('kfk.clusters_command.resource_exists')
+    @mock.patch('kfk.clusters_command.os')
+    def test_describe_broker_config(self, mock_os, mock_resource_exists):
+        mock_resource_exists.return_value = True
+        result = self.runner.invoke(kfk,
+                                    ['configs', '--describe', '--entity-type', 'brokers',
+                                     '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(
+            Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build())
+
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.configs_command.os')
+    def test_describe_broker_config_native(self, mock_os, mock_get_resource_yaml):
+        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
+            topic_yaml = file.read()
+            mock_get_resource_yaml.return_value = topic_yaml
+            result = self.runner.invoke(kfk,
+                                        ['configs', '--describe', '--entity-type', 'brokers',
+                                         '--entity-name', 'all', '--native', '-c', self.cluster, '-n', self.namespace])
+            assert result.exit_code == 0
+
+            native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
+                             "brokers --entity-name {entity_name} --describe"
+
+            mock_os.system.assert_called_with(
+                Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
+                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count-1))
