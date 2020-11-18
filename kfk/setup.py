@@ -23,17 +23,17 @@ def download_kubectl_if_not_exists():
         print("Creating Strimzi Kafka CLI Dependencies folder: {base_path}\n".format(base_path=BASE_PATH))
         Path(BASE_PATH).mkdir(exist_ok=True)
 
-        __download_kubectl()
+        _download_kubectl()
 
 
 def update_kubectl_if_new_version_exists():
     if os.path.exists(KUBECTL_PATH) and KUBECTL_VERSION not in subprocess.check_output(
             Kubectl().version("--client=true").build() + "; exit 0", shell=True, stderr=subprocess.STDOUT).decode("utf-8"):
         os.rename(KUBECTL_PATH, KUBECTL_PATH + "_old")
-        __download_kubectl()
+        _download_kubectl()
 
 
-def __download_kubectl():
+def _download_kubectl():
     print("Downloading dependency: kubectl {version}...\n".format(version=KUBECTL_VERSION))
     wget.download(KUBECTL_RELEASE_URL, KUBECTL_PATH)
     print("\nDownload successfully completed!\n")
