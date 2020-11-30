@@ -11,7 +11,7 @@ from kfk.config import *
 @click.option('--install', 'is_install', help='Installs Strimzi Kafka Operator', is_flag=True)
 @kfk.command()
 def operator(is_install, is_uninstall, namespace):
-    """Install/Uninstall Strimzi Kafka Operator"""
+    """Installs/Uninstalls Strimzi Kafka Operator"""
     if is_install:
         for directory_name, dirs, files in os.walk("{strimzi_path}/install/cluster-operator/".format(
                 strimzi_path=STRIMZI_PATH)):

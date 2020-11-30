@@ -7,6 +7,7 @@ from kfk.configs_command import configs
 from kfk.version_command import version
 from kfk.acls_command import acls
 from kfk.operator_command import operator
+from kfk.connect_command import connect
 from kfk.setup import setup
 
 

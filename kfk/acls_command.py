@@ -40,7 +40,7 @@ PRINCIPAL_SPLIT_CHAR = ":"
 @kfk.command()
 def acls(list, topic, cluster, group, add, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
          resource_pattern_type, remove, kafka_cluster, namespace):
-    """This tool helps to manage ACLs on Kafka."""
+    """Manages ACLs on Kafka."""
     if list:
         native_command = "bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:12181 --list {topic}" \
                          "{cluster} {group}"

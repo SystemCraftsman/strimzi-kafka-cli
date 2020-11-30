@@ -25,7 +25,7 @@ from kfk.config import *
 @click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
 def clusters(cluster, is_list, is_create, is_describe, is_delete, is_alter, config, delete_config, output, namespace):
-    """The kafka cluster(s) to be created, altered or described. """
+    """Creates, alters, deletes, describes Kafka cluster(s)."""
     if is_list:
         list(namespace)
     elif is_create:

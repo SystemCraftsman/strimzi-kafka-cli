@@ -48,7 +48,7 @@ from kfk.utils import snake_to_camel_case
 def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type,
           add_acl, delete_acl, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type,
           quota_tuple, delete_quota_tuple, cluster, namespace):
-    """The kafka user(s) to be created, altered or described."""
+    """Creates, alters, deletes, describes Kafka users(s)."""
     if is_list:
         list(cluster, namespace)
     elif is_create:

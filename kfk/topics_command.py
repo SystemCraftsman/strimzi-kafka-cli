@@ -37,7 +37,7 @@ from kfk.constants import *
 @kfk.command()
 def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, command_config,
            is_delete, is_alter, config, delete_config, cluster, namespace):
-    """The kafka topic(s) to be created, altered or described."""
+    """Creates, alters, deletes, describes Kafka topic(s)."""
     if is_list:
         list(cluster, namespace)
     elif is_create:

@@ -16,7 +16,7 @@ from kfk.constants import *
 @click.option('--topic', help='Topic Name', required=True)
 @kfk.command()
 def console_consumer(topic, consumer_config, from_beginning, cluster, namespace):
-    """The console consumer is a tool that reads data from Kafka and outputs it to standard output."""
+    """Reads data from Kafka topics and outputs it to standard output."""
     native_command = "bin/kafka-console-consumer.sh --bootstrap-server {cluster}-kafka-brokers:{port} --topic {" \
                      "topic} {from_beginning}"
     pod = cluster + "-kafka-0"
@@ -36,7 +36,7 @@ def console_consumer(topic, consumer_config, from_beginning, cluster, namespace)
 @click.option('--topic', help='Topic Name', required=True)
 @kfk.command()
 def console_producer(topic, producer_config, cluster, namespace):
-    """The console producer is a tool that reads data from standard input and publish it to Kafka."""
+    """Reads data from standard input and publish it to Kafka."""
     native_command = "bin/kafka-console-producer.sh --broker-list {cluster}-kafka-brokers:{port} --topic {topic}"
     pod = cluster + "-kafka-0"
     container = "kafka"
