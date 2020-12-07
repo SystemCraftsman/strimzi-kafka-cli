@@ -12,7 +12,7 @@ While `kfk configs` command can be used to change the configuration of these thr
  
  In this example we will show you to do the configuration in both ways. So let's start with `topic` configuration.
 
-## Topic Config
+## Topic Configuration
 
 Considering we already have a Kafka cluster called `my-cluster` on our namespace called `kafka`, let's create a topic on it called `my-topic`:
 
@@ -67,7 +67,6 @@ kafkatopic.kafka.strimzi.io/my-topic configured
 
 In order to add two configs -let's say that we wanted to add `cleanup.policy=compact` configuration along with `min.insync.replicas`- run a command like following: 
 
-Add two configs:
 ```shell
 kfk configs --alter --add-config min.insync.replicas=3 --add-config cleanup.policy=compact --entity-type topics --entity-name my-topic -c my-cluster -n kafka
 ```
@@ -118,6 +117,6 @@ Dynamic configs for topic my-topic are:
   retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
 ```
 
-## User Config
+## User Configuration
 
-## Broker Config
+## Broker Configuration
