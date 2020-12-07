@@ -110,6 +110,14 @@ Like adding a configuration, deleting a configuration is very easy. You can remo
 kfk configs --alter --delete-config min.insync.replicas --delete-config cleanup.policy --entity-type topics --entity-name my-topic -c my-cluster -n kafka
 ```
 
+When you run the `describe` command again you will see that the relevant configurations are removed:
+
+```
+Dynamic configs for topic my-topic are:
+  segment.bytes=1073741824 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:segment.bytes=1073741824, DEFAULT_CONFIG:log.segment.bytes=1073741824}
+  retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
+```
+
 ## User Config
 
 ## Broker Config
