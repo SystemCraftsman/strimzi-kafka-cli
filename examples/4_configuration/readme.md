@@ -1,4 +1,4 @@
-# Topic, User and Broker configuration on Strimzi by using Strimzi Kafka CLI
+# Topic, User and Broker Configuration
 
 Strimzi Kafka CLI enables users to describe, create, delete configurations of topics, users and brokers like you did with native Apache Kafka commands.
 
