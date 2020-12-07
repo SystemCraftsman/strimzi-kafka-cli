@@ -5,7 +5,7 @@ import ntpath
 import click
 
 from kfk.kubectl_command_builder import Kubectl
-from kfk.utils import convert_string_to_type
+from kfk.utils import convert_string_to_type, get_list_by_split_string
 from kfk.constants import *
 from subprocess import call
 
@@ -26,24 +26,30 @@ def delete_last_applied_configuration(resource_dict):
 
 
 def add_resource_kv_config(config, dict_part, *converters):
-    if type(config) is tuple:
+    if type(config) is tuple or type(config) is list:
         for config_str in config:
             for converter in converters:
                 config_str = converter(config_str)
-            config_arr = get_kv_config_arr(config_str)
-            dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
+            config_list = get_kv_config_list(config_str)
+            dict_part[config_list[0]] = convert_string_to_type(config_list[1])
     else:
-        config_arr = get_kv_config_arr(config)
-        dict_part[config_arr[0]] = convert_string_to_type(config_arr[1])
+        config_list = get_kv_config_list(config)
+        dict_part[config_list[0]] = convert_string_to_type(config_list[1])
 
 
-def get_kv_config_arr(config_str):
-    # TODO: exception here
-    return config_str.split('=')
+def get_kv_config_list(config_str):
+    return get_list_by_split_string(config_str, '=')
+
+
+def get_config_list(config_str):
+    if config_str is None:
+        return list()
+    else:
+        return get_list_by_split_string(config_str, ',')
 
 
 def delete_resource_config(config, dict_part, *converters):
-    if type(config) is tuple:
+    if type(config) is tuple or type(config) is list:
         for config_str in config:
             for converter in converters:
                 config_str = converter(config_str)
@@ -96,15 +102,15 @@ def apply_client_config_from_file(native_command, config_file_path, config_file_
             for cnt, producer_property in enumerate(temp_file):
                 producer_property = producer_property.strip()
                 if "security.protocol" in producer_property:
-                    producer_property_arr = get_kv_config_arr(producer_property)
-                    if producer_property_arr[1] == KAFKA_SSL:
+                    producer_property_list = get_kv_config_list(producer_property)
+                    if producer_property_list[1] == KAFKA_SSL:
                         port = KAFKA_SECURE_PORT
                 if "ssl.truststore.location" in producer_property or "ssl.keystore.location" in producer_property:
-                    producer_property_arr = get_kv_config_arr(producer_property)
-                    file_path = producer_property_arr[1]
+                    producer_property_list = get_kv_config_list(producer_property)
+                    file_path = producer_property_list[1]
                     new_file_path = "/tmp/" + ntpath.basename(file_path)
                     transfer_file_to_container(file_path, new_file_path, container, pod, namespace)
-                    producer_property = producer_property_arr[0] + "=" + new_file_path
+                    producer_property = producer_property_list[0] + "=" + new_file_path
                     delete_file_command = delete_file_command + "rm -rf" + SPACE + new_file_path + SEMICOLON
                 lines.append(producer_property)
         with open(temp_file.name, 'w') as temp_file:

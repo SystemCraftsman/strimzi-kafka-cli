@@ -119,4 +119,16 @@ Dynamic configs for topic my-topic are:
 
 ## User Configuration
 
+```shell
+kfk users --create --user my-user --authentication-type tls  -n kafka -c my-cluster
+```
+
+```shell
+kfk configs --alter --add-config request_percentage=55 --add-config consumer_byte_rate=2097152 --entity-type users --entity-name my-user -c my-cluster -n kafka
+```
+
+```shell
+kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
+```
+
 ## Broker Configuration

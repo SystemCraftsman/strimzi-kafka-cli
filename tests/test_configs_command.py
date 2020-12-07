@@ -59,9 +59,10 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = topic_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--alter', '--add-config', 'min.insync.replicas=3', '--add-config',
-                                         'cleanup.policy=compact', '--entity-type', 'topics',
-                                         '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
+                                        ['configs', '--alter', '--add-config',
+                                         'min.insync.replicas=3,cleanup.policy=compact', '--entity-type', 'topics',
+                                         '--entity-name', self.topic, '-c', self.cluster,
+                                         '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/topic_with_two_configs.yaml') as file:
@@ -83,8 +84,8 @@ class TestKfkConfigs(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--delete-config', 'cleanup.policy', '--entity-type',
-                                         'topics',
-                                         '--entity-name', self.topic, '-c', self.cluster, '-n', self.namespace])
+                                         'topics', '--entity-name', self.topic, '-c', self.cluster, '-n',
+                                         self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/topic_with_one_config.yaml') as file:
@@ -129,8 +130,7 @@ class TestKfkConfigs(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--add-config', 'request_percentage=55', '--entity-type',
-                                         'users',
-                                         '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
+                                         'users', '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/user_with_one_quota.yaml') as file:
@@ -150,8 +150,8 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = user_yaml
 
             result = self.runner.invoke(kfk,
-                                        ['configs', '--alter', '--add-config', 'request_percentage=55', '--add-config',
-                                         'consumer_byte_rate=2097152', '--entity-type', 'users',
+                                        ['configs', '--alter', '--add-config',
+                                         'request_percentage=55,consumer_byte_rate=2097152', '--entity-type', 'users',
                                          '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -173,8 +173,7 @@ class TestKfkConfigs(TestCase):
 
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--delete-config', 'consumer_byte_rate', '--entity-type',
-                                         'users',
-                                         '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
+                                         'users', '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/user_with_one_quota.yaml') as file:
@@ -214,8 +213,8 @@ class TestKfkConfigs(TestCase):
                                                           mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            cluster_yaml = file.read()
+            mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
                                          '--entity-type', 'brokers', '--entity-name', 'another_name', '-c',
@@ -231,8 +230,8 @@ class TestKfkConfigs(TestCase):
     def test_add_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            cluster_yaml = file.read()
+            mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
                                          '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
@@ -240,9 +239,9 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_cluster_yaml = file.read()
+                result_cluster_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_cluster_yaml == result_cluster_yaml
 
     @mock.patch('kfk.clusters_command.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -252,8 +251,8 @@ class TestKfkConfigs(TestCase):
                                       mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            cluster_yaml = file.read()
+            mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--delete-config', 'unclean.leader.election.enable',
                                          '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
@@ -261,9 +260,9 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_cluster_yaml = file.read()
+                result_cluster_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_cluster_yaml == result_cluster_yaml
 
     @mock.patch('kfk.clusters_command.resource_exists')
     @mock.patch('kfk.clusters_command.os')
@@ -280,8 +279,8 @@ class TestKfkConfigs(TestCase):
     @mock.patch('kfk.configs_command.os')
     def test_describe_broker_config_native(self, mock_os, mock_get_resource_yaml):
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            cluster_yaml = file.read()
+            mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--describe', '--entity-type', 'brokers',
                                          '--entity-name', 'all', '--native', '-c', self.cluster, '-n', self.namespace])

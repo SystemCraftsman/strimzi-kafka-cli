@@ -35,3 +35,9 @@ def convert_string_to_boolean(str_val):
 def snake_to_camel_case(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+def get_list_by_split_string(str_val, split_char):
+    # TODO: exception here
+    return str_val.split(split_char)
+

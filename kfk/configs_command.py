@@ -7,14 +7,14 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk import topics_command
 from kfk import users_command
 from kfk import clusters_command
-from kfk.commons import print_missing_options_for_command, resource_exists, get_resource_as_stream
+from kfk.commons import print_missing_options_for_command, get_resource_as_stream, get_config_list
 from kfk.constants import *
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
 @click.option('-c', '--cluster', help='Cluster to use', required=True)
-@click.option('--delete-config', help='Config keys to remove', multiple=True)
-@click.option('--add-config', help='Key Value pairs of configs to add.', multiple=True)
+@click.option('--delete-config', help='Config keys to remove')
+@click.option('--add-config', help='Key Value pairs of configs to add.')
 @click.option('--alter', help='Alter the configuration for the entity.', is_flag=True)
 @click.option('--native', help='List configs for the given entity natively.', is_flag=True)
 @click.option('--describe', help='List configs for the given entity.', is_flag=True)
@@ -47,17 +47,19 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
                 clusters_command.describe(cluster, None, namespace)
 
     elif alter:
-        if len(add_config) > 0 or len(delete_config) > 0:
-            if entity_type == "topics":
-                topics_command.alter(entity_name, None, None, add_config, delete_config, cluster, namespace)
-            elif entity_type == "users":
-                users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
-                                    add_config, delete_config, cluster, namespace)
-            elif entity_type == "brokers":
-                if entity_name == "all":
-                    clusters_command.alter(cluster, add_config, delete_config, namespace)
-                else:
-                    click.echo("`entity-name` for brokers should be set as `all`", err=True)
+        add_config_list = get_config_list(add_config)
+        delete_config_list = get_config_list(delete_config)
+
+        if entity_type == "topics":
+            topics_command.alter(entity_name, None, None, add_config_list, delete_config_list, cluster, namespace)
+        elif entity_type == "users":
+            users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
+                                add_config_list, delete_config_list, cluster, namespace)
+        elif entity_type == "brokers":
+            if entity_name == "all":
+                clusters_command.alter(cluster, add_config_list, delete_config_list, namespace)
+            else:
+                click.echo("`entity-name` for brokers should be set as `all`", err=True)
     else:
         print_missing_options_for_command("configs")
 
