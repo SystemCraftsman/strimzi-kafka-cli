@@ -1,4 +1,4 @@
-# TLS Authentication on Strimzi by using Strimzi Kafka CLI
+# TLS Authentication
 
 In this example we will demonstrate setting up TLS authentication for Strimzi using Strimzi Kafka CLI. So let's get started!
 
