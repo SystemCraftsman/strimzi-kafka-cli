@@ -15,9 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Get release version
-      run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Get code version
-      run: echo ::set-env name=STRIMZI_CLI_VERSION::$(grep -oP "(?<=version=')[^']*" setup.py)
+      run: echo "STRIMZI_CLI_VERSION=$(grep -oP "(?<=version=')[^']*" setup.py)" >> $GITHUB_ENV
     - name: Compare release and code version
       if: ${{ env.RELEASE_VERSION != env.STRIMZI_CLI_VERSION }}
       run: exit 1
