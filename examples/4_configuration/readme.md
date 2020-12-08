@@ -124,7 +124,7 @@ kfk users --create --user my-user --authentication-type tls  -n kafka -c my-clus
 ```
 
 ```shell
-kfk configs --alter --add-config request_percentage=55 --add-config consumer_byte_rate=2097152 --entity-type users --entity-name my-user -c my-cluster -n kafka
+kfk configs --alter --add-config 'request_percentage=55,consumer_byte_rate=2097152' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
 
 ```shell

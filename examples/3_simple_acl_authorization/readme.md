@@ -52,7 +52,7 @@ Now let's configure our cluster to enable for ACL authorization. We have to alte
 kfk clusters --alter --cluster my-cluster -n kafka
 ```
 
-and put the simple authorization definitions under kafka's `spec` like the following:
+and put the simple authorization definitions under `kafka` like the following:
 
 ```yaml
 authorization:
