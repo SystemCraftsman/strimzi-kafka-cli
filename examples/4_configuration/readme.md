@@ -111,6 +111,10 @@ kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity
 
 When you run the `describe` command again you will see that the relevant configurations are removed:
 
+```shell
+kfk configs --describe --entity-type topics --entity-name my-topic -c my-cluster -n kafka --native
+```
+
 ```
 Dynamic configs for topic my-topic are:
   segment.bytes=1073741824 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:segment.bytes=1073741824, DEFAULT_CONFIG:log.segment.bytes=1073741824}
@@ -125,6 +129,32 @@ kfk users --create --user my-user --authentication-type tls  -n kafka -c my-clus
 
 ```shell
 kfk configs --alter --add-config 'request_percentage=55,consumer_byte_rate=2097152' --entity-type users --entity-name my-user -c my-cluster -n kafka
+```
+
+```shell
+kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
+```
+
+```
+Configs for user-principal 'CN=my-user' are consumer_byte_rate=2097152.0, request_percentage=55.0
+```
+
+```shell
+kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka
+```
+
+```
+...
+Spec:
+...
+  Quotas:
+    Consumer Byte Rate:  2097152
+    Request Percentage:  55
+...
+```
+
+```shell
+kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
 
 ```shell
