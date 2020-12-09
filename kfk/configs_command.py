@@ -32,7 +32,7 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
                 topics_command.describe(entity_name, None, False, None, cluster, namespace)
         elif entity_type == "users":
             if native:
-                _describe_natively(entity_type, entity_name, cluster, namespace)
+                _describe_natively(entity_type, COMMON_NAME_PREFIX + entity_name, cluster, namespace)
             else:
                 users_command.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":

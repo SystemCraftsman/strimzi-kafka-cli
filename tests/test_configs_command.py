@@ -200,7 +200,7 @@ class TestKfkConfigs(TestCase):
         assert result.exit_code == 0
 
         native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                         "users --entity-name {entity_name} --describe"
+                         "users --entity-name CN={entity_name} --describe"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.user))
