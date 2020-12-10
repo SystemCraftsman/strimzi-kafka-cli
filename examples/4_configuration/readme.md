@@ -194,6 +194,6 @@ kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --en
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
 ```
 
-You can see that empty response returns since there is no configuration anymore after the deletion.
+You can see that empty response returning since there is no configuration anymore after the deletion.
 
 ## Broker Configuration
