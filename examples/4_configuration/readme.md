@@ -123,13 +123,42 @@ Dynamic configs for topic my-topic are:
 
 ## User Configuration
 
+For the user configuration let's first create a user called `my-user`:
+
 ```shell
 kfk users --create --user my-user --authentication-type tls  -n kafka -c my-cluster
 ```
 
+After creating the user, let's add two configurations as quota configurations like `request_percentage=55` and `consumer_byte_rate=2097152`.
+
 ```shell
 kfk configs --alter --add-config 'request_percentage=55,consumer_byte_rate=2097152' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
+
+---
+**IMPORTANT**
+
+In traditional `kafka-configs.sh` command there are actually 5 configurations, 3 of which are quota related ones:
+
+```
+consumer_byte_rate                    
+producer_byte_rate                    
+request_percentage  
+```
+
+and the other 2 is for authentication type:
+
+```
+SCRAM-SHA-256                         
+SCRAM-SHA-512 
+```
+
+While these two configurations are handled by `kafka-configs.sh` in traditional Kafka usage, in Strimzi CLI they are configured by altering the cluster by running the `kfk clusters --alter` command and altering the user by using the `kfk users --alter` command for adding the relevant authentication type. 
+So `kfk configs` command will not be used for these two configurations since it's not supported.
+
+---
+
+Now let's take a look at the configurations we just set:
 
 ```shell
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
@@ -138,6 +167,8 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 ```
 Configs for user-principal 'CN=my-user' are consumer_byte_rate=2097152.0, request_percentage=55.0
 ```
+
+You can also see the changes in the Kubernetes native description:
 
 ```shell
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka
@@ -153,6 +184,8 @@ Spec:
 ...
 ```
 
+Deletion of the configurations are the same as deleting the topic configurations:
+
 ```shell
 kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
@@ -160,5 +193,7 @@ kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --en
 ```shell
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
 ```
+
+You can see that empty response returns since there is no configuration anymore after the deletion.
 
 ## Broker Configuration
