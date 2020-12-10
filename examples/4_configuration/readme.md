@@ -192,10 +192,10 @@ Deletion of the configurations is the same as deleting the topic configurations:
 kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
 
+You can see that empty response returning since there is no configuration anymore after the deletion:
+
 ```shell
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
 ```
-
-You can see that empty response returning since there is no configuration anymore after the deletion.
 
 ## Broker Configuration
