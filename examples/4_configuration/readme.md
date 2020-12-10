@@ -153,7 +153,9 @@ SCRAM-SHA-256
 SCRAM-SHA-512 
 ```
 
-While these two configurations are handled by `kafka-configs.sh` in traditional Kafka usage, in Strimzi CLI they are configured by altering the cluster by running the `kfk clusters --alter` command and altering the user by using the `kfk users --alter` command for adding the relevant authentication type. 
+While these two configurations are also handled by `kafka-configs.sh` in traditional Kafka usage, 
+in Strimzi CLI they are configured by altering the cluster by running the `kfk clusters --alter` 
+command and altering the user by using the `kfk users --alter` command for adding the relevant authentication type. 
 So `kfk configs` command will not be used for these two configurations since it's not supported.
 
 ---
