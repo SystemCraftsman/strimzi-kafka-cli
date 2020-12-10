@@ -186,7 +186,7 @@ Spec:
 ...
 ```
 
-Deletion of the configurations is the same as deleting the topic configurations:
+Deletion of the configurations is almost the same as deleting the topic configurations:
 
 ```shell
 kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --entity-type users --entity-name my-user -c my-cluster -n kafka
