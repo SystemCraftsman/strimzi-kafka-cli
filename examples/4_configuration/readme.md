@@ -121,6 +121,9 @@ Dynamic configs for topic my-topic are:
   retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
 ```
 
+So as you can see we could easily manipulate the topic configurations almost like the native shell 
+executables of Apache Kafka. Now let's see how it is done for user configuration.
+
 ## User Configuration
 
 For the user configuration let's first create a user called `my-user`:
