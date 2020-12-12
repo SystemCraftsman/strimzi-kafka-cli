@@ -213,3 +213,7 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 ```shell
 kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name all -c my-cluster -n kafka
 ```
+
+```shell
+kfk configs --describe --entity-type brokers --entity-name all -c my-cluster -n kafka --native
+```
