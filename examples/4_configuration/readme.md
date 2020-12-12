@@ -211,5 +211,5 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 ## Broker Configuration
 
 ```shell
-kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name all -c my-cluster -n kafka
 ```
