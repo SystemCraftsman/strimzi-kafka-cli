@@ -103,7 +103,14 @@ kfk configs --describe --entity-type topics --entity-name my-topic -c my-cluster
 ...
 ```
 
-Like adding a configuration, deleting a configuration is very easy. You can remove all the configurations that you've just set with a single command:
+Like adding a configuration, deleting a configuration is very easy. You can remove all the configurations 
+that you've just set with a single command:
+
+```shell
+kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
+```
+
+or 
 
 ```shell
 kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
@@ -202,3 +209,7 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 ```
 
 ## Broker Configuration
+
+```shell
+kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```

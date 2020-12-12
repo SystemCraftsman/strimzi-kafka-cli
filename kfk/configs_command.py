@@ -36,15 +36,13 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             else:
                 users_command.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":
-            if native:
-                stream = get_resource_as_stream("kafkas", cluster, namespace)
-                cluster_dict = yaml.full_load(stream)
-                broker_count = int(cluster_dict["spec"]["kafka"]["replicas"])
-
-                for broker_id in range(0, broker_count):
-                    _describe_natively(entity_type, broker_id, cluster, namespace)
+            if entity_name == "all":
+                if native:
+                    _describe_natively(entity_type, entity_name, cluster, namespace)
+                else:
+                    clusters_command.describe(cluster, None, namespace)
             else:
-                clusters_command.describe(cluster, None, namespace)
+                click.echo("`entity-name` for brokers should be set as `all`", err=True)
 
     elif alter:
         add_config_list = get_config_list(add_config)
@@ -66,7 +64,11 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
 
 def _describe_natively(entity_type, entity_name, cluster, namespace):
     native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:{port} " \
-                     "--entity-type {entity_type} --entity-name {entity_name} --describe"
+                     "--entity-type {entity_type} --describe"
+
+    if entity_name != "all":
+        native_command = native_command + SPACE + "--entity-name {entity_name}"
+
     os.system(
         Kubectl().exec("-it", cluster + "-kafka-0").container("kafka").namespace(namespace).exec_command(
             native_command).build().format(cluster=cluster, port=KAFKA_PORT, entity_type=entity_type,

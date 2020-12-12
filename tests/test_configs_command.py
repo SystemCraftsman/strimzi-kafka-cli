@@ -112,7 +112,7 @@ class TestKfkConfigs(TestCase):
         assert result.exit_code == 0
 
         native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                         "topics --entity-name {entity_name} --describe"
+                         "topics --describe --entity-name {entity_name}"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.topic))
@@ -200,7 +200,7 @@ class TestKfkConfigs(TestCase):
         assert result.exit_code == 0
 
         native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                         "users --entity-name CN={entity_name} --describe"
+                         "users --describe --entity-name CN={entity_name}"
         mock_os.system.assert_called_with(
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.user))
@@ -270,7 +270,7 @@ class TestKfkConfigs(TestCase):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
                                     ['configs', '--describe', '--entity-type', 'brokers',
-                                     '--entity-name', self.user, '-c', self.cluster, '-n', self.namespace])
+                                     '--entity-name', "all", '-c', self.cluster, '-n', self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(
             Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build())
@@ -287,7 +287,7 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                             "brokers --entity-name {entity_name} --describe"
+                             "brokers --describe"
 
             mock_os.system.assert_called_with(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
