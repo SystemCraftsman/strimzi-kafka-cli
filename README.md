@@ -11,14 +11,7 @@ operator](https://operatorhub.io/operator/strimzi-kafka-operator) for
 [Apache Kafka](https://kafka.apache.org/).
 
 Intention here is to ramp up Strimzi usage by creating a similar CLI
-experience with traditional Apache Kafka binaries. For example:
-
-| Native Command                             | Strimzi CLI Command  |
-| ------------------------------------------ | -------------------- |
-| $KAFKA\_HOME/bin/kafka-topics.sh           | kfk topics           |
-| $KAFKA\_HOME/bin/kafka-configs.sh          | kfk configs          |
-| $KAFKA\_HOME/bin/kafka-console-consumer.sh | kfk console-consumer |
-| ... | ... |
+experience with traditional Apache Kafka binaries.
 
 **kfk** command stands for the usual **kafka-**\* prefix of the
 Apache Kafka runnable files which are located in *bin* directory. There
@@ -81,7 +74,7 @@ Project requires: Python >=3.5
 
 ## Examples
 
-You can access the examples from [here](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples).
+You can access the *examples* from [here](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples).
 
 ## Dependencies
 ### Python Dependencies
