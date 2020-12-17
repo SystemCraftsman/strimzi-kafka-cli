@@ -2,6 +2,9 @@ import click
 
 
 class NotRequiredIf(click.Option):
+
+    # TODO: Refactor here
+
     def __init__(self, *args, **kwargs):
         self.not_required_if = kwargs.pop('not_required_if')
         assert self.not_required_if, "'not_required_if' parameter required"
@@ -33,6 +36,9 @@ class NotRequiredIf(click.Option):
 
 
 class RequiredIf(click.Option):
+
+    # TODO: Refactor here
+
     def __init__(self, *args, **kwargs):
         self.required_if = kwargs.pop('required_if')
         assert self.required_if, "'required_if' parameter required"

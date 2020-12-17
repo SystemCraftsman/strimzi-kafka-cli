@@ -36,13 +36,10 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             else:
                 users_command.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":
-            if entity_name == "all":
-                if native:
-                    _describe_natively(entity_type, entity_name, cluster, namespace)
-                else:
-                    clusters_command.describe(cluster, None, namespace)
+            if native:
+                _describe_natively(entity_type, entity_name, cluster, namespace)
             else:
-                click.echo("`entity-name` for brokers should be set as `all`", err=True)
+                clusters_command.describe(cluster, None, namespace)
 
     elif alter:
         add_config_list = get_config_list(add_config)
