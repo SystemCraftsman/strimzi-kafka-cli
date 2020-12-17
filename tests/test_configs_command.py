@@ -289,6 +289,21 @@ class TestKfkConfigs(TestCase):
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
                              "brokers --describe"
 
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.configs_command.os')
+    def test_describe_broker_config_native_with_id(self, mock_os, mock_get_resource_yaml):
+        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
+            cluster_yaml = file.read()
+            mock_get_resource_yaml.return_value = cluster_yaml
+            result = self.runner.invoke(kfk,
+                                        ['configs', '--describe', '--entity-type', 'brokers',
+                                         '--entity-name', '0', '--native', '-c', self.cluster, '-n',
+                                         self.namespace])
+            assert result.exit_code == 0
+
+            native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
+                             "brokers --describe --entity-name 0"
+
             mock_os.system.assert_called_with(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                     native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1))
