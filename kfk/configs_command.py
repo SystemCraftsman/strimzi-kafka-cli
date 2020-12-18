@@ -9,6 +9,8 @@ from kfk import users_command
 from kfk import clusters_command
 from kfk.commons import print_missing_options_for_command, get_resource_as_stream, get_config_list
 from kfk.constants import *
+from kfk.messages import *
+from kfk.option_extensions import NotRequiredIf
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -18,7 +20,7 @@ from kfk.constants import *
 @click.option('--alter', help='Alter the configuration for the entity.', is_flag=True)
 @click.option('--native', help='List configs for the given entity natively.', is_flag=True)
 @click.option('--describe', help='List configs for the given entity.', is_flag=True)
-@click.option('--entity-name', help='Name of entity', required=True)
+@click.option('--entity-name', help='Name of entity', required=True, cls=NotRequiredIf, not_required_if=['native'])
 @click.option('--entity-type', help='Type of entity (topics/users/brokers)',
               type=click.Choice(['topics', 'users', 'brokers'], case_sensitive=True))
 @kfk.command()
@@ -51,10 +53,7 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
                                 add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "brokers":
-            if entity_name == "all":
-                clusters_command.alter(cluster, add_config_list, delete_config_list, namespace)
-            else:
-                click.echo("`entity-name` for brokers should be set as `all`", err=True)
+            clusters_command.alter(entity_name, add_config_list, delete_config_list, namespace)
     else:
         print_missing_options_for_command("configs")
 
@@ -63,10 +62,18 @@ def _describe_natively(entity_type, entity_name, cluster, namespace):
     native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:{port} " \
                      "--entity-type {entity_type} --describe"
 
-    if entity_name != "all":
+    if entity_name is not None:
         native_command = native_command + SPACE + "--entity-name {entity_name}"
+
+    if entity_type == "brokers":
+        native_command = native_command + SEMICOLON + "echo '{static_config_header}';grep -A 1000 '{" \
+                                                      "broker_config_file_user_config_header}' {" \
+                                                      "broker_temp_folder_path}/{broker_config_file} | tail --lines=+3"
 
     os.system(
         Kubectl().exec("-it", cluster + "-kafka-0").container("kafka").namespace(namespace).exec_command(
             native_command).build().format(cluster=cluster, port=KAFKA_PORT, entity_type=entity_type,
-                                           entity_name=entity_name))
+                                           entity_name=entity_name, broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
+                                           broker_config_file=BROKER_CONFIG_FILE,
+                                           broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
+                                           static_config_header=STATIC_CONFIG_HEADER))

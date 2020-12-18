@@ -2,6 +2,8 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 from kfk.configs_command import kfk
 from kfk.kubectl_command_builder import Kubectl
+from kfk.constants import *
+from kfk.messages import *
 
 
 class TestKfkConfigs(TestCase):
@@ -209,24 +211,6 @@ class TestKfkConfigs(TestCase):
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.clusters_command.resource_exists')
     @mock.patch('kfk.clusters_command.os')
-    def test_add_one_broker_config_with_wrong_entity_name(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                          mock_create_temp_file):
-        mock_resource_exists.return_value = True
-        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            cluster_yaml = file.read()
-            mock_get_resource_yaml.return_value = cluster_yaml
-            result = self.runner.invoke(kfk,
-                                        ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
-                                         '--entity-type', 'brokers', '--entity-name', 'another_name', '-c',
-                                         self.cluster,
-                                         '-n', self.namespace])
-            assert result.exit_code == 0
-            assert "`entity-name` for brokers should be set as `all`" in result.output
-
-    @mock.patch('kfk.clusters_command.create_temp_file')
-    @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.clusters_command.resource_exists')
-    @mock.patch('kfk.clusters_command.os')
     def test_add_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
@@ -234,7 +218,7 @@ class TestKfkConfigs(TestCase):
             mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--alter', '--add-config', 'unclean.leader.election.enable=true',
-                                         '--entity-type', 'brokers', '--entity-name', 'all', '-c', self.cluster,
+                                         '--entity-type', 'brokers', '--entity-name', self.cluster, '-c', self.cluster,
                                          '-n', self.namespace])
             assert result.exit_code == 0
 
@@ -282,12 +266,22 @@ class TestKfkConfigs(TestCase):
             cluster_yaml = file.read()
             mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(kfk,
-                                        ['configs', '--describe', '--entity-type', 'brokers',
-                                         '--entity-name', 'all', '--native', '-c', self.cluster, '-n', self.namespace])
+                                        ['configs', '--describe', '--entity-type', 'brokers', '--native', '-c',
+                                         self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                             "brokers --describe"
+                             "brokers --describe;echo '{static_config_header}';grep -A 1000 '{" \
+                             "broker_config_file_user_config_header}' {broker_temp_folder_path}/{broker_config_file} " \
+                             "| tail --lines=+3"
+
+            mock_os.system.assert_called_with(
+                Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
+                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1,
+                                                   broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
+                                                   broker_config_file=BROKER_CONFIG_FILE,
+                                                   broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
+                                                   static_config_header=STATIC_CONFIG_HEADER))
 
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.configs_command.os')
@@ -302,8 +296,14 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                             "brokers --describe --entity-name 0"
+                             "brokers --describe --entity-name 0;echo '{static_config_header}';grep -A 1000 '{" \
+                             "broker_config_file_user_config_header}' {broker_temp_folder_path}/{broker_config_file} " \
+                             "| tail --lines=+3"
 
             mock_os.system.assert_called_with(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
-                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1))
+                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1,
+                                                   broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
+                                                   broker_config_file=BROKER_CONFIG_FILE,
+                                                   broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
+                                                   static_config_header=STATIC_CONFIG_HEADER))

@@ -15,20 +15,16 @@ class NotRequiredIf(click.Option):
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        we_are_present = self.name in opts
-        other_present = False
+        options_exist = self.name in opts
+        control_options_exist = False
 
         for not_required_if in self.not_required_if:
-            other_present = not_required_if in opts
-            if other_present is True:
+            control_options_exist = not_required_if in opts
+            if control_options_exist is True:
                 break
 
-        if other_present:
-            if we_are_present:
-                raise click.UsageError(
-                    "Illegal usage: `%s` is mutually exclusive with `%s`" % (
-                        self.name, self.not_required_if))
-            else:
+        if control_options_exist:
+            if not options_exist:
                 self.required = None
 
         return super(NotRequiredIf, self).handle_parse_result(
@@ -49,15 +45,15 @@ class RequiredIf(click.Option):
         super(RequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        we_are_present = self.name in opts
-        other_present = False
+        options_exist = self.name in opts
+        control_options_exist = False
 
         for required_if in self.required_if:
-            other_present = required_if in opts
-            if other_present is True:
+            control_options_exist = required_if in opts
+            if control_options_exist is True:
                 break
 
-        if other_present or we_are_present:
+        if control_options_exist or options_exist:
             self.required = True
         else:
             self.required = None
