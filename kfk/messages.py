@@ -1,1 +1,1 @@
-STATIC_CONFIG_HEADER = "Static user provided configs for brokers in the cluster are:"
+USER_PROVIDED_CONFIG_HEADER = "All user provided configs for brokers in the cluster are:"

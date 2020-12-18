@@ -34,7 +34,7 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
                 topics_command.describe(entity_name, None, False, None, cluster, namespace)
         elif entity_type == "users":
             if native:
-                _describe_natively(entity_type, COMMON_NAME_PREFIX + entity_name, cluster, namespace)
+                _describe_natively(entity_type, entity_name, cluster, namespace)
             else:
                 users_command.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":
@@ -65,6 +65,9 @@ def _describe_natively(entity_type, entity_name, cluster, namespace):
     if entity_name is not None:
         native_command = native_command + SPACE + "--entity-name {entity_name}"
 
+        if entity_type == "users":
+            entity_name = COMMON_NAME_PREFIX + entity_name
+
     if entity_type == "brokers":
         native_command = native_command + SEMICOLON + "echo '{static_config_header}';grep -A 1000 '{" \
                                                       "broker_config_file_user_config_header}' {" \
@@ -76,4 +79,4 @@ def _describe_natively(entity_type, entity_name, cluster, namespace):
                                            entity_name=entity_name, broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
                                            broker_config_file=BROKER_CONFIG_FILE,
                                            broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                           static_config_header=STATIC_CONFIG_HEADER))
+                                           static_config_header=USER_PROVIDED_CONFIG_HEADER))

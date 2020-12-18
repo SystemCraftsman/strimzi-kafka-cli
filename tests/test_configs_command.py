@@ -281,7 +281,7 @@ class TestKfkConfigs(TestCase):
                                                    broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
                                                    broker_config_file=BROKER_CONFIG_FILE,
                                                    broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                                   static_config_header=STATIC_CONFIG_HEADER))
+                                                   static_config_header=USER_PROVIDED_CONFIG_HEADER))
 
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.configs_command.os')
@@ -306,4 +306,4 @@ class TestKfkConfigs(TestCase):
                                                    broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
                                                    broker_config_file=BROKER_CONFIG_FILE,
                                                    broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                                   static_config_header=STATIC_CONFIG_HEADER))
+                                                   static_config_header=USER_PROVIDED_CONFIG_HEADER))

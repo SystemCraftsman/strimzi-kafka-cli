@@ -10,7 +10,8 @@ While `kfk configs` command can be used to change the configuration of these thr
  
  * `kfk clusters --config/--delete-config` for adding and deleting configurations to all brokers.
  
- In this example we will show you to do the configuration in both ways. So let's start with `topic` configuration.
+ In this example we will show you to do the configuration by using `kfk configs` only but will mention about the upper options. 
+ So let's start with `topic` configuration.
 
 ## Topic Configuration
 
@@ -50,6 +51,16 @@ Dynamic configs for topic my-topic are:
   segment.bytes=1073741824 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:segment.bytes=1073741824, DEFAULT_CONFIG:log.segment.bytes=1073741824}
   retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
 ```
+
+---
+**INFO**
+Additionally you can describe all of the topic configurations natively on current cluster. 
+To do this, just remove the `entity-name` option:
+
+```shell
+kfk configs --describe --entity-type topics -c my-cluster -n kafka --native
+```
+---
 
 Now let's add a configuration like `min.insync.replicas`, which configures the sync replica count through the broker, between the leaders and followers. 
 In order to add a configuration you must use `--alter` and for each config to be add `--add-config` following the `kfk config` command:
@@ -180,6 +191,16 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 Configs for user-principal 'CN=my-user' are consumer_byte_rate=2097152.0, request_percentage=55.0
 ```
 
+---
+**INFO**
+Additionally you can describe all of the user configurations natively on current cluster. 
+To do this, just remove the `entity-name` option:
+
+```shell
+kfk configs --describe --entity-type users -c my-cluster -n kafka --native
+```
+---
+
 You can also see the changes in the Kubernetes native description:
 
 ```shell
@@ -208,6 +229,9 @@ You can see that empty response returning since there is no configuration anymor
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
 ```
 
+So we could easily update/create/delete the user configurations for Strimzi, almost like the native shell 
+executables of Apache Kafka. Now let's take our final step see how it is done for broker configuration.
+
 ## Broker Configuration
 
 ```shell
@@ -215,5 +239,5 @@ kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers -
 ```
 
 ```shell
-kfk configs --describe --entity-type brokers --entity-name all -c my-cluster -n kafka --native
+kfk configs --describe --entity-type brokers -c my-cluster -n kafka --native
 ```
