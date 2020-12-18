@@ -121,12 +121,6 @@ that you've just set with a single command:
 kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
 ```
 
-or 
-
-```shell
-kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
-```
-
 When you run the `describe` command again you will see that the relevant configurations are removed:
 
 ```shell
