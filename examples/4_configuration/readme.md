@@ -369,5 +369,5 @@ transaction.state.log.replication.factor=3
 
 So that's all! 
 
-We are able to configure and delete topics, users and Kafka cluster itself and describe the changed 
+We are able to create, update, delete the configurations of topics, users and Kafka cluster itself and describe the changed 
 configurations both Kubernetes and Kafka natively using Strimzi Kafka CLI.
