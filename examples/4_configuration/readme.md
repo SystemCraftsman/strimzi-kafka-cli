@@ -54,6 +54,7 @@ Dynamic configs for topic my-topic are:
 
 ---
 **INFO**
+
 Additionally you can describe all of the topic configurations natively on current cluster. 
 To do this, just remove the `entity-name` option:
 
