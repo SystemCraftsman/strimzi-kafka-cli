@@ -193,6 +193,7 @@ Configs for user-principal 'CN=my-user' are consumer_byte_rate=2097152.0, reques
 
 ---
 **INFO**
+
 Additionally you can describe all of the user configurations natively on current cluster. 
 To do this, just remove the `entity-name` option:
 
@@ -243,6 +244,14 @@ Here is a way to add a static configuration that will be reflected after the rol
 ```shell
 kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
 ```
+
+---
+**IMPORTANT**
+
+Unlike the native `kafka-configs` command, for the `entity-name` the Kafka cluster name should be set rather than the 
+broker ids.
+
+---
 
 ```shell
 kfk configs --describe --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
@@ -301,6 +310,19 @@ While describing it via Strimzi custom resources will return you the list again:
 kfk configs --describe --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
 ```
 
+```
+...
+  Kafka:
+    Config:
+      log.cleaner.threads:                       2
+      log.message.format.version:                2.6
+      log.retention.hours:                       168
+      offsets.topic.replication.factor:          3
+      transaction.state.log.min.isr:             2
+      transaction.state.log.replication.factor:  3
+...
+```
+
 Describing it with `native` flag will give more details about configurations' being dynamic or not:
 
 ```shell
@@ -324,3 +346,33 @@ offsets.topic.replication.factor=3
 transaction.state.log.min.isr=2
 transaction.state.log.replication.factor=3
 ```
+
+Deleting the configurations are exactly the same with the topics and users:
+
+```shell
+kfk configs --alter --delete-config 'log.retention.hours,log.cleaner.threads' --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+You can see only initial configurations after the deletion:
+
+```shell
+kfk configs --describe --entity-type brokers -c my-cluster -n kafka --native
+```
+
+```
+Dynamic configs for broker 0 are:
+Dynamic configs for broker 1 are:
+Dynamic configs for broker 2 are:
+Default configs for brokers in the cluster are:
+
+All user provided configs for brokers in the cluster are:
+log.message.format.version=2.6
+offsets.topic.replication.factor=3
+transaction.state.log.min.isr=2
+transaction.state.log.replication.factor=3
+```
+
+So that's all! 
+
+We are able to configure and delete topics, users and Kafka cluster itself and describe the changed 
+configurations both Kubernetes and Kafka natively using Strimzi Kafka CLI.
