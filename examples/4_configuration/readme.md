@@ -295,7 +295,7 @@ the first broker's configuration which will be totally the same with the cluster
 
 Now let's add a dynamic configuration in order to see it while describing with `native` flag. 
 We will change `log.cleaner.threads` configuration which is responsible for controlling the background threads 
-that do log compaction and is 1 one default.
+that do log compaction and is 1 one by default.
 
 ```shell
 kfk configs --alter --add-config log.cleaner.threads=2 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
