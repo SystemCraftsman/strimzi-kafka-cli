@@ -261,49 +261,47 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.configs_command.os')
-    def test_describe_broker_config_native(self, mock_os, mock_get_resource_yaml):
-        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            cluster_yaml = file.read()
-            mock_get_resource_yaml.return_value = cluster_yaml
+    def test_describe_broker_config_native(self, mock_os, mock_get_config_resource_yaml):
+        with open(r'files/yaml/kafka-config.yaml') as file:
+            config_yaml = file.read()
+            mock_get_config_resource_yaml.return_value = config_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--describe', '--entity-type', 'brokers', '--native', '-c',
                                          self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
+            assert "All user provided configs for brokers in the cluster are:" in result.output
+            assert "log.message.format.version=2.6" in result.output
+            assert "offsets.topic.replication.factor=3" in result.output
+            assert "transaction.state.log.min.isr=2" in result.output
+            assert "transaction.state.log.replication.factor=3" in result.output
 
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                             "brokers --describe;echo '{static_config_header}';grep -A 1000 '{" \
-                             "broker_config_file_user_config_header}' {broker_temp_folder_path}/{broker_config_file} " \
-                             "| tail --lines=+3"
+                             "brokers --describe"
 
             mock_os.system.assert_called_with(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
-                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1,
-                                                   broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
-                                                   broker_config_file=BROKER_CONFIG_FILE,
-                                                   broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                                   static_config_header=USER_PROVIDED_CONFIG_HEADER))
+                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1))
 
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.configs_command.os')
-    def test_describe_broker_config_native_with_id(self, mock_os, mock_get_resource_yaml):
-        with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            cluster_yaml = file.read()
-            mock_get_resource_yaml.return_value = cluster_yaml
+    def test_describe_broker_config_native_with_id(self, mock_os, mock_get_config_resource_yaml):
+        with open(r'files/yaml/kafka-config.yaml') as file:
+            config_yaml = file.read()
+            mock_get_config_resource_yaml.return_value = config_yaml
             result = self.runner.invoke(kfk,
                                         ['configs', '--describe', '--entity-type', 'brokers',
                                          '--entity-name', '0', '--native', '-c', self.cluster, '-n',
                                          self.namespace])
             assert result.exit_code == 0
+            assert "All user provided configs for brokers in the cluster are:" in result.output
+            assert "log.message.format.version=2.6" in result.output
+            assert "offsets.topic.replication.factor=3" in result.output
+            assert "transaction.state.log.min.isr=2" in result.output
+            assert "transaction.state.log.replication.factor=3" in result.output
 
             native_command = "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092 --entity-type " \
-                             "brokers --describe --entity-name 0;echo '{static_config_header}';grep -A 1000 '{" \
-                             "broker_config_file_user_config_header}' {broker_temp_folder_path}/{broker_config_file} " \
-                             "| tail --lines=+3"
+                             "brokers --describe --entity-name 0"
 
             mock_os.system.assert_called_with(
                 Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
-                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1,
-                                                   broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
-                                                   broker_config_file=BROKER_CONFIG_FILE,
-                                                   broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                                   static_config_header=USER_PROVIDED_CONFIG_HEADER))
+                    native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1))

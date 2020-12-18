@@ -7,7 +7,7 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk import topics_command
 from kfk import users_command
 from kfk import clusters_command
-from kfk.commons import print_missing_options_for_command, get_resource_as_stream, get_config_list
+from kfk.commons import *
 from kfk.constants import *
 from kfk.messages import *
 from kfk.option_extensions import NotRequiredIf
@@ -40,6 +40,10 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
         elif entity_type == "brokers":
             if native:
                 _describe_natively(entity_type, entity_name, cluster, namespace)
+                stream = get_resource_as_stream("configmap", cluster + "-kafka-config", namespace)
+                config_dict = yaml.full_load(stream)
+                config_data = get_list_by_split_string(config_dict["data"]["server.config"], BROKER_CONFIG_FILE_USER_CONFIG_HEADER)[1]
+                click.echo(NEW_LINE + USER_PROVIDED_CONFIG_HEADER + NEW_LINE + config_data)
             else:
                 clusters_command.describe(cluster, None, namespace)
 
@@ -68,15 +72,7 @@ def _describe_natively(entity_type, entity_name, cluster, namespace):
         if entity_type == "users":
             entity_name = COMMON_NAME_PREFIX + entity_name
 
-    if entity_type == "brokers":
-        native_command = native_command + SEMICOLON + "echo '{static_config_header}';grep -A 1000 '{" \
-                                                      "broker_config_file_user_config_header}' {" \
-                                                      "broker_temp_folder_path}/{broker_config_file} | tail --lines=+3"
-
     os.system(
         Kubectl().exec("-it", cluster + "-kafka-0").container("kafka").namespace(namespace).exec_command(
             native_command).build().format(cluster=cluster, port=KAFKA_PORT, entity_type=entity_type,
-                                           entity_name=entity_name, broker_temp_folder_path=BROKER_TMP_FOLDER_PATH,
-                                           broker_config_file=BROKER_CONFIG_FILE,
-                                           broker_config_file_user_config_header=BROKER_CONFIG_FILE_USER_CONFIG_HEADER,
-                                           static_config_header=USER_PROVIDED_CONFIG_HEADER))
+                                           entity_name=entity_name))

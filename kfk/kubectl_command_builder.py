@@ -58,6 +58,9 @@ class Kubectl:
     def kafkausers(self, *vals):
         return self.resource("kafkausers", *vals)
 
+    def configmap(self, *vals):
+        return self.resource("configmap", *vals)
+
     def resource(self, resource_name, *vals):
         self.cmd_str = self.cmd_str + SPACE + resource_name
         for val in vals:

@@ -234,10 +234,93 @@ executables of Apache Kafka. Now let's take our final step see how it is done fo
 
 ## Broker Configuration
 
+Adding configurations either as dynamic ones or static ones are as easy as it is for the topics and users.
+For both configuration types, Strimzi takes care about it itself by rolling update the brokers for the static 
+configurations and reflecting directly the dynamic configurations.
+
+Here is a way to add a static configuration that will be reflected after the rolling update of the brokers:
+
 ```shell
-kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name all -c my-cluster -n kafka
+kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+```shell
+kfk configs --describe --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+```
+...
+  Kafka:
+    Config:
+      log.message.format.version:                2.6
+      log.retention.hours:                       168
+      offsets.topic.replication.factor:          3
+      transaction.state.log.min.isr:             2
+      transaction.state.log.replication.factor:  3
+...
 ```
 
 ```shell
 kfk configs --describe --entity-type brokers -c my-cluster -n kafka --native
+```
+
+```
+Dynamic configs for broker 0 are:
+Dynamic configs for broker 1 are:
+Dynamic configs for broker 2 are:
+Default configs for brokers in the cluster are:
+
+All user provided configs for brokers in the cluster are:
+log.message.format.version=2.6
+log.retention.hours=168
+offsets.topic.replication.factor=3
+transaction.state.log.min.isr=2
+transaction.state.log.replication.factor=3
+```
+
+---
+**IMPORTANT**
+
+Note that using describe with `native` flag doesn't require any `entity-name` option since it fetches the cluster-wide
+broker configuration. For a specific broker configuration one can set `entity-name` as the broker id which will only show
+the first broker's configuration which will be totally the same with the cluster-wide one.
+
+---
+
+Now let's add a dynamic configuration in order to see it while describing with `native` flag. 
+We will change `log.cleaner.threads` configuration which is responsible for controlling the background threads 
+that do log compaction and is 1 one default.
+
+```shell
+kfk configs --alter --add-config log.cleaner.threads=2 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+While describing it via Strimzi custom resources will return you the list again:
+
+```shell
+kfk configs --describe --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+Describing it with `native` flag will give more details about configurations' being dynamic or not:
+
+```shell
+kfk configs --describe --entity-type brokers -c my-cluster -n kafka --native
+```
+
+```
+Dynamic configs for broker 0 are:
+  log.cleaner.threads=2 sensitive=false synonyms={DYNAMIC_BROKER_CONFIG:log.cleaner.threads=2, DEFAULT_CONFIG:log.cleaner.threads=1}
+Dynamic configs for broker 1 are:
+  log.cleaner.threads=2 sensitive=false synonyms={DYNAMIC_BROKER_CONFIG:log.cleaner.threads=2, DEFAULT_CONFIG:log.cleaner.threads=1}
+Dynamic configs for broker 2 are:
+  log.cleaner.threads=2 sensitive=false synonyms={DYNAMIC_BROKER_CONFIG:log.cleaner.threads=2, DEFAULT_CONFIG:log.cleaner.threads=1}
+Default configs for brokers in the cluster are:
+
+All user provided configs for brokers in the cluster are:
+log.cleaner.threads=2
+log.message.format.version=2.6
+log.retention.hours=168
+offsets.topic.replication.factor=3
+transaction.state.log.min.isr=2
+transaction.state.log.replication.factor=3
 ```
