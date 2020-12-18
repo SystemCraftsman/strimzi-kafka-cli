@@ -264,6 +264,8 @@ kfk configs --describe --entity-type brokers --entity-name my-cluster -c my-clus
 ...
 ```
 
+You can describe the cluster config Kafka natively like the following:
+
 ```shell
 kfk configs --describe --entity-type brokers -c my-cluster -n kafka --native
 ```
