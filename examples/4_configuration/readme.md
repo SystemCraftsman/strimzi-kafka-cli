@@ -10,7 +10,7 @@ While `kfk configs` command can be used to change the configuration of these thr
  
  * `kfk clusters --config/--delete-config` for adding and deleting configurations to all brokers.
  
- In this example we will show you to do the configuration by using `kfk configs` only but will mention about the upper options. 
+ In this example we will show you to do the configuration by using `kfk configs` only but will mention about the options above. 
  So let's start with `topic` configuration.
 
 ## Topic Configuration
