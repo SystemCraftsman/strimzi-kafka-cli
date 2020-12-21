@@ -80,7 +80,7 @@ kafkatopic.kafka.strimzi.io/my-topic configured
 Alternatively you can set the topic configuration by using `kfk topics` with `--config` option:
 
 ```shell
-kfk topics --alter --config min.insync.replicas=3 --topic my-topic -c my-cluster -n kafka
+kfk topics --alter --topic my-topic --config min.insync.replicas=3 -c my-cluster -n kafka
 ```
 
 In order to add two configs -let's say that we wanted to add `cleanup.policy=compact` configuration along with `min.insync.replicas`- run a command like following: 
@@ -92,7 +92,7 @@ kfk configs --alter --add-config 'min.insync.replicas=3,cleanup.policy=compact' 
 or
 
 ```shell
-kfk topics --alter --config min.insync.replicas=3 --config cleanup.policy=compact --topic my-topic -c my-cluster -n kafka
+kfk topics --alter --topic my-topic --config min.insync.replicas=3 --config cleanup.policy=compact -c my-cluster -n kafka
 ```
 
 After setting the configurations in order to see the changes, use the `--describe` flag like we did before:
@@ -131,13 +131,13 @@ Like adding a configuration, deleting a configuration is very easy. You can remo
 that you've just set with a single command:
 
 ```shell
-kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
+kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy' --entity-type topics --entity-name my-topic -c my-cluster -n kafka
 ```
 
 or you can use:
 
 ```shell
-kfk topics --alter --delete-config min.insync.replicas=3 --delete-config cleanup.policy=compact --topic my-topic -c my-cluster -n kafka
+kfk topics --alter --topic my-topic --delete-config min.insync.replicas=3 --delete-config cleanup.policy=compact -c my-cluster -n kafka
 ```
 
 When you run the `describe` command again you will see that the relevant configurations are removed:
