@@ -77,10 +77,22 @@ You should see a message like this:
 kafkatopic.kafka.strimzi.io/my-topic configured
 ```
 
+Alternatively you can set the topic configuration by using `kfk topics` with `--config` option:
+
+```shell
+kfk topics --alter --config min.insync.replicas=3 --topic my-topic -c my-cluster -n kafka
+```
+
 In order to add two configs -let's say that we wanted to add `cleanup.policy=compact` configuration along with `min.insync.replicas`- run a command like following: 
 
 ```shell
 kfk configs --alter --add-config 'min.insync.replicas=3,cleanup.policy=compact' --entity-type topics --entity-name my-topic -c my-cluster -n kafka
+```
+
+or
+
+```shell
+kfk topics --alter --config min.insync.replicas=3 --config cleanup.policy=compact --topic my-topic -c my-cluster -n kafka
 ```
 
 After setting the configurations in order to see the changes, use the `--describe` flag like we did before:
@@ -122,6 +134,12 @@ that you've just set with a single command:
 kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy'--entity-type topics --entity-name my-topic -c my-cluster -n kafka
 ```
 
+or you can use:
+
+```shell
+kfk topics --alter --delete-config min.insync.replicas=3 --delete-config cleanup.policy=compact --topic my-topic -c my-cluster -n kafka
+```
+
 When you run the `describe` command again you will see that the relevant configurations are removed:
 
 ```shell
@@ -134,7 +152,7 @@ Dynamic configs for topic my-topic are:
   retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
 ```
 
-So as you can see we could easily manipulate the topic configurations almost like the native shell 
+As you can see we could easily manipulate the topic configurations almost like the native shell 
 executables of Apache Kafka. Now let's see how it is done for user configuration.
 
 ## User Configuration
