@@ -169,6 +169,12 @@ After creating the user, let's add two configurations as quota configurations li
 kfk configs --alter --add-config 'request_percentage=55,consumer_byte_rate=2097152' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
 
+Alternatively you can set the user quota configuration by using `kfk users` with `--quota` option:
+
+```shell
+kfk users --alter --user my-user --quota request_percentage=55 --quota consumer_byte_rate=2097152 -c my-cluster -n kafka
+```
+
 ---
 **IMPORTANT**
 
@@ -237,6 +243,12 @@ Deletion of the configurations is almost the same as deleting the topic configur
 kfk configs --alter --delete-config 'request_percentage,consumer_byte_rate' --entity-type users --entity-name my-user -c my-cluster -n kafka
 ```
 
+or
+
+```shell
+kfk users --alter --user my-user --delete-quota request_percentage=55 --delete-quota consumer_byte_rate=2097152 -c my-cluster -n kafka
+```
+
 You can see that empty response returning since there is no configuration anymore after the deletion:
 
 ```shell
@@ -244,7 +256,7 @@ kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -
 ```
 
 So we could easily update/create/delete the user configurations for Strimzi, almost like the native shell 
-executables of Apache Kafka. Now let's take our final step see how it is done for broker configuration.
+executables of Apache Kafka. Now let's take our final step to see how it is done for broker configuration.
 
 ## Broker Configuration
 
@@ -262,7 +274,7 @@ kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers -
 **IMPORTANT**
 
 Unlike the native `kafka-configs` command, for the `entity-name` the Kafka cluster name should be set rather than the 
-broker ids.
+broker ids. In this 
 
 ---
 
