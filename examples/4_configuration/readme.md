@@ -175,7 +175,7 @@ executables of Apache Kafka. Now let's see how it is done for user configuration
 For the user configuration let's first create a user called `my-user`:
 
 ```shell
-kfk users --create --user my-user --authentication-type tls  -n kafka -c my-cluster
+kfk users --create --user my-user --authentication-type tls -n kafka -c my-cluster
 ```
 
 After creating the user, let's add two configurations as quota configurations like `request_percentage=55` and `consumer_byte_rate=2097152`.
