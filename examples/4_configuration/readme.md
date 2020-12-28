@@ -63,6 +63,21 @@ kfk configs --describe --entity-type topics -c my-cluster -n kafka --native
 ```
 ---
 
+We can also describe the `Topic` custom resource itself by removing the `--native` flag:
+
+```shell
+kfk configs --describe --entity-type topics --entity-name my-topic -c my-cluster -n kafka
+```
+
+```
+...
+Spec:
+  Config:
+    retention.ms:   7200000
+    segment.bytes:  1073741824
+...
+```
+
 Now let's add a configuration like `min.insync.replicas`, which configures the sync replica count through the broker, between the leaders and followers. 
 In order to add a configuration you must use `--alter` and for each config to be add `--add-config` following the `kfk config` command:
 
@@ -137,7 +152,7 @@ kfk configs --alter --delete-config 'min.insync.replicas,cleanup.policy' --entit
 or you can use:
 
 ```shell
-kfk topics --alter --topic my-topic --delete-config min.insync.replicas=3 --delete-config cleanup.policy=compact -c my-cluster -n kafka
+kfk topics --alter --topic my-topic --delete-config min.insync.replicas --delete-config cleanup.policy -c my-cluster -n kafka
 ```
 
 When you run the `describe` command again you will see that the relevant configurations are removed:
@@ -270,6 +285,12 @@ Here is a way to add a static configuration that will be reflected after the rol
 kfk configs --alter --add-config log.retention.hours=168 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
 ```
 
+or alternatively using the `kfk clusters` command:
+
+```shell
+kfk clusters --alter --cluster my-cluster --config log.retention.hours=168 -n kafka
+```
+
 ---
 **IMPORTANT**
 
@@ -331,6 +352,12 @@ that do log compaction and is 1 one by default.
 kfk configs --alter --add-config log.cleaner.threads=2 --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
 ```
 
+or
+
+```shell
+kfk clusters --alter --cluster my-cluster --config log.cleaner.threads=2 -n kafka
+```
+
 While describing it via Strimzi custom resources will return you the list again:
 
 ```shell
@@ -378,6 +405,12 @@ Deleting the configurations are exactly the same with the topics and users:
 
 ```shell
 kfk configs --alter --delete-config 'log.retention.hours,log.cleaner.threads' --entity-type brokers --entity-name my-cluster -c my-cluster -n kafka
+```
+
+or use the following command:
+
+```shell
+kfk clusters --alter --cluster my-cluster --delete-config log.retention.hours --delete-config log.cleaner.threads -n kafka
 ```
 
 You can see only initial configurations after the deletion:
