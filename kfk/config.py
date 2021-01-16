@@ -4,7 +4,7 @@ import os
 
 from pathlib import Path
 
-STRIMZI_VERSION = "0.20.1"
+STRIMZI_VERSION = "0.21.0"
 KUBECTL_VERSION = "v1.20.0"
 
 BASE_FOLDER = ".strimzi-kafka-cli"

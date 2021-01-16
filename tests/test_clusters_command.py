@@ -143,15 +143,12 @@ class TestKfkClusters(TestCase):
     def test_create_cluster(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor, mock_create_temp_file):
         mock_click_confirm.return_value = True
 
-        with open(r'files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml') as file:
+        new_cluster_name = "my-cluster-with-new-name"
+
+        result = self.runner.invoke(kfk, ['clusters', '--create', '--cluster', new_cluster_name, '-n', self.namespace])
+        assert result.exit_code == 0
+
+        with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
             expected_kafka_yaml = file.read()
-
-            new_cluster_name = "my-cluster-with-new-name"
-
-            result = self.runner.invoke(kfk, ['clusters', '--create', '--cluster', new_cluster_name, '-n', self.namespace])
-            assert result.exit_code == 0
-
-            with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
-                expected_kafka_yaml = file.read()
-                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_kafka_yaml == result_kafka_yaml
+            result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_kafka_yaml == result_kafka_yaml
