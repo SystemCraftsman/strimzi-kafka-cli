@@ -294,8 +294,8 @@ kfk clusters --alter --cluster my-cluster --config log.retention.hours=168 -n ka
 ---
 **IMPORTANT**
 
-Unlike the native `kafka-configs` command, for the `entity-name` the Kafka cluster name should be set rather than the 
-broker ids. In this 
+Unlike the native `kafka-configs.sh` command, for the `entity-name`, the Kafka cluster name should be set rather than the 
+broker ids.
 
 ---
 
