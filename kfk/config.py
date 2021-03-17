@@ -4,8 +4,8 @@ import os
 
 from pathlib import Path
 
-STRIMZI_VERSION = "0.21.0"
-KUBECTL_VERSION = "v1.20.0"
+STRIMZI_VERSION = "0.22.0"
+KUBECTL_VERSION = "v1.20.4"
 
 BASE_FOLDER = ".strimzi-kafka-cli"
 BASE_PATH = (str(Path.home()) + "/" + BASE_FOLDER) if os.environ.get(
