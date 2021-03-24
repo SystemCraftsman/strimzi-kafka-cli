@@ -17,9 +17,13 @@ from kfk.option_extensions import NotRequiredIf, RequiredIf
 def connect(is_create, cluster, replica_count, config_files, namespace):
     """Creates, alters, deletes, describes Kafka connect cluster(s) or connectors."""
     if is_create:
-        if cluster is not None:
-            if len(config_files) == 0:
-                raise click.ClickException("A configuration file should be provided for connect cluster")
+        create(cluster, replica_count, config_files, namespace)
 
     else:
         print_missing_options_for_command("connect")
+
+
+def create(cluster, replica_count, config_files, namespace):
+    if cluster is not None:
+        if len(config_files) == 0:
+            raise click.ClickException("A configuration file should be provided for connect cluster")
