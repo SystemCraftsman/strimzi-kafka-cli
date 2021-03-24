@@ -1,4 +1,4 @@
-![Build](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg) ![Deploy](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg) [![PyPI version](https://badge.fury.io/py/strimzi-kafka-cli.svg)](https://badge.fury.io/py/strimzi-kafka-cli)
+![Build](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg) ![Deploy](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg) [![PyPI version](https://badge.fury.io/py/strimzi-kafka-cli.svg)](https://badge.fury.io/py/strimzi-kafka-cli) [![Downloads](https://pepy.tech/badge/strimzi-kafka-cli)](https://pepy.tech/project/strimzi-kafka-cli)
 
 ![strimzi cli](https://raw.githubusercontent.com/systemcraftsman/strimzi-kafka-cli/master/logo/strimzi_cli.png)
 
@@ -56,25 +56,13 @@ Strimzi Kafka CLI can be installed via pip (python package installer).
 sudo pip install strimzi-kafka-cli
 ```
 
----
-**IMPORTANT**
-
-We recommend to use sudo while installing Strimzi Kafka CLI because the binary will directly be located in /usr/local/bin which is accessible from all users of the OS. If you don't want this, and want to install the CLI without sudo you will get this kind of warning:
-
-```
-WARNING: The script kfk is installed in '[USER_HOME]/[PYTHON_PATH]/bin' which is not on PATH.
-Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
-```
-  
-So in this case you need to put the shown location of `kfk` on PATH.
-
----
-
 Project requires: Python >=3.5
 
 ## Examples
 
-You can access the *examples* from [here](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples).
+* [TLS Authentication](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/2_tls_authentication)
+* [Simple ACL Authorization](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/3_simple_acl_authorization)
+* [Topic, User and Broker Configuration](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/4_configuration)
 
 ## Dependencies
 ### Python Dependencies
