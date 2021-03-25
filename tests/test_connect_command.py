@@ -23,7 +23,8 @@ class TestKfkConnect(TestCase):
     @mock.patch('kfk.clusters_command.os')
     def test_create_cluster(self, mock_os):
         result = self.runner.invoke(kfk,
-                                    ['connect', '--create', '--cluster', self.cluster, self.connect_config_file,
+                                    ['connect', '--create', '--clust'
+                                                            'er', self.cluster, self.connect_config_file,
                                      '-n', self.namespace])
         assert result.exit_code == 0
 

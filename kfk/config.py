@@ -6,18 +6,20 @@ from pathlib import Path
 
 
 def _get_processor_type():
-    is64bit = sys.maxsize > 2 ** 32
-
-    if is64bit:
-        if "arm" in os.uname() or "aarch" in os.uname():
+    if _is_64_bit():
+        if "arm" in os.uname().machine or "aarch" in os.uname().machine:
             return "arm64"
         else:
             return "amd64"
     else:
-        if "arm" in os.uname():
+        if "arm" in os.uname().machine:
             return "arm"
         else:
             return "386"
+
+
+def _is_64_bit():
+    return sys.maxsize > 2 ** 32
 
 
 STRIMZI_VERSION = "0.22.0"
