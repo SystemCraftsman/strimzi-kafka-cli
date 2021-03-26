@@ -56,7 +56,7 @@ Strimzi Kafka CLI can be installed via pip (python package installer).
 sudo pip install strimzi-kafka-cli
 ```
 
-Project requires: Python >=3.5
+Project requires: Python >=3.6
 
 ## Examples
 
