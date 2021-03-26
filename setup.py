@@ -13,7 +13,7 @@ setup(
     package_dir={'kfk': 'kfk'},
     install_requires=[
         'Click==7.1.2',
-        'PyYAML==5.3.1',
+        'PyYAML==5.4.1',
         'wget==3.2',
     ],
     entry_points='''
