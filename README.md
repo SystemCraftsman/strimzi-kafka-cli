@@ -68,13 +68,13 @@ Project requires: Python >=3.6
 ### Python Dependencies
 Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/requirements.txt) file.
 ### External Dependencies
-kubectl and Strimzi resources are the tools that Strimzi Kafka CLI uses. These dependencies are automatically downloaded when the first `kfk` command is run. You can always check the dependency versions of your CLI with the following command:
+`kubectl` and `Strimzi resources` are the tools that Strimzi Kafka CLI uses. These dependencies are automatically downloaded when the first `kfk` command is run. You can always check the dependency versions of your CLI with the following command:
 
 ``` bash
 kfk version
 ```
 
-If you want to change the `kubectl` and `Strimzi binaries`, you can simply change their version with the help of some environment veriables in order to let Strimzi Kafka CLI download the version you want, or change the PATH of any if you want to use a custom kubectl or Strimzi binary folder.
+If you want to change the `kubectl` and `Strimzi resources` folder, you can simply change their version with the help of some environment veriables in order to let Strimzi Kafka CLI download the version you want, or change the PATH of any if you want to use a custom kubectl or Strimzi binary folder.
 
 **STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is set in `~/.strimzi-kafka-cli` as default.
 
