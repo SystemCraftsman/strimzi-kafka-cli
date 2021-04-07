@@ -20,29 +20,28 @@ class TestKfkConnect(TestCase):
         assert result.exit_code == 0
         assert "Missing options: kfk connect" in result.output
 
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.connect_command.os')
     def test_create_cluster(self, mock_os):
         result = self.runner.invoke(kfk,
-                                    ['connect', '--create', '--clust'
-                                                            'er', self.cluster, self.connect_config_file,
+                                    ['connect', '--create', '--cluster', self.cluster, self.connect_config_file,
                                      '-n', self.namespace])
         assert result.exit_code == 0
 
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.connect_command.os')
     def test_create_cluster_three_replicas(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['connect', '--create', '--cluster', self.cluster, '--replica-count',
                                      self.replica_count, self.connect_config_file, '-n', self.namespace])
         assert result.exit_code == 0
 
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.connect_command.os')
     def test_create_cluster_with_connector_config(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['connect', '--create', '--cluster', self.cluster, self.connect_config_file,
                                      self.connector_config_file_1, self.connector_config_file_2, '-n', self.namespace])
         assert result.exit_code == 0
 
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.connect_command.os')
     def test_create_cluster_with_two_connectors_config(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['connect', '--create', '--cluster', self.cluster, self.connect_config_file,

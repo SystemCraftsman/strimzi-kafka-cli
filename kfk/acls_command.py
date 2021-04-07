@@ -6,8 +6,7 @@ from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.kubectl_command_builder import Kubectl
 from kfk.commons import print_missing_options_for_command
 from kfk import users_command
-
-PRINCIPAL_SPLIT_CHAR = ":"
+from kfk.constants import COLON
 
 
 @click.option('-n', '--namespace', help='Namespace to use.', required=True)
@@ -51,7 +50,8 @@ def acls(list, topic, cluster, group, add, allow_principal, deny_principal, oper
                                                cluster=(cluster and '--cluster ' + cluster or ''),
                                                group=(group and '--group ' + group or '')))
     elif add or remove:
-        alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
+        alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host,
+              deny_host,
               resource_pattern_type, kafka_cluster, namespace)
     else:
         print_missing_options_for_command("acls")
@@ -64,14 +64,14 @@ def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, o
     if allow_principal:
         type = "allow"
         # TODO: click exception here
-        allow_principal_arr = allow_principal.split(PRINCIPAL_SPLIT_CHAR)
+        allow_principal_arr = allow_principal.split(COLON)
         principal_type = allow_principal_arr[0]
         principal_name = allow_principal_arr[1]
         host = allow_host
     else:
         type = "deny"
         # TODO: click exception here
-        deny_principal_arr = deny_principal.split(PRINCIPAL_SPLIT_CHAR)
+        deny_principal_arr = deny_principal.split(COLON)
         principal_type = deny_principal_arr[0]
         principal_name = deny_principal_arr[1]
         host = deny_host

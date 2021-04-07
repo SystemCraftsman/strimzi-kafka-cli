@@ -8,6 +8,7 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type, get_list_by_split_string
 from kfk.constants import *
 from subprocess import call
+from jproperties import Properties
 
 
 def print_missing_options_for_command(command_str):
@@ -33,6 +34,8 @@ def add_resource_kv_config(config, dict_part, *converters):
             config_list = get_kv_config_list(config_str)
             dict_part[config_list[0]] = convert_string_to_type(config_list[1])
     else:
+        for converter in converters:
+            config = converter(config)
         config_list = get_kv_config_list(config)
         dict_part[config_list[0]] = convert_string_to_type(config_list[1])
 
@@ -59,11 +62,11 @@ def delete_resource_config(config, dict_part, *converters):
         del dict_part[config]
 
 
+# TODO: rename
 def resource_exists(resource_type, resource_name, cluster, namespace):
     return resource_name in os.popen(
         Kubectl().get().resource(resource_type).label("strimzi.io/cluster={cluster}").namespace(
-            namespace).build().format(
-            cluster=cluster)).read()
+            namespace).build().format(cluster=cluster)).read()
 
 
 def get_resource_yaml(resource_type, resource_name, namespace):

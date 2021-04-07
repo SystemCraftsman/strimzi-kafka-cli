@@ -4,7 +4,14 @@ import yaml
 
 from kfk.command import kfk
 from kfk.commons import *
+from kfk.config import *
 from kfk.option_extensions import NotRequiredIf, RequiredIf
+from kfk.messages import Errors
+from kfk.constants import *
+
+CONNECT_SKIPPED_PROPERTIES = (
+    SpecialTexts.CONNECT_BOOTSTRAP_SERVERS, SpecialTexts.CONNECT_OUTPUT_IMAGE, SpecialTexts.CONNECT_PLUGIN_URL,
+    SpecialTexts.CONNECT_PLUGIN_PATH)
 
 
 # TODO enter command explanations
@@ -26,4 +33,31 @@ def connect(is_create, cluster, replica_count, config_files, namespace):
 def create(cluster, replica_count, config_files, namespace):
     if cluster is not None:
         if len(config_files) == 0:
-            raise click.ClickException("A configuration file should be provided for connect cluster")
+            raise click.ClickException(Errors.CONFIG_FILE_SHOULD_BE_PROVIDED)
+
+        with open('{strimzi_path}/examples/connect/kafka-connect.yaml'.format(strimzi_path=STRIMZI_PATH).format(
+                version=STRIMZI_VERSION)) as file:
+            cluster_dict = yaml.full_load(file)
+
+            connect_properties = Properties()
+            connect_properties.load(config_files[0].read())
+
+            cluster_dict["metadata"]["name"] = cluster
+            cluster_dict["spec"]["bootstrapServers"] = connect_properties.get(SpecialTexts.CONNECT_BOOTSTRAP_SERVERS).data
+            cluster_dict["spec"]["tls"] = {}
+
+            if replica_count is not None:
+                cluster_dict["spec"]["replicas"] = replica_count
+
+            cluster_dict["spec"]["config"] = {}
+
+            for item in connect_properties.items():
+                if item[0] not in CONNECT_SKIPPED_PROPERTIES:
+                    cluster_dict["spec"]["config"][item[0]] = item[1].data
+
+            cluster_yaml = yaml.dump(cluster_dict)
+            cluster_temp_file = create_temp_file(cluster_yaml)
+            os.system(
+                Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
+                    cluster_temp_file_path=cluster_temp_file.name))
+            cluster_temp_file.close()

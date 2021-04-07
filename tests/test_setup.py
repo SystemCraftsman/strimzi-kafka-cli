@@ -1,4 +1,3 @@
-import shutil
 import tempfile
 import os
 

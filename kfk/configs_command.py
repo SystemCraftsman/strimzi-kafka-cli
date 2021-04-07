@@ -9,7 +9,7 @@ from kfk import users_command
 from kfk import clusters_command
 from kfk.commons import *
 from kfk.constants import *
-from kfk.messages import *
+from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
 
 
@@ -42,8 +42,9 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
                 _describe_natively(entity_type, entity_name, cluster, namespace)
                 stream = get_resource_as_stream("configmap", cluster + "-kafka-config", namespace)
                 config_dict = yaml.full_load(stream)
-                config_data = get_list_by_split_string(config_dict["data"]["server.config"], BROKER_CONFIG_FILE_USER_CONFIG_HEADER)[1]
-                click.echo(NEW_LINE + USER_PROVIDED_CONFIG_HEADER + NEW_LINE + config_data)
+                config_data = get_list_by_split_string(config_dict["data"]["server.config"],
+                                                       SpecialTexts.BROKER_CONFIG_FILE_USER_CONFIG_HEADER)[1]
+                click.echo(NEW_LINE + Messages.USER_PROVIDED_CONFIG_HEADER + NEW_LINE + config_data)
             else:
                 clusters_command.describe(cluster, None, namespace)
 
