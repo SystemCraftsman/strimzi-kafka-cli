@@ -1,11 +1,11 @@
 import click
 import os
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.kubectl_command_builder import Kubectl
 from kfk.commons import print_missing_options_for_command
-from kfk import users_command
+from kfk.commands import users
 from kfk.constants import COLON
 
 
@@ -77,7 +77,7 @@ def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, o
         host = deny_host
     if principal_type == "User":
         for resource_type, resource_name in resource_type_dict.items():
-            users_command.alter(principal_name, None, None, add, remove, operation_tuple, host, type,
+            users.alter(principal_name, None, None, add, remove, operation_tuple, host, type,
                                 resource_type, resource_name, resource_pattern_type, tuple(), tuple(),
                                 kafka_cluster, namespace)
 

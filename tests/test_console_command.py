@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk.console_command import kfk
+from kfk.commands.console import kfk
 from kfk.kubectl_command_builder import Kubectl
 
 
@@ -12,7 +12,7 @@ class TestKfkConsole(TestCase):
         self.namespace = "kafka"
         self.topic = "my-topic"
 
-    @mock.patch('kfk.console_command.os')
+    @mock.patch('kfk.commands.console.os')
     def test_console_consumer(self, mock_os):
         result = self.runner.invoke(kfk, ['console-consumer', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace])
@@ -25,7 +25,7 @@ class TestKfkConsole(TestCase):
                 native_command).build().format(cluster=self.cluster, topic=self.topic))
 
     @mock.patch('kfk.commons.transfer_file_to_container')
-    @mock.patch('kfk.console_command.os')
+    @mock.patch('kfk.commands.console.os')
     def test_console_consumer_with_consumer_config(self, mock_os, mock_transfer_file_to_container):
         result = self.runner.invoke(kfk, ['console-consumer', '--topic', self.topic, '--consumer.config',
                                           'files/client.properties', '-c', self.cluster, '-n', self.namespace])
@@ -38,7 +38,7 @@ class TestKfkConsole(TestCase):
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, topic=self.topic))
 
-    @mock.patch('kfk.console_command.os')
+    @mock.patch('kfk.commands.console.os')
     def test_console_consumer_with_from_beginning(self, mock_os):
         from_beginning = True
         result = self.runner.invoke(kfk, ['console-consumer', '--topic', self.topic, '-c', self.cluster, '-n',
@@ -52,7 +52,7 @@ class TestKfkConsole(TestCase):
                 native_command).build().format(cluster=self.cluster, topic=self.topic,
                                                from_beginning=(from_beginning and '--from-beginning' or '')))
 
-    @mock.patch('kfk.console_command.os')
+    @mock.patch('kfk.commands.console.os')
     def test_console_producer(self, mock_os):
         result = self.runner.invoke(kfk, ['console-producer', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace])
@@ -63,7 +63,7 @@ class TestKfkConsole(TestCase):
                 native_command).build().format(cluster=self.cluster, topic=self.topic))
 
     @mock.patch('kfk.commons.transfer_file_to_container')
-    @mock.patch('kfk.console_command.os')
+    @mock.patch('kfk.commands.console.os')
     def test_console_producer_with_producer_config(self, mock_os, mock_transfer_file_to_container):
         result = self.runner.invoke(kfk, ['console-producer', '--topic', self.topic, '--producer.config',
                                           'files/client.properties', '-c', self.cluster, '-n', self.namespace])

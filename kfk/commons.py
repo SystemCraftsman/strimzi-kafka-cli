@@ -8,7 +8,6 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type, get_list_by_split_string
 from kfk.constants import *
 from subprocess import call
-from jproperties import Properties
 
 
 def print_missing_options_for_command(command_str):

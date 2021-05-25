@@ -2,11 +2,11 @@ import click
 import os
 import yaml
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.kubectl_command_builder import Kubectl
-from kfk import topics_command
-from kfk import users_command
-from kfk import clusters_command
+from kfk.commands import topics
+from kfk.commands import users
+from kfk.commands import clusters
 from kfk.commons import *
 from kfk.constants import *
 from kfk.messages import Messages
@@ -31,12 +31,12 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             if native:
                 _describe_natively(entity_type, entity_name, cluster, namespace)
             else:
-                topics_command.describe(entity_name, None, False, None, cluster, namespace)
+                topics.describe(entity_name, None, False, None, cluster, namespace)
         elif entity_type == "users":
             if native:
                 _describe_natively(entity_type, entity_name, cluster, namespace)
             else:
-                users_command.describe(entity_name, None, cluster, namespace)
+                users.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":
             if native:
                 _describe_natively(entity_type, entity_name, cluster, namespace)
@@ -46,19 +46,19 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
                                                        SpecialTexts.BROKER_CONFIG_FILE_USER_CONFIG_HEADER)[1]
                 click.echo(NEW_LINE + Messages.USER_PROVIDED_CONFIG_HEADER + NEW_LINE + config_data)
             else:
-                clusters_command.describe(cluster, None, namespace)
+                clusters.describe(cluster, None, namespace)
 
     elif alter:
         add_config_list = get_config_list(add_config)
         delete_config_list = get_config_list(delete_config)
 
         if entity_type == "topics":
-            topics_command.alter(entity_name, None, None, add_config_list, delete_config_list, cluster, namespace)
+            topics.alter(entity_name, None, None, add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "users":
-            users_command.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
+            users.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
                                 add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "brokers":
-            clusters_command.alter(entity_name, add_config_list, delete_config_list, namespace)
+            clusters.alter(entity_name, add_config_list, delete_config_list, namespace)
     else:
         print_missing_options_for_command("configs")
 

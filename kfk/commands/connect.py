@@ -2,12 +2,12 @@ import click
 import os
 import yaml
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.commons import *
 from kfk.config import *
-from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.messages import Errors
 from kfk.constants import *
+from jproperties import Properties
 
 CONNECT_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECT_BOOTSTRAP_SERVERS, SpecialTexts.CONNECT_OUTPUT_IMAGE, SpecialTexts.CONNECT_PLUGIN_URL,

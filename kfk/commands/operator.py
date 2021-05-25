@@ -1,6 +1,6 @@
 import click
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.commons import print_missing_options_for_command, create_temp_file
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *

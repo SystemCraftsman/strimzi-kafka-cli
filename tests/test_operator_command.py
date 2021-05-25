@@ -1,8 +1,9 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk.operator_command import kfk
+from kfk.commands.operator import kfk
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import STRIMZI_PATH
+
 
 class TestKfkOperator(TestCase):
 
@@ -12,7 +13,7 @@ class TestKfkOperator(TestCase):
         self.namespace = "kafka"
         self.installation_file_count = 25
 
-    @mock.patch('kfk.operator_command.os.system')
+    @mock.patch('kfk.commands.operator.os.system')
     def test_install_strimzi(self, mock_os_system):
         result = self.runner.invoke(kfk, ['operator', '--install', '-n', self.namespace])
         assert result.exit_code == 0

@@ -1,7 +1,7 @@
 import click
 import os
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 
 
 @kfk.command()
