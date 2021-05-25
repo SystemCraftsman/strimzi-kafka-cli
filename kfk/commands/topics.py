@@ -2,7 +2,7 @@ import click
 import os
 import yaml
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.commons import *
 from kfk.config import *

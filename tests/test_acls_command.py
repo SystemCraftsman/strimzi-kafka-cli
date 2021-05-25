@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk.acls_command import kfk
+from kfk.commands.acls import kfk
 from kfk.kubectl_command_builder import Kubectl
 
 
@@ -14,7 +14,7 @@ class TestKfkAcls(TestCase):
         self.group = "my-group"
         self.user = "my-user"
 
-    @mock.patch('kfk.acls_command.os')
+    @mock.patch('kfk.commands.acls.os')
     def test_list_all_acls(self, mock_os):
         result = self.runner.invoke(kfk, ['acls', '--list', '-n', self.namespace, '-c', self.kafka_cluster])
         assert result.exit_code == 0
@@ -23,7 +23,7 @@ class TestKfkAcls(TestCase):
             Kubectl().exec("-it", "{kafka_cluster}-zookeeper-0").container("zookeeper").namespace(
                 self.namespace).exec_command(native_command).build().format(kafka_cluster=self.kafka_cluster))
 
-    @mock.patch('kfk.acls_command.os')
+    @mock.patch('kfk.commands.acls.os')
     def test_list_topic_acls(self, mock_os):
         result = self.runner.invoke(kfk, ['acls', '--list', '--topic', self.topic, '-n', self.namespace, '-c',
                                           self.kafka_cluster])
@@ -34,7 +34,7 @@ class TestKfkAcls(TestCase):
             Kubectl().exec("-it", "{kafka_cluster}-zookeeper-0").container("zookeeper").namespace(
                 self.namespace).exec_command(native_command).build().format(kafka_cluster=self.kafka_cluster))
 
-    @mock.patch('kfk.acls_command.os')
+    @mock.patch('kfk.commands.acls.os')
     def test_list_group_acls(self, mock_os):
         result = self.runner.invoke(kfk, ['acls', '--list', '--group', self.group, '-n', self.namespace, '-c',
                                           self.kafka_cluster])
@@ -45,16 +45,16 @@ class TestKfkAcls(TestCase):
             Kubectl().exec("-it", "{kafka_cluster}-zookeeper-0").container("zookeeper").namespace(
                 self.namespace).exec_command(native_command).build().format(kafka_cluster=self.kafka_cluster))
 
-    @mock.patch('kfk.acls_command.os')
+    @mock.patch('kfk.commands.acls.os')
     def test_add_acls_without_principal(self, mock_os):
         result = self.runner.invoke(kfk, ['acls', '--add', '--topic', self.topic, '-n', self.namespace, '-c',
                                           self.kafka_cluster])
         assert result.exit_code == 2
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_add_topic_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/user_with_authorization_with_one_topic_acl.yaml') as file:
@@ -72,10 +72,10 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_remove_topic_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/user_with_authorization_with_two_topic_acls.yaml') as file:
@@ -93,10 +93,10 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_add_topic_acl_with_two_operations(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                                mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -115,10 +115,10 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_add_group_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/user_with_authorization_with_one_topic_acl.yaml') as file:

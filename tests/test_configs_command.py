@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 from click.testing import CliRunner
-from kfk.configs_command import kfk
+from kfk.commands.configs import kfk
 from kfk.kubectl_command_builder import Kubectl
 from kfk.constants import *
 from kfk.messages import *
@@ -27,10 +27,10 @@ class TestKfkConfigs(TestCase):
                                           self.cluster, '-n', self.namespace])
         assert result.exit_code == 2
 
-    @mock.patch('kfk.topics_command.create_temp_file')
+    @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.topics_command.os')
+    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.os')
     def test_add_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -49,10 +49,10 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch('kfk.topics_command.create_temp_file')
+    @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.topics_command.os')
+    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.os')
     def test_add_two_topic_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -72,10 +72,10 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch('kfk.topics_command.create_temp_file')
+    @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.topics_command.os')
+    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.os')
     def test_delete_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                      mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -95,8 +95,8 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch('kfk.topics_command.resource_exists')
-    @mock.patch('kfk.topics_command.os')
+    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.os')
     def test_describe_topic_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
@@ -106,7 +106,7 @@ class TestKfkConfigs(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().describe().kafkatopics(self.topic).namespace(self.namespace).build())
 
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.commands.configs.os')
     def test_describe_topic_config_native(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['configs', '--describe', '--entity-type', 'topics',
@@ -119,10 +119,10 @@ class TestKfkConfigs(TestCase):
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.topic))
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_add_one_user_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -140,10 +140,10 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_add_two_user_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -162,10 +162,10 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.create_temp_file')
+    @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_delete_one_user_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
 
@@ -183,8 +183,8 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.users_command.resource_exists')
-    @mock.patch('kfk.users_command.os')
+    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.os')
     def test_describe_user_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
@@ -194,7 +194,7 @@ class TestKfkConfigs(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
 
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.commands.configs.os')
     def test_describe_user_config_native(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['configs', '--describe', '--entity-type', 'users',
@@ -207,10 +207,10 @@ class TestKfkConfigs(TestCase):
             Kubectl().exec("-it", "{cluster}-kafka-0").container("kafka").namespace(self.namespace).exec_command(
                 native_command).build().format(cluster=self.cluster, entity_name=self.user))
 
-    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.clusters_command.resource_exists')
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.os')
     def test_add_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
@@ -227,10 +227,10 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
-    @mock.patch('kfk.clusters_command.create_temp_file')
+    @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.clusters_command.resource_exists')
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.os')
     def test_delete_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                       mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -248,8 +248,8 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
-    @mock.patch('kfk.clusters_command.resource_exists')
-    @mock.patch('kfk.clusters_command.os')
+    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.os')
     def test_describe_broker_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
         result = self.runner.invoke(kfk,
@@ -260,7 +260,7 @@ class TestKfkConfigs(TestCase):
             Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build())
 
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.commands.configs.os')
     def test_describe_broker_config_native(self, mock_os, mock_get_config_resource_yaml):
         with open(r'files/yaml/kafka-config.yaml') as file:
             config_yaml = file.read()
@@ -283,7 +283,7 @@ class TestKfkConfigs(TestCase):
                     native_command).build().format(cluster=self.cluster, entity_name=self.broker_count - 1))
 
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.configs_command.os')
+    @mock.patch('kfk.commands.configs.os')
     def test_describe_broker_config_native_with_id(self, mock_os, mock_get_config_resource_yaml):
         with open(r'files/yaml/kafka-config.yaml') as file:
             config_yaml = file.read()

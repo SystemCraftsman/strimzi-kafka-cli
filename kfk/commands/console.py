@@ -2,7 +2,7 @@ import click
 import os
 import ntpath
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
 from kfk.commons import *

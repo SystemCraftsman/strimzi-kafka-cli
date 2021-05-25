@@ -2,10 +2,9 @@ import click
 import os
 import yaml
 
-from kfk.command import kfk
+from kfk.commands.main import kfk
 from kfk.commons import *
 from kfk.config import *
-from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.messages import Errors
 from kfk.constants import *
 from jproperties import Properties
