@@ -17,7 +17,7 @@ jobs:
     - name: Get release version
       run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Get code version
-      run: echo "STRIMZI_CLI_VERSION=$(grep 'version' setup.cfg | cut -d '=' -f 2)" >> $GITHUB_ENV
+      run: echo "STRIMZI_CLI_VERSION=$(grep 'version' setup.cfg | cut -d '=' -f 2) | xargs" >> $GITHUB_ENV
     - name: Compare release and code version
       if: ${{ env.RELEASE_VERSION != env.STRIMZI_CLI_VERSION }}
       run: exit 1
