@@ -22,7 +22,7 @@ def _is_64_bit():
     return sys.maxsize > 2 ** 32
 
 
-STRIMZI_VERSION = "0.22.1"
+STRIMZI_VERSION = "0.23.0"
 KUBECTL_VERSION = "v1.21.1"
 
 BASE_FOLDER = ".strimzi-kafka-cli"
