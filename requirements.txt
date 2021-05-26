@@ -1,4 +1,4 @@
-click==8.0.1
+click==7.1.2
 PyYAML==5.4.1
 wget==3.2
 jproperties==2.1.0

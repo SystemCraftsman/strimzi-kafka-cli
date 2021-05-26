@@ -19,15 +19,17 @@ class TestSetup(TestCase):
         assert result.exit_code == 0
         mock_setup.assert_called()
 
+    @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_PATH", tempfile.mkdtemp() + "/" + KUBECTL)
     @mock.patch("kfk.setup._download_kubectl")
-    def test_main(self, mock_download_kubectl):
+    def test_main(self, mock_download_kubectl, mock_rename):
         setup()
         assert mock_download_kubectl.call_count == 1
 
+    @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_PATH", tempfile.mkdtemp() + "/" + KUBECTL)
     @mock.patch("kfk.setup._download_kubectl")
-    def test_download_kubectl_if_not_exists(self, mock_download_kubectl):
+    def test_download_kubectl_if_not_exists(self, mock_download_kubectl, mock_rename):
         setup()
         assert mock_download_kubectl.call_count == 1
 
@@ -54,11 +56,12 @@ class TestSetup(TestCase):
         setup()
         assert mock_download_kubectl.call_count == 0
 
+    @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.os.remove")
     @mock.patch("kfk.setup.tarfile")
     @mock.patch("kfk.setup.print")
     @mock.patch("kfk.setup.wget.download")
     @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp() + "/strimzi-x.x.x")
-    def test_download_strimzi_if_not_exists(self, mock_wget_download, mock_print, mock_tarfile, mock_remove):
+    def test_download_strimzi_if_not_exists(self, mock_wget_download, mock_print, mock_tarfile, mock_remove, mock_rename):
         setup()
         mock_print.assert_called_with("Extracting Strimzi {version}...\n".format(version=STRIMZI_VERSION))

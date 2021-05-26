@@ -23,7 +23,7 @@ def _is_64_bit():
 
 
 STRIMZI_VERSION = "0.22.1"
-KUBECTL_VERSION = "v1.20.5"
+KUBECTL_VERSION = "v1.21.1"
 
 BASE_FOLDER = ".strimzi-kafka-cli"
 BASE_PATH = (str(Path.home()) + "/" + BASE_FOLDER) if os.environ.get(
