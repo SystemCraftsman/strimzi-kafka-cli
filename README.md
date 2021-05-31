@@ -35,14 +35,16 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  acls              This tool helps to manage ACLs on Kafka.
-  clusters          The kafka cluster(s) to be created, altered or...
-  configs           Add/Remove entity config for a topic, client, user or...
-  console-consumer  The console consumer is a tool that reads data from...
-  console-producer  The console producer is a tool that reads data from...
-  operator          Install/Uninstall Strimzi Kafka Operator
-  topics            The kafka topic(s) to be created, altered or described.
-  users             The kafka user(s) to be created, altered or described.
+  acls              Manages ACLs on Kafka.
+  clusters          Creates, alters, deletes, describes Kafka cluster(s).
+  configs           Adds/Removes entity config for a topic, client, user or...
+  connect           Creates, alters, deletes, describes Kafka connect...
+  console-consumer  Reads data from Kafka topics and outputs it to standard...
+  console-producer  Reads data from standard input and publish it to Kafka.
+  env               Prints the environment variable values for Strimzi Kafka CLI
+  operator          Installs/Uninstalls Strimzi Kafka Operator
+  topics            Creates, alters, deletes, describes Kafka topic(s).
+  users             Creates, alters, deletes, describes Kafka users(s).
   version           Prints the version of Strimzi Kafka CLI
 ```
 
