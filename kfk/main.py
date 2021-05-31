@@ -2,6 +2,7 @@ from kfk.commands.main import kfk
 from kfk.commands.clusters import clusters
 from kfk.commands.topics import topics
 from kfk.commands.users import users
+from kfk.commands.console import console_consumer, console_producer
 from kfk.commands.configs import configs
 from kfk.commands.version import version
 from kfk.commands.acls import acls
