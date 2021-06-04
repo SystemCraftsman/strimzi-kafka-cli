@@ -58,7 +58,7 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             users.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
                                 add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "brokers":
-            clusters.alter(entity_name, add_config_list, delete_config_list, namespace)
+            clusters.alter(entity_name, None, None, add_config_list, delete_config_list, namespace)
     else:
         print_missing_options_for_command("configs")
 

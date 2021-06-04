@@ -29,7 +29,7 @@ from kfk.constants import *
 @click.option('--describe', 'is_describe', help='List details for the given topic.', is_flag=True)
 @click.option('--replication-factor', help='The replication factor for each partition in the topic being created.',
               cls=RequiredIf, required_if=['is_create'], type=int)
-@click.option('--partitions', help='The number of partitions for the topic being created or altered ', cls=RequiredIf,
+@click.option('--partitions', help='The number of partitions for the topic being created or altered.', cls=RequiredIf,
               required_if=['is_create'], type=int)
 @click.option('--create', 'is_create', help='Create a new topic.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
@@ -68,10 +68,7 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_dict["spec"]["partitions"] = int(partitions)
         topic_dict["spec"]["replicas"] = int(replication_factor)
 
-        if len(config) > 0:
-            if topic_dict["spec"].get("config") is None:
-                topic_dict["spec"]["config"] = {}
-            add_resource_kv_config(config, topic_dict["spec"]["config"])
+        _add_config_if_exists(config, topic_dict)
 
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
@@ -122,10 +119,7 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
 
         delete_last_applied_configuration(topic_dict)
 
-        if len(config) > 0:
-            if topic_dict["spec"].get("config") is None:
-                topic_dict["spec"]["config"] = {}
-            add_resource_kv_config(config, topic_dict["spec"]["config"])
+        _add_config_if_exists(config, topic_dict)
 
         if len(delete_config) > 0:
             if topic_dict["spec"].get("config") is not None:
@@ -139,3 +133,10 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
         topic_temp_file.close()
     else:
         print_resource_not_found_msg(cluster, namespace)
+
+
+def _add_config_if_exists(config, topic_dict):
+    if len(config) > 0:
+        if topic_dict["spec"].get("config") is None:
+            topic_dict["spec"]["config"] = {}
+        add_resource_kv_config(config, topic_dict["spec"]["config"])

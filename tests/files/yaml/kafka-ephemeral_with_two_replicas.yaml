@@ -10,9 +10,9 @@ spec:
     config:
       inter.broker.protocol.version: '2.8'
       log.message.format.version: '2.8'
-      offsets.topic.replication.factor: 3
-      transaction.state.log.min.isr: 2
-      transaction.state.log.replication.factor: 3
+      offsets.topic.replication.factor: 2
+      transaction.state.log.min.isr: 1
+      transaction.state.log.replication.factor: 2
     listeners:
     - name: plain
       port: 9092
@@ -22,7 +22,7 @@ spec:
       port: 9093
       tls: true
       type: internal
-    replicas: 3
+    replicas: 2
     storage:
       type: ephemeral
     version: 2.8.0
