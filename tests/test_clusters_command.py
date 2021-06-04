@@ -136,6 +136,15 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().delete().kafkas(self.cluster).namespace(self.namespace).build())
 
+    @mock.patch('kfk.commands.clusters.click.confirm')
+    @mock.patch('kfk.commands.clusters.os')
+    def test_delete_cluster_with_yes_flag(self, mock_os, mock_click_confirm):
+        mock_click_confirm.return_value = False
+        result = self.runner.invoke(kfk,
+                                    ['clusters', '--delete', '--cluster', self.cluster, '-n', self.namespace, '-y'])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(Kubectl().delete().kafkas(self.cluster).namespace(self.namespace).build())
+
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commands.clusters.open_file_in_system_editor')
     @mock.patch('kfk.commands.clusters.click.confirm')
@@ -146,6 +155,25 @@ class TestKfkClusters(TestCase):
         new_cluster_name = "my-cluster-with-new-name"
 
         result = self.runner.invoke(kfk, ['clusters', '--create', '--cluster', new_cluster_name, '-n', self.namespace])
+        assert result.exit_code == 0
+
+        with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
+            expected_kafka_yaml = file.read()
+            result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_kafka_yaml == result_kafka_yaml
+
+    @mock.patch('kfk.commands.clusters.create_temp_file')
+    @mock.patch('kfk.commands.clusters.open_file_in_system_editor')
+    @mock.patch('kfk.commands.clusters.click.confirm')
+    @mock.patch('kfk.commands.clusters.os')
+    def test_create_cluster_with_yes_flag(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
+                                          mock_create_temp_file):
+        mock_click_confirm.return_value = False
+
+        new_cluster_name = "my-cluster-with-new-name"
+
+        result = self.runner.invoke(kfk,
+                                    ['clusters', '--create', '--cluster', new_cluster_name, '-n', self.namespace, '-y'])
         assert result.exit_code == 0
 
         with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:

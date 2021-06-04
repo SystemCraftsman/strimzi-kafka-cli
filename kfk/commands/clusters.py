@@ -9,6 +9,7 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
 
 
+@click.option('-y', '--yes', 'is_yes', help='"Yes" confirmation', is_flag=True)
 @click.option('-n', '--namespace', help='Namespace to use')
 @click.option('--delete-config', help='A cluster configuration override to be removed for an existing cluster',
               multiple=True)
@@ -24,16 +25,16 @@ from kfk.config import *
 @click.option('--list', 'is_list', help='List all available clusters.', required=True, is_flag=True)
 @click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
-def clusters(cluster, is_list, is_create, is_describe, is_delete, is_alter, config, delete_config, output, namespace):
+def clusters(cluster, is_list, is_create, is_describe, is_delete, is_alter, config, delete_config, output, namespace, is_yes):
     """Creates, alters, deletes, describes Kafka cluster(s)."""
     if is_list:
         list(namespace)
     elif is_create:
-        create(cluster, namespace)
+        create(cluster, namespace, is_yes)
     elif is_describe:
         describe(cluster, output, namespace)
     elif is_delete:
-        delete(cluster, namespace)
+        delete(cluster, namespace, is_yes)
     elif is_alter:
         alter(cluster, config, delete_config, namespace)
     else:
@@ -44,13 +45,16 @@ def list(namespace):
     os.system(Kubectl().get().kafkas().namespace(namespace).build())
 
 
-def create(cluster, namespace):
+def create(cluster, namespace, is_yes):
     with open('{strimzi_path}/examples/kafka/kafka-ephemeral.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
         stream = file.read().replace('my-cluster', cluster)
         cluster_temp_file = create_temp_file(stream)
         open_file_in_system_editor(cluster_temp_file.name)
-        is_confirmed = click.confirm("Are you sure you want to create the cluster with the saved configuration?")
+        if is_yes:
+            is_confirmed = True
+        else:
+            is_confirmed = click.confirm("Are you sure you want to create the cluster with the saved configuration?")
         if is_confirmed:
             os.system(Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                 cluster_temp_file_path=cluster_temp_file.name))
@@ -64,8 +68,11 @@ def describe(cluster, output, namespace):
         os.system(Kubectl().describe().kafkas(cluster).namespace(namespace).build())
 
 
-def delete(cluster, namespace):
-    is_confirmed = click.confirm("Are you sure you want to delete the cluster?")
+def delete(cluster, namespace, is_yes):
+    if is_yes:
+        is_confirmed = True
+    else:
+        is_confirmed = click.confirm("Are you sure you want to delete the cluster?")
     if is_confirmed:
         os.system(Kubectl().delete().kafkas(cluster).namespace(namespace).build())
 
