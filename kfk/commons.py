@@ -40,14 +40,14 @@ def add_resource_kv_config(config, dict_part, *converters):
 
 
 def get_kv_config_list(config_str):
-    return get_list_by_split_string(config_str, '=')
+    return get_list_by_split_string(config_str, EQUALS)
 
 
 def get_config_list(config_str):
     if config_str is None:
         return list()
     else:
-        return get_list_by_split_string(config_str, ',')
+        return get_list_by_split_string(config_str, COMMA)
 
 
 def delete_resource_config(config, dict_part, *converters):

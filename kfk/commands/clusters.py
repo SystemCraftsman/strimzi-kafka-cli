@@ -7,6 +7,7 @@ from kfk.option_extensions import NotRequiredIf
 from kfk.commons import *
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
+from kfk.messages import Messages
 
 
 @click.option('-y', '--yes', 'is_yes', help='"Yes" confirmation', is_flag=True)
@@ -68,7 +69,7 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
             is_confirmed = True
         else:
             open_file_in_system_editor(cluster_temp_file.name)
-            is_confirmed = click.confirm("Are you sure you want to create the cluster with the saved configuration?")
+            is_confirmed = click.confirm(Messages.CLUSTER_SAVE_CONFIRMATION)
         if is_confirmed:
             os.system(Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                 cluster_temp_file_path=cluster_temp_file.name))

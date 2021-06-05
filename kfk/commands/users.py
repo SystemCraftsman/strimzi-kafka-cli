@@ -161,8 +161,8 @@ def _add_acl_option(user_dict, operation, host, type, resource_type, resource_na
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
     for operation_str in operation:
-        acl_dict = {'operation': operation_str, 'host': host, 'type': type,
-                    'resource': {'type': resource_type, 'name': resource_name, 'patternType': resource_pattern_type}}
+        acl_dict = {"operation": operation_str, "host": host, "type": type,
+                    "resource": {"type": resource_type, "name": resource_name, "patternType": resource_pattern_type}}
         user_dict["spec"]["authorization"]["acls"].append(acl_dict)
 
 

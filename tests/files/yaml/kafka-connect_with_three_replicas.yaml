@@ -1,0 +1,34 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  bootstrapServers: my-cluster-kafka-bootstrap:9092
+  build:
+    output:
+      image: quay.io/mabulgu/my-connect-cluster:latest
+      pushSecret: registry-credentials
+      type: docker
+    plugins:
+    - artifacts:
+      - type: tgz
+        url: https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/1.3.1.Final/debezium-connector-postgres-1.3.1.Final-plugin.tar.gz
+      name: connector-1
+    - artifacts:
+      - type: tgz
+        url: https://repo.maven.apache.org/maven2/org/apache/camel/kafkaconnector/camel-telegram-kafka-connector/0.7.0/camel-telegram-kafka-connector-0.7.0-package.tar.gz
+      name: connector-2
+  config:
+    config.storage.replication.factor: '1'
+    config.storage.topic: connect-cluster-configs
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter.schemas.enable: 'true'
+    offset.storage.replication.factor: '1'
+    offset.storage.topic: connect-cluster-offsets
+    status.storage.replication.factor: '1'
+    status.storage.topic: connect-cluster-status
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    value.converter.schemas.enable: 'true'
+  replicas: 3
+  tls: {}
+  version: 2.8.0
