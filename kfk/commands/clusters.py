@@ -52,9 +52,11 @@ def list(namespace):
 def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
     with open('{strimzi_path}/examples/kafka/kafka-ephemeral.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
-        stream = file.read().replace('my-cluster', cluster)
+        stream = file.read()
 
         cluster_dict = yaml.full_load(stream)
+
+        cluster_dict["metadata"]["name"] = cluster
 
         _update_replicas(replicas, zk_replicas, cluster_dict)
 

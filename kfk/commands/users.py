@@ -96,65 +96,59 @@ def create(user, authentication_type, quota, cluster, namespace):
 
 def describe(user, output, cluster, namespace):
     if output is not None:
-        if resource_exists("kafkausers", user, cluster, namespace):
-            os.system(Kubectl().get().kafkausers(user).namespace(namespace).output(output).build())
+        os.system(Kubectl().get().kafkausers(user).namespace(namespace).output(output).build())
     else:
-        if resource_exists("kafkausers", user, cluster, namespace):
-            os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
+        os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
 
 
 def delete(cluster, namespace, user):
-    if resource_exists("kafkausers", user, cluster, namespace):
-        os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
+    os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
 
 
 def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, type,
           resource_type, resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace):
-    if resource_exists("kafkausers", user, cluster, namespace):
-        stream = get_resource_as_stream("kafkausers", user, namespace)
-        user_dict = yaml.full_load(stream)
+    stream = get_resource_as_stream("kafkausers", user, namespace)
+    user_dict = yaml.full_load(stream)
 
-        if authentication_type is not None:
-            if user_dict["spec"].get("authentication") is None:
-                user_dict["spec"]["authentication"] = {}
-            user_dict["spec"]["authentication"]["type"] = authentication_type
+    if authentication_type is not None:
+        if user_dict["spec"].get("authentication") is None:
+            user_dict["spec"]["authentication"] = {}
+        user_dict["spec"]["authentication"]["type"] = authentication_type
 
-        if authorization_type is not None:
-            if user_dict["spec"].get("authorization") is None:
-                user_dict["spec"]["authorization"] = {}
-            if authorization_type != "none":
-                user_dict["spec"]["authorization"]["type"] = authorization_type
-            else:
-                del user_dict["spec"]["authorization"]
+    if authorization_type is not None:
+        if user_dict["spec"].get("authorization") is None:
+            user_dict["spec"]["authorization"] = {}
+        if authorization_type != "none":
+            user_dict["spec"]["authorization"]["type"] = authorization_type
+        else:
+            del user_dict["spec"]["authorization"]
 
-        if add_acl:
-            if user_dict["spec"].get("authorization") is not None:
-                _add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
+    if add_acl:
+        if user_dict["spec"].get("authorization") is not None:
+            _add_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type)
 
-        if delete_acl:
-            if user_dict["spec"].get("authorization") is not None:
-                _delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
-                                   resource_pattern_type)
+    if delete_acl:
+        if user_dict["spec"].get("authorization") is not None:
+            _delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
+                               resource_pattern_type)
 
-        delete_last_applied_configuration(user_dict)
+    delete_last_applied_configuration(user_dict)
 
-        if len(quota_tuple) > 0:
-            if user_dict["spec"].get("quotas") is None:
-                user_dict["spec"]["quotas"] = {}
-            add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
+    if len(quota_tuple) > 0:
+        if user_dict["spec"].get("quotas") is None:
+            user_dict["spec"]["quotas"] = {}
+        add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
 
-        if len(delete_quota_tuple) > 0:
-            if user_dict["spec"].get("quotas") is not None:
-                delete_resource_config(delete_quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
+    if len(delete_quota_tuple) > 0:
+        if user_dict["spec"].get("quotas") is not None:
+            delete_resource_config(delete_quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
 
-        user_yaml = yaml.dump(user_dict)
-        user_temp_file = create_temp_file(user_yaml)
-        os.system(
-            Kubectl().apply().from_file("{user_temp_file_path}").namespace(namespace).build().format(
-                user_temp_file_path=user_temp_file.name))
-        user_temp_file.close()
-    else:
-        print_resource_not_found_msg(cluster, namespace)
+    user_yaml = yaml.dump(user_dict)
+    user_temp_file = create_temp_file(user_yaml)
+    os.system(
+        Kubectl().apply().from_file("{user_temp_file_path}").namespace(namespace).build().format(
+            user_temp_file_path=user_temp_file.name))
+    user_temp_file.close()
 
 
 def _add_acl_option(user_dict, operation, host, type, resource_type, resource_name, resource_pattern_type):

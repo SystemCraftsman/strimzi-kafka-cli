@@ -66,7 +66,7 @@ class TestKfkConnect(TestCase):
 
         result = self.runner.invoke(kfk,
                                     ['connect', '--create', '--cluster', self.cluster,
-                                     "files/connect_with_zip_jar_plugins.properties", '-n', self.namespace])
+                                     'files/connect_with_zip_jar_plugins.properties', '-n', self.namespace])
         assert result.exit_code == 0
 
         result_connect_yaml = mock_create_temp_file.call_args[0][0]
@@ -232,3 +232,47 @@ class TestKfkConnect(TestCase):
         assert result.exit_code == 0
         mock_os.system.assert_called_with(
             Kubectl().delete().kafkaconnects(self.cluster).namespace(self.namespace).build())
+
+    @mock.patch('kfk.commands.connect.os')
+    def test_alter_cluster_without_parameters(self, mock_os):
+        result = self.runner.invoke(kfk, ['connect', '--alter', '--cluster', self.cluster, '-n', self.namespace])
+        assert result.exit_code == 0
+        mock_os.system.assert_called_with(
+            Kubectl().edit().kafkaconnects(self.cluster).namespace(self.namespace).build())
+
+    @mock.patch('kfk.commands.connect.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.commands.connect.os')
+    def test_alter_cluster_with_replica_param(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
+        with open(r'files/yaml/kafka-connect.yaml') as file:
+            topic_yaml = file.read()
+
+            mock_get_resource_yaml.return_value = topic_yaml
+
+            result = self.runner.invoke(kfk, ['connect', '--alter', '--cluster', self.cluster, '--replicas', 3, '-n',
+                                              self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/kafka-connect_with_three_replicas.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_topic_yaml == result_topic_yaml
+
+    @mock.patch('kfk.commands.connect.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.commands.connect.os')
+    def test_alter_cluster_with_different_config_file(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
+        with open(r'files/yaml/kafka-connect.yaml') as file:
+            topic_yaml = file.read()
+
+            mock_get_resource_yaml.return_value = topic_yaml
+
+            result = self.runner.invoke(kfk, ['connect', '--alter', '--cluster', self.cluster,
+                                              'files/connect_with_zip_jar_plugins.properties', '-n',
+                                              self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/kafka-connect_with_zip_jar_plugins.yaml') as file:
+                expected_topic_yaml = file.read()
+                result_topic_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_topic_yaml == result_topic_yaml

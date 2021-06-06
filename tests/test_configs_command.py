@@ -29,7 +29,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
     def test_add_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -51,7 +51,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
     def test_add_two_topic_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -74,7 +74,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
     def test_delete_one_topic_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                      mock_create_temp_file):
@@ -95,7 +95,7 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch('kfk.commands.topics.resource_exists')
+    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
     def test_describe_topic_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
@@ -121,7 +121,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_add_one_user_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -142,7 +142,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_add_two_user_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -164,7 +164,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_delete_one_user_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -183,7 +183,7 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_describe_user_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True
@@ -209,7 +209,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_add_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -229,7 +229,7 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_delete_one_broker_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                       mock_create_temp_file):
@@ -248,7 +248,7 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_describe_broker_config(self, mock_os, mock_resource_exists):
         mock_resource_exists.return_value = True

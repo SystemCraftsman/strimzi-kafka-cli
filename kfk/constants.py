@@ -15,6 +15,7 @@ EXTENSION_TAR_GZ = ".tar.gz"
 EXTENSION_JAR = ".jar"
 EXTENSION_ZIP = ".zip"
 
+
 class SpecialTexts:
     BROKER_CONFIG_FILE_USER_CONFIG_HEADER = "\n##########\n# User provided configuration\n##########\n"
     CONNECT_BOOTSTRAP_SERVERS = "bootstrap.servers"

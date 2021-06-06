@@ -52,11 +52,8 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
     @mock.patch('kfk.commands.clusters.os')
-    def test_alter_cluster_with_one_additional_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                      mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_cluster_with_one_additional_config(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -71,11 +68,8 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
     @mock.patch('kfk.commands.clusters.os')
-    def test_alter_cluster_with_two_additional_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                       mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_cluster_with_two_additional_configs(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -91,11 +85,9 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
     @mock.patch('kfk.commands.clusters.os')
-    def test_alter_cluster_with_two_additional_configs_delete_one_config(self, mock_os, mock_resource_exists,
-                                                                         mock_get_resource_yaml, mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_cluster_with_two_additional_configs_delete_one_config(self, mock_os, mock_get_resource_yaml,
+                                                                         mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_with_two_additional_configs.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -110,7 +102,7 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_two_additional_configs_delete_two_configs(self, mock_os, mock_resource_exists,
                                                                           mock_get_resource_yaml,
@@ -131,7 +123,7 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_one_replica(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                             mock_create_temp_file):
@@ -150,7 +142,7 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_two_replicas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                              mock_create_temp_file):
@@ -169,7 +161,7 @@ class TestKfkClusters(TestCase):
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.clusters.resource_exists')
+    @mock.patch('kfk.commands.clusters.cluster_resource_exists')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_one_replica_one_zk_replica(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                                            mock_create_temp_file):

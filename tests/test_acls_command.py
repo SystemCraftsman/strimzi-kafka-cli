@@ -53,7 +53,7 @@ class TestKfkAcls(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_add_topic_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -74,7 +74,7 @@ class TestKfkAcls(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_remove_topic_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True
@@ -95,7 +95,7 @@ class TestKfkAcls(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_add_topic_acl_with_two_operations(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
                                                mock_create_temp_file):
@@ -117,7 +117,7 @@ class TestKfkAcls(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.resource_exists')
+    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
     def test_add_group_acl(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
         mock_resource_exists.return_value = True

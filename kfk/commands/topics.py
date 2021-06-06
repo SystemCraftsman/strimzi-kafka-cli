@@ -80,9 +80,7 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
 
 def describe(topic, output, native, command_config, cluster, namespace):
     if output is not None:
-        if resource_exists("kafkatopics", topic, cluster, namespace):
-            os.system(
-                Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
+        os.system(Kubectl().get().kafkatopics(topic).namespace(namespace).output(output).build())
     else:
         if native:
             native_command = "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:{port} --describe " \
@@ -96,43 +94,37 @@ def describe(topic, output, native, command_config, cluster, namespace):
                 Kubectl().exec("-it", pod).container(container).namespace(namespace).exec_command(
                     native_command).build().format(port=KAFKA_PORT, topic=topic, cluster=cluster))
         else:
-            if resource_exists("kafkatopics", topic, cluster, namespace):
-                os.system(
-                    Kubectl().describe().kafkatopics(topic).namespace(namespace).build())
+            os.system(Kubectl().describe().kafkatopics(topic).namespace(namespace).build())
 
 
 def delete(topic, cluster, namespace):
-    if resource_exists("kafkatopics", topic, cluster, namespace):
-        os.system(Kubectl().delete().kafkatopics(topic).namespace(namespace).build())
+    os.system(Kubectl().delete().kafkatopics(topic).namespace(namespace).build())
 
 
 def alter(topic, partitions, replication_factor, config, delete_config, cluster, namespace):
-    if resource_exists("kafkatopics", topic, cluster, namespace):
-        stream = get_resource_as_stream("kafkatopics", topic, namespace)
-        topic_dict = yaml.full_load(stream)
+    stream = get_resource_as_stream("kafkatopics", topic, namespace)
+    topic_dict = yaml.full_load(stream)
 
-        if partitions is not None:
-            topic_dict["spec"]["partitions"] = int(partitions)
+    if partitions is not None:
+        topic_dict["spec"]["partitions"] = int(partitions)
 
-        if replication_factor is not None:
-            topic_dict["spec"]["replicas"] = int(replication_factor)
+    if replication_factor is not None:
+        topic_dict["spec"]["replicas"] = int(replication_factor)
 
-        delete_last_applied_configuration(topic_dict)
+    delete_last_applied_configuration(topic_dict)
 
-        _add_config_if_exists(config, topic_dict)
+    _add_config_if_exists(config, topic_dict)
 
-        if len(delete_config) > 0:
-            if topic_dict["spec"].get("config") is not None:
-                delete_resource_config(delete_config, topic_dict["spec"]["config"])
+    if len(delete_config) > 0:
+        if topic_dict["spec"].get("config") is not None:
+            delete_resource_config(delete_config, topic_dict["spec"]["config"])
 
-        topic_yaml = yaml.dump(topic_dict)
-        topic_temp_file = create_temp_file(topic_yaml)
-        os.system(
-            Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
-                topic_temp_file_path=topic_temp_file.name))
-        topic_temp_file.close()
-    else:
-        print_resource_not_found_msg(cluster, namespace)
+    topic_yaml = yaml.dump(topic_dict)
+    topic_temp_file = create_temp_file(topic_yaml)
+    os.system(
+        Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
+            topic_temp_file_path=topic_temp_file.name))
+    topic_temp_file.close()
 
 
 def _add_config_if_exists(config, topic_dict):

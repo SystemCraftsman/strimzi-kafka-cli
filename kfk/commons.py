@@ -9,15 +9,20 @@ from kfk.utils import convert_string_to_type, get_list_by_split_string
 from kfk.constants import *
 from subprocess import call
 
+#TODO: Message string to messages.py
 
 def print_missing_options_for_command(command_str):
     click.echo("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
         command_str=command_str))
 
 
-def print_resource_not_found_msg(cluster, namespace):
+def print_cluster_resource_not_found_msg(cluster, namespace):
     click.echo("No resource found in Kafka cluster: {cluster}, namespace: {namespace}".format(
         cluster=cluster, namespace=namespace))
+
+
+def print_resource_not_found_msg(namespace):
+    click.echo("No resource found in namespace: {namespace}".format(namespace=namespace))
 
 
 def delete_last_applied_configuration(resource_dict):
@@ -61,11 +66,15 @@ def delete_resource_config(config, dict_part, *converters):
         del dict_part[config]
 
 
-# TODO: rename
-def resource_exists(resource_type, resource_name, cluster, namespace):
+def cluster_resource_exists(resource_type, resource_name, cluster, namespace):
     return resource_name in os.popen(
         Kubectl().get().resource(resource_type).label("strimzi.io/cluster={cluster}").namespace(
             namespace).build().format(cluster=cluster)).read()
+
+
+def resource_exists(resource_type, resource_name, namespace):
+    return resource_name in os.popen(
+        Kubectl().get().resource(resource_type).namespace(namespace).build()).read()
 
 
 def get_resource_yaml(resource_type, resource_name, namespace):
@@ -74,8 +83,12 @@ def get_resource_yaml(resource_type, resource_name, namespace):
 
 
 def get_resource_as_stream(resource_type, resource_name, namespace):
-    topic_yaml = get_resource_yaml(resource_type, resource_name, namespace)
-    return io.StringIO(topic_yaml)
+    resource_yaml = get_resource_yaml(resource_type, resource_name, namespace)
+
+    if not resource_yaml:
+        raise click.exceptions.Exit(1)
+
+    return io.StringIO(resource_yaml)
 
 
 def create_temp_file(stream):
