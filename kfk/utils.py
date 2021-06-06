@@ -1,3 +1,6 @@
+import re
+
+
 def convert_string_to_type(str_val):
     str_val = str(str_val)
     if str_val.isdigit():
@@ -40,4 +43,16 @@ def snake_to_camel_case(snake_str):
 def get_list_by_split_string(str_val, split_char):
     # TODO: exception here
     return str_val.split(split_char)
+
+
+def is_valid_url(url):
+    regex = re.compile(
+        r'^(?:http|ftp)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+    return re.match(regex, url) is not None
 

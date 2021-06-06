@@ -29,8 +29,7 @@ from kfk.messages import Messages
 @click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
 @kfk.command()
 def clusters(cluster, is_list, is_create, replicas, zk_replicas, is_describe, is_delete, is_alter, config,
-             delete_config, output, namespace,
-             is_yes):
+             delete_config, output, namespace, is_yes):
     """Creates, alters, deletes, describes Kafka cluster(s)."""
     if is_list:
         list(namespace)
@@ -69,7 +68,7 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
             is_confirmed = True
         else:
             open_file_in_system_editor(cluster_temp_file.name)
-            is_confirmed = click.confirm(Messages.CLUSTER_SAVE_CONFIRMATION)
+            is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
         if is_confirmed:
             os.system(Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                 cluster_temp_file_path=cluster_temp_file.name))
@@ -87,7 +86,7 @@ def delete(cluster, namespace, is_yes):
     if is_yes:
         is_confirmed = True
     else:
-        is_confirmed = click.confirm("Are you sure you want to delete the cluster?")
+        is_confirmed = click.confirm(Messages.CLUSTER_DELETE_CONFIRMATION)
     if is_confirmed:
         os.system(Kubectl().delete().kafkas(cluster).namespace(namespace).build())
 

@@ -6,8 +6,8 @@ spec:
   bootstrapServers: my-cluster-kafka-bootstrap:9092
   build:
     output:
-      image: quay.io/mabulgu/my-connect-cluster:latest
-      pushSecret: registry-credentials
+      image: quay.io/systemcraftsman/test-connect-cluster:latest
+      pushSecret: my-connect-cluster-push-secret
       type: docker
     plugins:
     - artifacts:
@@ -30,5 +30,4 @@ spec:
     value.converter: org.apache.kafka.connect.json.JsonConverter
     value.converter.schemas.enable: 'true'
   replicas: 3
-  tls: {}
   version: 2.8.0

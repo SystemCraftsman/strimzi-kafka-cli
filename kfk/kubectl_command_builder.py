@@ -52,6 +52,9 @@ class Kubectl:
     def kafkas(self, *vals):
         return self.resource("kafkas", *vals)
 
+    def kafkaconnects(self, *vals):
+        return self.resource("kafkaconnects", *vals)
+
     def kafkatopics(self, *vals):
         return self.resource("kafkatopics", *vals)
 
@@ -60,6 +63,9 @@ class Kubectl:
 
     def configmap(self, *vals):
         return self.resource("configmap", *vals)
+
+    def secret(self, *vals):
+        return self.resource("secret", *vals)
 
     def resource(self, resource_name, *vals):
         self.cmd_str = self.cmd_str + SPACE + resource_name

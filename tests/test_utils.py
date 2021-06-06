@@ -1,4 +1,4 @@
-from kfk.utils import convert_string_to_type, snake_to_camel_case
+from kfk.utils import *
 from unittest import TestCase
 
 
@@ -24,4 +24,15 @@ class TestUtils(TestCase):
     def test_snake_to_camel_case(self):
         val_str = "this_is_the_test_string"
         self.assertEqual(snake_to_camel_case(val_str), "thisIsTheTestString")
+
+    def test_is_valid_url(self):
+        not_valid_url_str = "not a valid url"
+        valid_url_str = "https://www.systemcraftsman.com"
+        not_valid_url_str2 = "systemcraftsman.com"
+        not_valid_url_str3 = "systemcraftsman.com"
+
+        self.assertFalse(is_valid_url(not_valid_url_str))
+        self.assertTrue(is_valid_url(valid_url_str))
+        self.assertFalse(is_valid_url(not_valid_url_str2))
+        self.assertFalse(is_valid_url(not_valid_url_str3))
 

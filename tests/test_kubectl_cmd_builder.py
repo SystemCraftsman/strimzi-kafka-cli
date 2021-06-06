@@ -80,6 +80,12 @@ class TestKubectl(TestCase):
         self.assertEqual(Kubectl().get().kafkas().output("yaml").build(),
                          "{kubectl} get kafkas -o yaml".format(kubectl=KUBECTL_PATH))
 
-    def test_from_file(self):
+    def test_create_from_file(self):
         self.assertEqual(Kubectl().create().from_file("/a/test/path/testfile.yaml").build(),
                          "{kubectl} create -f /a/test/path/testfile.yaml".format(kubectl=KUBECTL_PATH))
+
+    def test_create_secret(self):
+        self.assertEqual(Kubectl().create().secret("docker-registry", "secret-name", "--docker-username=tiger",
+                                                   "--docker-password=pass113").build(),
+                         "{kubectl} create secret docker-registry secret-name --docker-username=tiger "
+                         "--docker-password=pass113".format(kubectl=KUBECTL_PATH))
