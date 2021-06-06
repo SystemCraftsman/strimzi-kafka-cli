@@ -90,7 +90,8 @@ def create(cluster, replicas, config_files, namespace, is_yes):
                 if not is_valid_url(plugin_url):
                     raise click.ClickException(Errors.NOT_A_VALID_URL + f": {plugin_url}")
 
-                plugin_dict = {"name": f"connector-{i}", "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
+                plugin_dict = {"name": f"connector-{i}",
+                               "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
 
                 cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
 
@@ -156,5 +157,3 @@ def _get_plugin_type(plugin_url):
         return "zip"
     else:
         raise click.ClickException(Errors.NO_PLUGIN_TYPE_DETECTED)
-
-
