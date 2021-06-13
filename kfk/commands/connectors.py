@@ -5,6 +5,7 @@ import yaml
 from kfk.commands.main import kfk
 from kfk.commons import print_missing_options_for_command
 from kfk.option_extensions import RequiredIf
+from kfk.argument_extensions import NotRequiredIf
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
 from kfk.commons import *
@@ -21,7 +22,8 @@ CONNECTOR_SKIPPED_PROPERTIES = (
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given connector.', is_flag=True)
-@click.argument('config_file', type=click.File('r'))
+@click.argument('config_file', type=click.File('r'), cls=NotRequiredIf,
+                not_required_if=['is_describe', 'is_delete', 'is_list'])
 @click.option('--create', 'is_create', help='Create a new connector.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available connectors.', is_flag=True)
 @click.option('--connector', help='Connector Name', cls=RequiredIf, required_if=['is_describe', 'is_delete'])

@@ -15,7 +15,6 @@ class NotRequiredIf(click.Option):
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        options_exist = self.name in opts
         control_options_exist = False
 
         for not_required_if in self.not_required_if:
@@ -24,8 +23,7 @@ class NotRequiredIf(click.Option):
                 break
 
         if control_options_exist:
-            if not options_exist:
-                self.required = None
+            self.required = None
 
         return super(NotRequiredIf, self).handle_parse_result(
             ctx, opts, args)
@@ -45,7 +43,6 @@ class RequiredIf(click.Option):
         super(RequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        options_exist = self.name in opts
         control_options_exist = False
 
         for required_if in self.required_if:
@@ -53,7 +50,7 @@ class RequiredIf(click.Option):
             if control_options_exist is True:
                 break
 
-        if control_options_exist or options_exist:
+        if control_options_exist:
             self.required = True
         else:
             self.required = None

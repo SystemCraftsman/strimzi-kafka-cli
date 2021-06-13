@@ -26,20 +26,16 @@ class TestKfkTopics(TestCase):
                 self.namespace).build().format(
                 cluster=self.cluster))
 
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_describe_topic(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_describe_topic(self, mock_os):
         result = self.runner.invoke(kfk, ['topics', '--describe', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(
             Kubectl().describe().kafkatopics(self.topic).namespace(self.namespace).build())
 
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_describe_topic_output_yaml(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_describe_topic_output_yaml(self, mock_os):
         result = self.runner.invoke(kfk, ['topics', '--describe', '--topic', self.topic, '-c', self.cluster, '-n',
                                           self.namespace, '-o', 'yaml'])
         assert result.exit_code == 0
@@ -109,10 +105,8 @@ class TestKfkTopics(TestCase):
                                      self.namespace])
         assert result.exit_code == 2
 
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_delete_topic(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_delete_topic(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['topics', '--delete', '--topic', self.topic, '-c', self.cluster, '-n',
                                      self.namespace])
@@ -123,12 +117,8 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                        mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_with_no_params(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/topic.yaml') as file:
             expected_topic_yaml = file.read()
             mock_get_resource_yaml.return_value = expected_topic_yaml
@@ -144,12 +134,8 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_without_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                        mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_without_config(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/topic.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -167,12 +153,8 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_with_config(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                     mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_with_config(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/topic.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -191,12 +173,8 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_with_two_configs(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                          mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_with_two_configs(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/topic.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -216,12 +194,9 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_with_two_configs_delete_one_config(self, mock_os, mock_resource_exists,
-                                                            mock_get_resource_yaml, mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_with_two_configs_delete_one_config(self, mock_os, mock_get_resource_yaml,
+                                                            mock_create_temp_file):
         with open(r'files/yaml/topic_with_two_configs.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
@@ -239,12 +214,9 @@ class TestKfkTopics(TestCase):
 
     @mock.patch('kfk.commands.topics.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.topics.cluster_resource_exists')
     @mock.patch('kfk.commands.topics.os')
-    def test_alter_topic_with_two_configs_delete_two_configs(self, mock_os, mock_resource_exists,
-                                                             mock_get_resource_yaml, mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_topic_with_two_configs_delete_two_configs(self, mock_os, mock_get_resource_yaml,
+                                                             mock_create_temp_file):
         with open(r'files/yaml/topic_with_two_configs.yaml') as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
