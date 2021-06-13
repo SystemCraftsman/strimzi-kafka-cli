@@ -7,7 +7,6 @@ from kfk.commons import *
 from kfk.config import *
 from kfk.messages import Errors
 from kfk.constants import *
-from jproperties import Properties
 from kfk.messages import Messages
 from kfk.utils import is_valid_url
 from kfk.option_extensions import NotRequiredIf
@@ -19,8 +18,8 @@ CONNECT_SKIPPED_PROPERTIES = (
 
 @click.option('-y', '--yes', 'is_yes', help='"Yes" confirmation', is_flag=True)
 @click.option('-n', '--namespace', help='Namespace to use')
-@click.option('--alter', 'is_alter', help='Alter the cluster.', is_flag=True)
-@click.option('--delete', 'is_delete', help='Delete the cluster.', is_flag=True)
+@click.option('--alter', 'is_alter', help='Alter the connect cluster.', is_flag=True)
+@click.option('--delete', 'is_delete', help='Delete the connect cluster.', is_flag=True)
 @click.argument('config_files', nargs=-1, type=click.File('r'))
 @click.option('-p', '--registry-password', help='Image registry password for Connect image')
 @click.option('-u', '--registry-username', help='Image registry username for Connect image')
@@ -68,8 +67,7 @@ def create(cluster, replicas, registry_username, registry_password, config_files
             if replicas is not None:
                 cluster_dict["spec"]["replicas"] = replicas
 
-            connect_properties = Properties()
-            connect_properties.load(config_files[0].read())
+            connect_properties = get_properties_from_file(config_files[0])
 
             del cluster_dict["spec"]["tls"]
 
@@ -95,11 +93,12 @@ def create(cluster, replicas, registry_username, registry_password, config_files
                                "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
 
                 cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
+
             cluster_dict["spec"]["config"] = {}
 
-            for item in connect_properties.items():
-                if item[0] not in CONNECT_SKIPPED_PROPERTIES:
-                    cluster_dict["spec"]["config"][item[0]] = item[1].data
+            for property_item in connect_properties.items():
+                if property_item[0] not in CONNECT_SKIPPED_PROPERTIES:
+                    cluster_dict["spec"]["config"][property_item[0]] = property_item[1].data
 
             cluster_yaml = yaml.dump(cluster_dict)
             cluster_temp_file = create_temp_file(cluster_yaml)
@@ -158,9 +157,8 @@ def alter(cluster, replicas, config_files, namespace):
         if replicas is not None:
             cluster_dict["spec"]["replicas"] = replicas
 
-        connect_properties = Properties()
         if len(config_files) > 0:
-            connect_properties.load(config_files[0].read())
+            connect_properties = get_properties_from_file(config_files[0])
 
             cluster_dict["spec"]["bootstrapServers"] = connect_properties.get(
                 SpecialTexts.CONNECT_BOOTSTRAP_SERVERS).data
@@ -183,9 +181,9 @@ def alter(cluster, replicas, config_files, namespace):
                 cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
             cluster_dict["spec"]["config"] = {}
 
-            for item in connect_properties.items():
-                if item[0] not in CONNECT_SKIPPED_PROPERTIES:
-                    cluster_dict["spec"]["config"][item[0]] = item[1].data
+            for property_item in connect_properties.items():
+                if property_item[0] not in CONNECT_SKIPPED_PROPERTIES:
+                    cluster_dict["spec"]["config"][property_item[0]] = property_item[1].data
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)

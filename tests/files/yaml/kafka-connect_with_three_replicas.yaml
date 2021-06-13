@@ -16,7 +16,7 @@ spec:
       name: connector-1
     - artifacts:
       - type: tgz
-        url: https://repo.maven.apache.org/maven2/org/apache/camel/kafkaconnector/camel-telegram-kafka-connector/0.7.0/camel-telegram-kafka-connector-0.7.0-package.tar.gz
+        url: https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
       name: connector-2
   config:
     config.storage.replication.factor: '1'

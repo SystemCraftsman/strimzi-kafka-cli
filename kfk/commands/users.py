@@ -88,9 +88,11 @@ def create(user, authentication_type, quota, cluster, namespace):
 
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
+
         os.system(
             Kubectl().create().from_file("{user_temp_file_path}").namespace(namespace).build().format(
                 user_temp_file_path=user_temp_file.name))
+
         user_temp_file.close()
 
 
@@ -145,9 +147,11 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
 
     user_yaml = yaml.dump(user_dict)
     user_temp_file = create_temp_file(user_yaml)
+
     os.system(
         Kubectl().apply().from_file("{user_temp_file_path}").namespace(namespace).build().format(
             user_temp_file_path=user_temp_file.name))
+
     user_temp_file.close()
 
 

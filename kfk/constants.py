@@ -22,3 +22,6 @@ class SpecialTexts:
     CONNECT_OUTPUT_IMAGE = "output.image"
     CONNECT_PLUGIN_URL = "plugin.url"
     CONNECT_PLUGIN_PATH = "plugin.path"
+    CONNECTOR_NAME = "name"
+    CONNECTOR_TASKS_MAX = "tasks.max"
+    CONNECTOR_CLASS = "connector.class"

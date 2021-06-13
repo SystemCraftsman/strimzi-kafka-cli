@@ -16,11 +16,11 @@ from kfk.messages import Messages
               multiple=True)
 @click.option('--config', help='A cluster configuration override for the cluster being altered.',
               multiple=True)
-@click.option('--alter', 'is_alter', help='Alter the cluster.', is_flag=True)
-@click.option('--delete', 'is_delete', help='Delete the cluster.', is_flag=True)
+@click.option('--alter', 'is_alter', help='Alter the Kafka cluster.', is_flag=True)
+@click.option('--delete', 'is_delete', help='Delete the Kafka cluster.', is_flag=True)
 @click.option('--zk-replicas', help='The number of zookeeper replicas for the cluster.', type=int)
 @click.option('--replicas', help='The number of broker replicas for the cluster.', type=int)
-@click.option('--create', 'is_create', help='Create the cluster.', is_flag=True)
+@click.option('--create', 'is_create', help='Create a Kafka cluster.', is_flag=True)
 @click.option('--describe', 'is_describe', help='List details for the given cluster.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'

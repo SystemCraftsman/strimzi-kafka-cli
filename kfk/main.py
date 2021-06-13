@@ -9,6 +9,7 @@ from kfk.commands.acls import acls
 from kfk.commands.operator import operator
 from kfk.commands.connect import connect
 from kfk.commands.env import env
+from kfk.commands.connectors import connectors
 from kfk.setup import setup
 
 setup()

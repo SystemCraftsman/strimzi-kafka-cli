@@ -45,7 +45,7 @@ def topics(topic, is_list, is_create, partitions, replication_factor, is_describ
     elif is_describe:
         describe(topic, output, native, command_config, cluster, namespace)
     elif is_delete:
-        delete(topic, cluster, namespace)
+        delete(topic, namespace)
     elif is_alter:
         alter(topic, partitions, replication_factor, config, delete_config, cluster, namespace)
     else:
@@ -72,9 +72,11 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
 
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
+
         os.system(
             Kubectl().create().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
                 topic_temp_file_path=topic_temp_file.name))
+
         topic_temp_file.close()
 
 
@@ -97,7 +99,7 @@ def describe(topic, output, native, command_config, cluster, namespace):
             os.system(Kubectl().describe().kafkatopics(topic).namespace(namespace).build())
 
 
-def delete(topic, cluster, namespace):
+def delete(topic, namespace):
     os.system(Kubectl().delete().kafkatopics(topic).namespace(namespace).build())
 
 
@@ -121,9 +123,11 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
 
     topic_yaml = yaml.dump(topic_dict)
     topic_temp_file = create_temp_file(topic_yaml)
+
     os.system(
         Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
             topic_temp_file_path=topic_temp_file.name))
+
     topic_temp_file.close()
 
 

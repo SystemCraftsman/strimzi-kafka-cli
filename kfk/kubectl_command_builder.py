@@ -55,6 +55,9 @@ class Kubectl:
     def kafkaconnects(self, *vals):
         return self.resource("kafkaconnects", *vals)
 
+    def kafkaconnectors(self, *vals):
+        return self.resource("kafkaconnectors", *vals)
+
     def kafkatopics(self, *vals):
         return self.resource("kafkatopics", *vals)
 

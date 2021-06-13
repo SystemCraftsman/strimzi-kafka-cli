@@ -15,7 +15,7 @@ class TestKfkConnect(TestCase):
         self.cluster = "my-connect-cluster"
         self.namespace = "kafka"
         self.connect_config_file = "files/connect.properties"
-        self.connector_config_file_1 = "files/connector1.properties"
+        self.connector_config_file_1 = "files/twitter_connector.properties"
         self.connector_config_file_2 = "files/connector2.properties"
         self.registry_userpass = "someuserpass"
         self.registry_server = "quay.io/systemcraftsman/test-connect-cluster:latest"

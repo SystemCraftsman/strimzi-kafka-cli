@@ -8,6 +8,7 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.utils import convert_string_to_type, get_list_by_split_string
 from kfk.constants import *
 from subprocess import call
+from jproperties import Properties
 
 #TODO: Message string to messages.py
 
@@ -137,6 +138,12 @@ def apply_client_config_from_file(native_command, config_file_path, config_file_
         native_command = native_command + SPACE + config_file_flag + SPACE + new_config_file_path
         temp_file.close()
     return native_command.format_map(SafeDict(port=port)) + SEMICOLON + delete_file_command
+
+
+def get_properties_from_file(file):
+    properties = Properties()
+    properties.load(file.read())
+    return properties
 
 
 class SafeDict(dict):
