@@ -90,7 +90,7 @@ def delete(connector, namespace):
 
 
 def alter(config_files, cluster, namespace):
-    pass
+    click.echo("Not implemented")
 
 
 def _return_if_not_skipped(property_item):
