@@ -2,7 +2,7 @@ import click
 import os
 import yaml
 
-from kfk.commands.main import kfk
+from kfk.commands.connect import connect
 from kfk.commons import print_missing_options_for_command
 from kfk.option_extensions import RequiredIf
 from kfk.argument_extensions import NotRequiredIf
@@ -15,7 +15,7 @@ CONNECTOR_SKIPPED_PROPERTIES = (
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
-@click.option('-c', '--cluster', help='Cluster to use', required=True)
+@click.option('-c', '--cluster', help='Connect cluster to use', required=True)
 @click.option('--alter', 'is_alter', help='Alter the connector.', is_flag=True)
 @click.option('--delete', 'is_delete', help='Delete the connector.', is_flag=True)
 @click.option('-o', '--output',
@@ -27,7 +27,7 @@ CONNECTOR_SKIPPED_PROPERTIES = (
 @click.option('--create', 'is_create', help='Create a new connector.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available connectors.', is_flag=True)
 @click.option('--connector', help='Connector Name', cls=RequiredIf, required_if=['is_describe', 'is_delete'])
-@kfk.command()
+@connect.command()
 def connectors(connector, is_list, is_create, config_file, is_describe, output, is_delete, is_alter, cluster,
                namespace):
     """Creates, alters, deletes, describes Kafka Connect connector(s)."""
@@ -62,12 +62,11 @@ def create(config_file, cluster, namespace):
         connector_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
 
         connector_dict["spec"]["class"] = connector_properties.get(SpecialTexts.CONNECTOR_CLASS).data
-        connector_dict["spec"]["tasksMax"] = connector_properties.get(SpecialTexts.CONNECTOR_TASKS_MAX).data
+        connector_dict["spec"]["tasksMax"] = int(connector_properties.get(SpecialTexts.CONNECTOR_TASKS_MAX).data)
         connector_dict["spec"]["config"] = {}
 
-        for property_item in connector_properties.items():
-            if property_item[0] not in CONNECTOR_SKIPPED_PROPERTIES:
-                connector_dict["spec"]["config"][property_item[0]] = property_item[1].data
+        add_properties_config_to_resource(connector_properties, connector_dict["spec"]["config"],
+                                          _return_if_not_skipped)
 
         connector_yaml = yaml.dump(connector_dict)
         connector_temp_file = create_temp_file(connector_yaml)
@@ -92,3 +91,10 @@ def delete(connector, namespace):
 
 def alter(config_files, cluster, namespace):
     pass
+
+
+def _return_if_not_skipped(property_item):
+    if property_item[0] not in CONNECTOR_SKIPPED_PROPERTIES:
+        return property_item
+    else:
+        return None

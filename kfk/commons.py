@@ -31,7 +31,7 @@ def delete_last_applied_configuration(resource_dict):
         del resource_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
 
 
-def add_resource_kv_config(config, dict_part, *converters):
+def add_kv_config_to_resource(config, dict_part, *converters):
     if type(config) is tuple or type(config) is list:
         for config_str in config:
             for converter in converters:
@@ -43,6 +43,14 @@ def add_resource_kv_config(config, dict_part, *converters):
             config = converter(config)
         config_list = get_kv_config_list(config)
         dict_part[config_list[0]] = convert_string_to_type(config_list[1])
+
+
+def add_properties_config_to_resource(properties, dict_part, *converters):
+    for property_item in properties.items():
+        for converter in converters:
+            property_item = converter(property_item)
+            if property_item is not None:
+                dict_part[property_item[0]] = convert_string_to_type(property_item[1].data)
 
 
 def get_kv_config_list(config_str):

@@ -135,4 +135,4 @@ def _add_config_if_exists(config, topic_dict):
     if len(config) > 0:
         if topic_dict["spec"].get("config") is None:
             topic_dict["spec"]["config"] = {}
-        add_resource_kv_config(config, topic_dict["spec"]["config"])
+        add_kv_config_to_resource(config, topic_dict["spec"]["config"])

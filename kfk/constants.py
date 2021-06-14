@@ -14,6 +14,7 @@ CONNECT_OUTPUT_TYPE_DOCKER = "docker"
 EXTENSION_TAR_GZ = ".tar.gz"
 EXTENSION_JAR = ".jar"
 EXTENSION_ZIP = ".zip"
+TRUE = "true"
 
 
 class SpecialTexts:

@@ -84,7 +84,7 @@ def create(user, authentication_type, quota, cluster, namespace):
         if len(quota) > 0:
             if user_dict["spec"].get("quotas") is None:
                 user_dict["spec"]["quotas"] = {}
-            add_resource_kv_config(quota, user_dict["spec"]["quotas"])
+            add_kv_config_to_resource(quota, user_dict["spec"]["quotas"])
 
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
@@ -139,7 +139,7 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
     if len(quota_tuple) > 0:
         if user_dict["spec"].get("quotas") is None:
             user_dict["spec"]["quotas"] = {}
-        add_resource_kv_config(quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
+        add_kv_config_to_resource(quota_tuple, user_dict["spec"]["quotas"], snake_to_camel_case)
 
     if len(delete_quota_tuple) > 0:
         if user_dict["spec"].get("quotas") is not None:

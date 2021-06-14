@@ -1,6 +1,8 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaConnect
 metadata:
+  annotations:
+    strimzi.io/use-connector-resources: 'true'
   name: my-connect-cluster
 spec:
   bootstrapServers: my-cluster-kafka-bootstrap:9092
@@ -19,15 +21,15 @@ spec:
         url: https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
       name: connector-2
   config:
-    config.storage.replication.factor: '1'
+    config.storage.replication.factor: 1
     config.storage.topic: connect-cluster-configs
     key.converter: org.apache.kafka.connect.json.JsonConverter
-    key.converter.schemas.enable: 'true'
-    offset.storage.replication.factor: '1'
+    key.converter.schemas.enable: true
+    offset.storage.replication.factor: 1
     offset.storage.topic: connect-cluster-offsets
-    status.storage.replication.factor: '1'
+    status.storage.replication.factor: 1
     status.storage.topic: connect-cluster-status
     value.converter: org.apache.kafka.connect.json.JsonConverter
-    value.converter.schemas.enable: 'true'
+    value.converter.schemas.enable: true
   replicas: 3
   version: 2.8.0

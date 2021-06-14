@@ -136,4 +136,4 @@ def _add_config_if_exists(config, cluster_dict):
     if len(config) > 0:
         if cluster_dict["spec"]["kafka"].get("config") is None:
             cluster_dict["spec"]["kafka"]["config"] = {}
-        add_resource_kv_config(config, cluster_dict["spec"]["kafka"]["config"])
+        add_kv_config_to_resource(config, cluster_dict["spec"]["kafka"]["config"])

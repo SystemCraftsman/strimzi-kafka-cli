@@ -2,7 +2,7 @@ import click
 import os
 import yaml
 
-from kfk.commands.main import kfk
+from kfk.commands.connect import connect
 from kfk.commons import *
 from kfk.config import *
 from kfk.messages import Errors
@@ -31,13 +31,13 @@ CONNECT_SKIPPED_PROPERTIES = (
                    '|jsonpath-file.')
 @click.option('--list', 'is_list', help='List all available clusters.', required=True, is_flag=True)
 @click.option('--cluster', help='Connect cluster name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
-@kfk.command()
-def connect(cluster, is_list, is_create, replicas, registry_username, registry_password, config_files, is_describe,
-            is_delete, is_alter, output, namespace, is_yes):
-    """Creates, alters, deletes, describes Kafka Connect cluster(s) or its connectors."""
+@connect.command()
+def clusters(cluster, is_list, is_create, replicas, registry_username, registry_password, config_files, is_describe,
+             is_delete, is_alter, output, namespace, is_yes):
+    """Creates, alters, deletes, describes Kafka Connect cluster(s)"""
     if is_list:
         list(namespace)
-    if is_create:
+    elif is_create:
         create(cluster, replicas, registry_username, registry_password, config_files, namespace, is_yes)
     elif is_describe:
         describe(cluster, output, namespace)
@@ -53,7 +53,8 @@ def list(namespace):
     os.system(Kubectl().get().kafkaconnects().namespace(namespace).build())
 
 
-def create(cluster, replicas, registry_username, registry_password, config_files, namespace, is_yes):
+def create(cluster, replicas, registry_username, registry_password, config_files, namespace,
+           is_yes):
     if cluster is not None:
         if len(config_files) == 0:
             raise click.ClickException(Errors.CONFIG_FILE_SHOULD_BE_PROVIDED)
@@ -63,6 +64,9 @@ def create(cluster, replicas, registry_username, registry_password, config_files
             cluster_dict = yaml.full_load(file)
 
             cluster_dict["metadata"]["name"] = cluster
+
+            cluster_dict["metadata"]["annotations"] = {}
+            cluster_dict["metadata"]["annotations"]["strimzi.io/use-connector-resources"] = TRUE
 
             if replicas is not None:
                 cluster_dict["spec"]["replicas"] = replicas
@@ -96,9 +100,8 @@ def create(cluster, replicas, registry_username, registry_password, config_files
 
             cluster_dict["spec"]["config"] = {}
 
-            for property_item in connect_properties.items():
-                if property_item[0] not in CONNECT_SKIPPED_PROPERTIES:
-                    cluster_dict["spec"]["config"][property_item[0]] = property_item[1].data
+            add_properties_config_to_resource(connect_properties, cluster_dict["spec"]["config"],
+                                              _return_if_not_skipped)
 
             cluster_yaml = yaml.dump(cluster_dict)
             cluster_temp_file = create_temp_file(cluster_yaml)
@@ -181,9 +184,8 @@ def alter(cluster, replicas, config_files, namespace):
                 cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
             cluster_dict["spec"]["config"] = {}
 
-            for property_item in connect_properties.items():
-                if property_item[0] not in CONNECT_SKIPPED_PROPERTIES:
-                    cluster_dict["spec"]["config"][property_item[0]] = property_item[1].data
+            add_properties_config_to_resource(connect_properties, cluster_dict["spec"]["config"],
+                                              _return_if_not_skipped)
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -193,6 +195,13 @@ def alter(cluster, replicas, config_files, namespace):
         cluster_temp_file.close()
     else:
         os.system(Kubectl().edit().kafkaconnects(cluster).namespace(namespace).build())
+
+
+def _return_if_not_skipped(property_item):
+    if property_item[0] not in CONNECT_SKIPPED_PROPERTIES:
+        return property_item
+    else:
+        return None
 
 
 def _get_plugin_type(plugin_url):
