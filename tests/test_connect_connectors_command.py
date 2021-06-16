@@ -81,3 +81,27 @@ class TestKfkConnectors(TestCase):
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connector_yaml == result_connector_yaml
+
+    def test_alter_connector_without_config_file(self):
+        result = self.runner.invoke(connect,
+                                    ['connectors', '--alter', '-c', self.cluster, '-n', self.namespace])
+
+        assert result.exit_code == 2
+
+    @mock.patch('kfk.commands.connect.connectors.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.commands.connect.connectors.os')
+    def test_alter_connector(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
+        with open(r'files/yaml/kafka-connect-connector-twitter_with_config_change.yaml') as file:
+            expected_connector_yaml = file.read()
+            mock_get_resource_yaml.return_value = expected_connector_yaml
+
+            result = self.runner.invoke(connect,
+                                        ['connectors', '--alter',
+                                         'files/twitter_connector_with_config_change.properties', '-c',
+                                         self.cluster, '-n', self.namespace])
+
+            assert result.exit_code == 0
+
+            result_connector_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_connector_yaml == result_connector_yaml

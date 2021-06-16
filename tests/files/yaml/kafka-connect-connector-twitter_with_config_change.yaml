@@ -1,0 +1,18 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    strimzi.io/cluster: my-connect-cluster
+  name: twitter-source-connector
+spec:
+  class: com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
+  config:
+    filter.keywords: strimzi
+    kafka.delete.topic: connect-twitter-delete
+    kafka.status.topic: connect-twitter-status
+    process.deletes: false
+    twitter.oauth.accessToken: anaccesstoken
+    twitter.oauth.accessTokenSecret: anaccesstokensecret
+    twitter.oauth.consumerKey: aconsumerkey
+    twitter.oauth.consumerSecret: aconsumersecret
+  tasksMax: 2
