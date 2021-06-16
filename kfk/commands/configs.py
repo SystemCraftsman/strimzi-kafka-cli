@@ -20,7 +20,7 @@ from kfk.option_extensions import NotRequiredIf
 @click.option('--alter', help='Alter the configuration for the entity.', is_flag=True)
 @click.option('--native', help='List configs for the given entity natively.', is_flag=True)
 @click.option('--describe', help='List configs for the given entity.', is_flag=True)
-@click.option('--entity-name', help='Name of entity', required=True, cls=NotRequiredIf, not_required_if=['native'])
+@click.option('--entity-name', help='Name of entity', required=True, cls=NotRequiredIf, options=['native'])
 @click.option('--entity-type', help='Type of entity (topics/users/brokers)',
               type=click.Choice(['topics', 'users', 'brokers'], case_sensitive=True))
 @kfk.command()
@@ -40,7 +40,8 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
         elif entity_type == "brokers":
             if native:
                 _describe_natively(entity_type, entity_name, cluster, namespace)
-                stream = get_resource_as_stream("configmap", cluster + "-kafka-config", namespace)
+                stream = get_resource_as_stream("configmap", resource_name=cluster + "-kafka-config",
+                                                namespace=namespace)
                 config_dict = yaml.full_load(stream)
                 config_data = get_list_by_split_string(config_dict["data"]["server.config"],
                                                        SpecialTexts.BROKER_CONFIG_FILE_USER_CONFIG_HEADER)[1]
@@ -56,7 +57,7 @@ def configs(entity_type, entity_name, describe, native, alter, add_config, delet
             topics.alter(entity_name, None, None, add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "users":
             users.alter(entity_name, None, None, False, False, tuple(), None, None, None, None, None,
-                                add_config_list, delete_config_list, cluster, namespace)
+                        add_config_list, delete_config_list, cluster, namespace)
         elif entity_type == "brokers":
             clusters.alter(entity_name, None, None, add_config_list, delete_config_list, namespace)
     else:

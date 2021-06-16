@@ -25,19 +25,15 @@ class TestKfkUsers(TestCase):
             Kubectl().get().kafkausers().label("strimzi.io/cluster={cluster}").namespace(self.namespace).build().format(
                 cluster=self.cluster))
 
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_describe_user(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_describe_user(self, mock_os):
         result = self.runner.invoke(kfk, ['users', '--describe', '--user', self.user, '-c', self.cluster, '-n',
                                           self.namespace])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build())
 
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_describe_user_output_yaml(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_describe_user_output_yaml(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['users', '--describe', '--user', self.user, '-c', self.cluster, '-n',
                                      self.namespace, '-o',
@@ -78,10 +74,8 @@ class TestKfkUsers(TestCase):
                                      '--authorization-type', 'auth', '-c', self.cluster, '-n', self.namespace])
         assert result.exit_code == 2
 
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_delete_user(self, mock_os, mock_resource_exists):
-        mock_resource_exists.return_value = True
+    def test_delete_user(self, mock_os):
         result = self.runner.invoke(kfk,
                                     ['users', '--delete', '--user', self.user, '-c', self.cluster, '-n',
                                      self.namespace])
@@ -90,11 +84,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_with_no_params(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                       mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_with_no_params(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             expected_user_yaml = file.read()
             mock_get_resource_yaml.return_value = expected_user_yaml
@@ -109,11 +100,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authentication(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_for_authentication(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -130,12 +118,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                          mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_user_for_authorization(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -153,12 +137,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization_none(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                          mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_user_for_authorization_none(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -176,13 +156,9 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization_with_two_acl_operation(self, mock_os, mock_resource_exists,
-                                                                 mock_get_resource_yaml,
+    def test_alter_user_for_authorization_with_two_acl_operation(self, mock_os, mock_get_resource_yaml,
                                                                  mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -202,13 +178,9 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization_none_with_two_acl_operation(self, mock_os, mock_resource_exists,
-                                                                 mock_get_resource_yaml,
-                                                                 mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_user_for_authorization_none_with_two_acl_operation(self, mock_os, mock_get_resource_yaml,
+                                                                      mock_create_temp_file):
         with open(r'files/yaml/user_with_authorization_with_two_topic_acls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -228,13 +200,9 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization_delete_acls_for_one_operation(self, mock_os, mock_resource_exists,
-                                                                 mock_get_resource_yaml,
-                                                                 mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_user_for_authorization_delete_acls_for_one_operation(self, mock_os, mock_get_resource_yaml,
+                                                                        mock_create_temp_file):
         with open(r'files/yaml/user_with_authorization_with_three_topic_acls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -254,13 +222,9 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_authorization_delete_acls_for_two_operation(self, mock_os, mock_resource_exists,
-                                                                 mock_get_resource_yaml,
-                                                                 mock_create_temp_file):
-        mock_resource_exists.return_value = True
-
+    def test_alter_user_for_authorization_delete_acls_for_two_operation(self, mock_os, mock_get_resource_yaml,
+                                                                        mock_create_temp_file):
         with open(r'files/yaml/user_with_authorization_with_three_topic_acls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -280,10 +244,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml, mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_for_quota(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -301,11 +263,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_for_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                       mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_for_two_quotas(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_authentication_tls.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -324,11 +283,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_with_two_quotas_delete_one_quota(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                         mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_with_two_quotas_delete_one_quota(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_two_quotas.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -346,11 +302,8 @@ class TestKfkUsers(TestCase):
 
     @mock.patch('kfk.commands.users.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
-    @mock.patch('kfk.commands.users.cluster_resource_exists')
     @mock.patch('kfk.commands.users.os')
-    def test_alter_user_with_two_quotas_delete_two_quotas(self, mock_os, mock_resource_exists, mock_get_resource_yaml,
-                                                          mock_create_temp_file):
-        mock_resource_exists.return_value = True
+    def test_alter_user_with_two_quotas_delete_two_quotas(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/user_with_two_quotas.yaml') as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml

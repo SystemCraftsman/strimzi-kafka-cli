@@ -5,20 +5,46 @@ class NotRequiredIf(click.Argument):
     # TODO: Refactor here
 
     def __init__(self, *args, **kwargs):
-        self.not_required_if = kwargs.pop('not_required_if')
-        assert self.not_required_if, "'not_required_if' parameter required"
+        self.arguments = kwargs.pop('arguments')
+        assert self.arguments, "'arguments' parameter required"
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        control_options_exist = False
+        control_arguments_exist = False
 
-        for not_required_if in self.not_required_if:
-            control_options_exist = not_required_if in opts
-            if control_options_exist is True:
+        for arguments in self.arguments:
+            control_arguments_exist = arguments in opts
+            if control_arguments_exist is True:
                 break
 
-        if control_options_exist:
+        if control_arguments_exist:
             self.required = None
 
         return super(NotRequiredIf, self).handle_parse_result(
+            ctx, opts, args)
+
+
+class RequiredIf(click.Argument):
+
+    # TODO: Refactor here
+
+    def __init__(self, *args, **kwargs):
+        self.arguments = kwargs.pop('arguments')
+        assert self.arguments, "'arguments' parameter required"
+        super(RequiredIf, self).__init__(*args, **kwargs)
+
+    def handle_parse_result(self, ctx, opts, args):
+        control_arguments_exist = False
+
+        for arguments in self.arguments:
+            control_arguments_exist = arguments in opts
+            if control_arguments_exist is True:
+                break
+
+        if control_arguments_exist:
+            self.required = True
+        else:
+            self.required = None
+
+        return super(RequiredIf, self).handle_parse_result(
             ctx, opts, args)

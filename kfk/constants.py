@@ -26,3 +26,5 @@ class SpecialTexts:
     CONNECTOR_NAME = "name"
     CONNECTOR_TASKS_MAX = "tasks.max"
     CONNECTOR_CLASS = "connector.class"
+    OPERATOR_ROLE_BINDING = "RoleBinding"
+    OPERATOR_MY_PROJECT = "myproject"

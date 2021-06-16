@@ -4,6 +4,7 @@ from kfk.commands.main import kfk
 from kfk.commons import print_missing_options_for_command, create_temp_file
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
+from kfk.constants import SpecialTexts
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -18,9 +19,9 @@ def operator(is_install, is_uninstall, namespace):
             for file_name in files:
                 file_path = os.path.join(directory_name, file_name)
 
-                if "RoleBinding" in file_name:
+                if SpecialTexts.OPERATOR_ROLE_BINDING in file_name:
                     with open(file_path) as file:
-                        stream = file.read().replace("myproject", namespace)
+                        stream = file.read().replace(SpecialTexts.OPERATOR_MY_PROJECT, namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
                 os.system(Kubectl().apply().from_file(file_path).namespace(namespace).build())
@@ -31,9 +32,9 @@ def operator(is_install, is_uninstall, namespace):
             for file_name in files:
                 file_path = os.path.join(directory_name, file_name)
 
-                if "RoleBinding" in file_name:
+                if SpecialTexts.OPERATOR_ROLE_BINDING in file_name:
                     with open(file_path) as file:
-                        stream = file.read().replace("myproject", namespace)
+                        stream = file.read().replace(SpecialTexts.OPERATOR_MY_PROJECT, namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
                 os.system(Kubectl().delete().from_file(file_path).namespace(namespace).build())

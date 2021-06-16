@@ -19,10 +19,10 @@ from kfk.utils import snake_to_camel_case
               help="The type of the resource pattern or <ANY|MATCH|LITERAL|PREFIXED> pattern filter. When adding "
                    "acls, this should be a specific pattern type, e.g. 'literal' or 'prefixed'. (default: literal)",
               default='literal')
-@click.option('--resource-name', help='ACL resource name.', cls=RequiredIf, required_if=['add_acl', 'delete_acl'])
+@click.option('--resource-name', help='ACL resource name.', cls=RequiredIf, options=['add_acl', 'delete_acl'])
 @click.option('--resource-type', help='ACL resource type.',
               type=click.Choice(['topic', 'group', 'cluster'], case_sensitive=True), cls=RequiredIf,
-              required_if=['add_acl', 'delete_acl'])
+              options=['add_acl', 'delete_acl'])
 @click.option('--type', help='Operation type for ACL. (default: allow)',
               type=click.Choice(['allow', 'deny'], case_sensitive=True), default='allow')
 @click.option('--host', help='Host which User will have access. (default: *)', default='*')
@@ -40,10 +40,10 @@ from kfk.utils import snake_to_camel_case
 @click.option('--describe', 'is_describe', help='List details for the given user.', is_flag=True)
 @click.option('--authentication-type', help='Authentication type for user',
               type=click.Choice(['tls', 'scram-sha-512'], case_sensitive=True), cls=RequiredIf,
-              required_if=['is_create'])
+              options=['is_create'])
 @click.option('--create', 'is_create', help='Create a new user.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available users.', is_flag=True)
-@click.option('--user', help='User Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
+@click.option('--user', help='User Name', required=True, cls=NotRequiredIf, options=['is_list'])
 @kfk.command()
 def users(user, is_list, is_create, authentication_type, is_describe, output, is_delete, is_alter, authorization_type,
           add_acl, delete_acl, operation_tuple, host, type, resource_type, resource_name, resource_pattern_type,
@@ -109,8 +109,10 @@ def delete(cluster, namespace, user):
 
 def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, type,
           resource_type, resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace):
-    stream = get_resource_as_stream("kafkausers", user, namespace)
+    stream = get_resource_as_stream("kafkausers", user, cluster, namespace)
     user_dict = yaml.full_load(stream)
+
+    delete_last_applied_configuration(user_dict)
 
     if authentication_type is not None:
         if user_dict["spec"].get("authentication") is None:
@@ -133,8 +135,6 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         if user_dict["spec"].get("authorization") is not None:
             _delete_acl_option(user_dict, operation_tuple, host, type, resource_type, resource_name,
                                resource_pattern_type)
-
-    delete_last_applied_configuration(user_dict)
 
     if len(quota_tuple) > 0:
         if user_dict["spec"].get("quotas") is None:

@@ -26,7 +26,7 @@ from kfk.messages import Messages
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
 @click.option('--list', 'is_list', help='List all available clusters.', required=True, is_flag=True)
-@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
+@click.option('--cluster', help='Cluster Name', required=True, cls=NotRequiredIf, options=['is_list'])
 @kfk.command()
 def clusters(cluster, is_list, is_create, replicas, zk_replicas, is_describe, is_delete, is_alter, config,
              delete_config, output, namespace, is_yes):
@@ -95,7 +95,7 @@ def delete(cluster, namespace, is_yes):
 
 def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
     if len(config) > 0 or len(delete_config) > 0 or replicas is not None or zk_replicas is not None:
-        stream = get_resource_as_stream("kafkas", cluster, namespace)
+        stream = get_resource_as_stream("kafkas", resource_name=cluster, namespace=namespace)
         cluster_dict = yaml.full_load(stream)
 
         delete_last_applied_configuration(cluster_dict)

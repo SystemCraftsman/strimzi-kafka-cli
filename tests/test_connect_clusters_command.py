@@ -26,6 +26,12 @@ class TestKfkConnect(TestCase):
         assert result.exit_code == 0
         assert "Missing options: kfk connect" in result.output
 
+    def test_create_custer_without_config_file(self):
+        result = self.runner.invoke(connect,
+                                    ['clusters', '--create', '--cluster', self.cluster, '-n', self.namespace])
+
+        assert result.exit_code == 2
+
     @mock.patch('kfk.commands.connect.clusters.click.prompt')
     @mock.patch('kfk.commands.connect.clusters.create_temp_file')
     @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
@@ -51,8 +57,8 @@ class TestKfkConnect(TestCase):
         mock_os.system.assert_called_with(
             Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
-                self.namespace).build().format(
-                username=self.registry_userpass, password=self.registry_userpass, registry_server=self.registry_server))
+                self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
+                                               registry_server=self.registry_server))
 
     @mock.patch('kfk.commands.connect.clusters.click.prompt')
     @mock.patch('kfk.commands.connect.clusters.create_temp_file')

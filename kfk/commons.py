@@ -10,7 +10,8 @@ from kfk.constants import *
 from subprocess import call
 from jproperties import Properties
 
-#TODO: Message string to messages.py
+
+# TODO: Message string to messages.py
 
 def print_missing_options_for_command(command_str):
     click.echo("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
@@ -28,7 +29,7 @@ def print_resource_not_found_msg(namespace):
 
 def delete_last_applied_configuration(resource_dict):
     if "annotations" in resource_dict["metadata"]:
-        del resource_dict["metadata"]["annotations"]["kubectl.kubernetes.io/last-applied-configuration"]
+        resource_dict["metadata"]["annotations"].pop("kubectl.kubernetes.io/last-applied-configuration", None)
 
 
 def add_kv_config_to_resource(config, dict_part, *converters):
@@ -75,24 +76,26 @@ def delete_resource_config(config, dict_part, *converters):
         del dict_part[config]
 
 
-def cluster_resource_exists(resource_type, resource_name, cluster, namespace):
-    return resource_name in os.popen(
-        Kubectl().get().resource(resource_type).label("strimzi.io/cluster={cluster}").namespace(
-            namespace).build().format(cluster=cluster)).read()
+def resource_exists(resource_type=None, resource_name=None, cluster=None, namespace=None):
+    command = Kubectl().get().resource(resource_type).namespace(namespace)
+
+    if cluster is not None:
+        command = command.label(f"strimzi.io/cluster={cluster}")
+
+    return resource_name in os.popen(command.build()).read()
 
 
-def resource_exists(resource_type, resource_name, namespace):
-    return resource_name in os.popen(
-        Kubectl().get().resource(resource_type).namespace(namespace).build()).read()
+def get_resource_yaml(resource_type=None, resource_name=None, cluster=None, namespace=None):
+    command = Kubectl().get().resource(resource_type, resource_name).namespace(namespace).output("yaml")
+
+    if cluster is not None:
+        command = command.label(f"strimzi.io/cluster={cluster}")
+
+    return os.popen(command.build()).read()
 
 
-def get_resource_yaml(resource_type, resource_name, namespace):
-    return os.popen(
-        Kubectl().get().resource(resource_type, resource_name).namespace(namespace).output("yaml").build()).read()
-
-
-def get_resource_as_stream(resource_type, resource_name, namespace):
-    resource_yaml = get_resource_yaml(resource_type, resource_name, namespace)
+def get_resource_as_stream(resource_type=None, resource_name=None, cluster=None, namespace=None):
+    resource_yaml = get_resource_yaml(resource_type, resource_name, cluster, namespace)
 
     if not resource_yaml:
         raise click.exceptions.Exit(1)

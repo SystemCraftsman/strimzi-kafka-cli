@@ -23,11 +23,11 @@ from kfk.constants import COLON
 @click.option('--deny-principal',
               help='principal is in principalType:name format. By default anyone not added through --allow-principal '
                    'is denied access. You only need to use this option as negation to already allowed set.',
-              required=True, cls=NotRequiredIf, not_required_if=['list', 'allow_principal'])
+              required=True, cls=NotRequiredIf, options=['list', 'allow_principal'])
 @click.option('--allow-principal',
               help='principal is in principalType:name principal format. Note that principalType must be supported '
                    'by the Authorizer being used.', required=True, cls=NotRequiredIf,
-              not_required_if=['list', 'deny_principal'])
+              options=['list', 'deny_principal'])
 @click.option('--add', help='Indicates you are trying to add ACLs.', is_flag=True)
 @click.option('--group', help='Consumer Group ACLs.')
 @click.option('--cluster', help='Cluster ACLs.')

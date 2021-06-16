@@ -22,18 +22,18 @@ from kfk.constants import *
 @click.option('--command-config',
               help='Property file containing configs to be config property file passed to Admin Client.')
 @click.option('--native', help='List details for the given topic natively.', is_flag=True, cls=RequiredIf,
-              required_if=['is_describe'])
+              options=['is_describe'])
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
 @click.option('--describe', 'is_describe', help='List details for the given topic.', is_flag=True)
 @click.option('--replication-factor', help='The replication factor for each partition in the topic being created.',
-              cls=RequiredIf, required_if=['is_create'], type=int)
+              cls=RequiredIf, options=['is_create'], type=int)
 @click.option('--partitions', help='The number of partitions for the topic being created or altered.', cls=RequiredIf,
-              required_if=['is_create'], type=int)
+              options=['is_create'], type=int)
 @click.option('--create', 'is_create', help='Create a new topic.', is_flag=True)
 @click.option('--list', 'is_list', help='List all available topics.', is_flag=True)
-@click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, not_required_if=['is_list'])
+@click.option('--topic', help='Topic Name', required=True, cls=NotRequiredIf, options=['is_list'])
 @kfk.command()
 def topics(topic, is_list, is_create, partitions, replication_factor, is_describe, output, native, command_config,
            is_delete, is_alter, config, delete_config, cluster, namespace):
@@ -104,16 +104,16 @@ def delete(topic, namespace):
 
 
 def alter(topic, partitions, replication_factor, config, delete_config, cluster, namespace):
-    stream = get_resource_as_stream("kafkatopics", topic, namespace)
+    stream = get_resource_as_stream("kafkatopics", topic, cluster, namespace)
     topic_dict = yaml.full_load(stream)
+
+    delete_last_applied_configuration(topic_dict)
 
     if partitions is not None:
         topic_dict["spec"]["partitions"] = int(partitions)
 
     if replication_factor is not None:
         topic_dict["spec"]["replicas"] = int(replication_factor)
-
-    delete_last_applied_configuration(topic_dict)
 
     _add_config_if_exists(config, topic_dict)
 
