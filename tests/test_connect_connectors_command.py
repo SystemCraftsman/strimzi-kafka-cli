@@ -14,7 +14,7 @@ class TestKfkConnectors(TestCase):
         self.runner = CliRunner()
         self.cluster = "my-connect-cluster"
         self.namespace = "kafka"
-        self.connector_config_file = "files/twitter_connector.properties"
+        self.connector_config_file = "files/twitter-connector.properties"
         self.connector = "twitter-source-connector"
 
     def test_no_option(self):

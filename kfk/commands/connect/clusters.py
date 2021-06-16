@@ -10,6 +10,7 @@ from kfk.constants import *
 from kfk.messages import Messages
 from kfk.utils import is_valid_url
 from kfk import argument_extensions, option_extensions
+from kfk.commands.connect import connectors
 
 CONNECT_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECT_BOOTSTRAP_SERVERS, SpecialTexts.CONNECT_OUTPUT_IMAGE, SpecialTexts.CONNECT_PLUGIN_URL,
@@ -125,9 +126,13 @@ def create(cluster, replicas, registry_username, registry_password, config_file,
                     SpecialTexts.CONNECT_OUTPUT_IMAGE).data))
 
             if return_code == 0:
-                os.system(
+                return_code = os.system(
                     Kubectl().create().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                         cluster_temp_file_path=cluster_temp_file.name))
+                if return_code == 0:
+                    for connector_config_file in connector_config_files:
+                        connectors.create(connector_config_file, cluster, namespace)
+
         cluster_temp_file.close()
 
 

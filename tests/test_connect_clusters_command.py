@@ -15,8 +15,8 @@ class TestKfkConnect(TestCase):
         self.cluster = "my-connect-cluster"
         self.namespace = "kafka"
         self.connect_config_file = "files/connect.properties"
-        self.connector_config_file_1 = "files/twitter_connector.properties"
-        self.connector_config_file_2 = "files/connector2.properties"
+        self.connector_config_file_1 = "files/twitter-connector.properties"
+        self.connector_config_file_2 = "files/file-stream-connector.properties"
         self.registry_userpass = "someuserpass"
         self.registry_server = "quay.io/systemcraftsman/test-connect-cluster:latest"
         self.push_secret_name = f"{self.cluster}-push-secret"
@@ -59,6 +59,24 @@ class TestKfkConnect(TestCase):
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
                 self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
                                                registry_server=self.registry_server))
+
+    @mock.patch('kfk.commands.connect.clusters.click.prompt')
+    @mock.patch('kfk.commands.connect.clusters.create_temp_file')
+    @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
+    @mock.patch('kfk.commands.connect.clusters.click.confirm')
+    @mock.patch('kfk.commands.connect.clusters.os')
+    def test_create_cluster_with_command_error(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor, mock_create_temp_file,
+                            mock_click_prompt):
+        mock_click_confirm.return_value = True
+        mock_click_prompt.return_value = self.registry_userpass
+        mock_os.system.return_value = 1
+
+        result = self.runner.invoke(connect,
+                                    ['clusters', '--create', '--cluster', self.cluster, self.connect_config_file,
+                                     '-n', self.namespace])
+        assert result.exit_code == 0
+
+        assert mock_os.system.call_count == 1
 
     @mock.patch('kfk.commands.connect.clusters.click.prompt')
     @mock.patch('kfk.commands.connect.clusters.create_temp_file')
@@ -121,11 +139,9 @@ class TestKfkConnect(TestCase):
                                      '-n', self.namespace, '-y'])
         assert result.exit_code == 0
 
-        result_connect_yaml = mock_create_temp_file.call_args[0][0]
-
         with open(r'files/yaml/kafka-connect.yaml') as file:
             expected_connect_yaml = file.read()
-
+            result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
 
         mock_os.system.assert_called_with(
@@ -149,11 +165,9 @@ class TestKfkConnect(TestCase):
                                      self.connect_config_file, '-n', self.namespace])
         assert result.exit_code == 0
 
-        result_connect_yaml = mock_create_temp_file.call_args[0][0]
-
         with open(r'files/yaml/kafka-connect_with_three_replicas.yaml') as file:
             expected_connect_yaml = file.read()
-
+            result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
 
         mock_os.system.assert_called_with(
@@ -162,35 +176,80 @@ class TestKfkConnect(TestCase):
                 self.namespace).build().format(
                 username=self.registry_userpass, password=self.registry_userpass, registry_server=self.registry_server))
 
+    @mock.patch('kfk.commands.connect.connectors.create_temp_file')
+    @mock.patch('kfk.commands.connect.connectors.os')
     @mock.patch('kfk.commands.connect.clusters.click.prompt')
+    @mock.patch('kfk.commands.connect.clusters.create_temp_file')
     @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
     @mock.patch('kfk.commands.connect.clusters.click.confirm')
     @mock.patch('kfk.commands.connect.clusters.os')
     def test_create_cluster_with_connector_config(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
-                                                  mock_click_prompt):
+                                                  mock_create_temp_file, mock_click_prompt, mock_os_connectors,
+                                                  mock_create_temp_file_connectors):
         mock_click_confirm.return_value = True
         mock_click_prompt.return_value = self.registry_userpass
+        mock_os.system.return_value = 0
 
         result = self.runner.invoke(connect,
                                     ['clusters', '--create', '--cluster', self.cluster, self.connect_config_file,
                                      self.connector_config_file_1, '-n', self.namespace])
         assert result.exit_code == 0
 
+        with open(r'files/yaml/kafka-connect.yaml') as file:
+            expected_connect_yaml = file.read()
+            result_connect_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_connect_yaml == result_connect_yaml
+
+        mock_os.system.assert_any_call(
+            Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
+                                      "--docker-password={password} --docker-server={registry_server}").namespace(
+                self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
+                                               registry_server=self.registry_server))
+
+        with open(r'files/yaml/kafka-connect-connector-twitter.yaml') as file:
+            expected_connector_yaml = file.read()
+            result_connector_yaml = mock_create_temp_file_connectors.call_args[0][0]
+            assert expected_connector_yaml == result_connector_yaml
+
+    @mock.patch('kfk.commands.connect.connectors.create_temp_file')
+    @mock.patch('kfk.commands.connect.connectors.os')
     @mock.patch('kfk.commands.connect.clusters.click.prompt')
     @mock.patch('kfk.commands.connect.clusters.create_temp_file')
     @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
     @mock.patch('kfk.commands.connect.clusters.click.confirm')
     @mock.patch('kfk.commands.connect.clusters.os')
-    def test_create_cluster_with_two_connectors_config(self, mock_os, mock_click_confirm,
-                                                       mock_open_file_in_system_editor,
-                                                       mock_create_temp_file, mock_click_prompt):
+    def test_create_cluster_with_two_connectors_config(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
+                                                  mock_create_temp_file, mock_click_prompt, mock_os_connectors,
+                                                  mock_create_temp_file_connectors):
         mock_click_confirm.return_value = True
         mock_click_prompt.return_value = self.registry_userpass
+        mock_os.system.return_value = 0
 
         result = self.runner.invoke(connect,
                                     ['clusters', '--create', '--cluster', self.cluster, self.connect_config_file,
                                      self.connector_config_file_1, self.connector_config_file_2, '-n', self.namespace])
         assert result.exit_code == 0
+
+        with open(r'files/yaml/kafka-connect.yaml') as file:
+            expected_connect_yaml = file.read()
+            result_connect_yaml = mock_create_temp_file.call_args[0][0]
+            assert expected_connect_yaml == result_connect_yaml
+
+        mock_os.system.assert_any_call(
+            Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
+                                      "--docker-password={password} --docker-server={registry_server}").namespace(
+                self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
+                                               registry_server=self.registry_server))
+
+        with open(r'files/yaml/kafka-connect-connector-twitter.yaml') as file:
+            expected_connector_yaml = file.read()
+            result_connector_yaml = mock_create_temp_file_connectors.call_args_list[0][0][0]
+            assert expected_connector_yaml == result_connector_yaml
+
+        with open(r'files/yaml/kafka-connect-connector-file-stream.yaml') as file:
+            expected_connector_yaml = file.read()
+            result_connector_yaml = mock_create_temp_file_connectors.call_args_list[1][0][0]
+            assert expected_connector_yaml == result_connector_yaml
 
     @mock.patch('kfk.commands.connect.clusters.os')
     def test_list_clusters(self, mock_os):

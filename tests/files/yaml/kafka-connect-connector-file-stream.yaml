@@ -1,0 +1,12 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    strimzi.io/cluster: my-connect-cluster
+  name: local-file-source
+spec:
+  class: FileStreamSource
+  config:
+    file: test.txt
+    topic: connect-test
+  tasksMax: 1
