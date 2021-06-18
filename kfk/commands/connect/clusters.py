@@ -197,7 +197,7 @@ def alter(cluster, replicas, config_file, namespace):
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
         os.system(
-            Kubectl().apply().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
+            Kubectl().replace().from_file("{cluster_temp_file_path}").namespace(namespace).build().format(
                 cluster_temp_file_path=cluster_temp_file.name))
         cluster_temp_file.close()
     else:

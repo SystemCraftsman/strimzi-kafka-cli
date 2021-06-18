@@ -102,6 +102,8 @@ def alter(config_file, cluster, namespace):
     connector_dict["spec"]["class"] = connector_properties.get(SpecialTexts.CONNECTOR_CLASS).data
     connector_dict["spec"]["tasksMax"] = int(connector_properties.get(SpecialTexts.CONNECTOR_TASKS_MAX).data)
 
+    connector_dict["spec"]["config"] = {}
+
     add_properties_config_to_resource(connector_properties, connector_dict["spec"]["config"],
                                       _return_if_not_skipped)
 
@@ -109,7 +111,7 @@ def alter(config_file, cluster, namespace):
     connector_temp_file = create_temp_file(connector_yaml)
 
     os.system(
-        Kubectl().apply().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
+        Kubectl().replace().from_file("{topic_temp_file_path}").namespace(namespace).build().format(
             topic_temp_file_path=connector_temp_file.name))
 
     connector_temp_file.close()
