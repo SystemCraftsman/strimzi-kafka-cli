@@ -7,12 +7,12 @@ from pathlib import Path
 
 def _get_processor_type():
     if _is_64_bit():
-        if "arm" in os.uname().machine or "aarch" in os.uname().machine:
+        if "arm" in platform.uname().machine or "aarch" in platform.uname().machine:
             return "arm64"
         else:
             return "amd64"
     else:
-        if "arm" in os.uname().machine:
+        if "arm" in platform.uname().machine:
             return "arm"
         else:
             return "386"
