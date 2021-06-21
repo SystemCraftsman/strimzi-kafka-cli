@@ -8,6 +8,9 @@ This example is under development
 ---
 
 <!---
+
+Strimzi Operator and a cluster called `my-cluster` should be ready to use.
+
 Prereqs: a namespace named `kafka` and a kafka cluster called `my-cluster`
 
 elasticsearch installed in the namespace
@@ -25,7 +28,6 @@ kfk topics --create --topic twitter-status-connect --partitions 3 --replication-
 
 ```shell
 kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
-
 ```
 
 
@@ -61,7 +63,6 @@ my-connect-cluster-connect-8444df69c9-x7xf6   1/1     Running     0          3m4
 <!--- 
 Show them the tweet stream by consuming the twitter-status-connect topic
 -->
-
 ```shell
 kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 ```
@@ -70,9 +71,17 @@ kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 <!--- 
 Alter the connect cluster to add another connector resource. this will be camel elasticsearch connector
 -->
+```shell
+kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect_v2.properties
+```
 
 <!--- 
 Add another connector with kfk connect connector
 -->
+```shell
+kfk connect connectors --create -c my-connect-cluster -n kafka camel_elasticsearch_connector.properties
+```
 
-
+<!--- 
+Open elasticsearch and show them some newly indexed tweets
+-->
