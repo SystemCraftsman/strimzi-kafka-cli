@@ -9,6 +9,10 @@ This example is under development
 
 <!---
 Prereqs: a namespace named `kafka` and a kafka cluster called `my-cluster`
+
+elasticsearch installed in the namespace
+
+create a repo called `demo-connect-cluster` in a docker repository, Int this example we are going to use `quay.io/systemcraftsman/demo-connect-cluster`
 -->
 
 <!--- 
@@ -61,3 +65,14 @@ Show them the tweet stream by consuming the twitter-status-connect topic
 ```shell
 kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 ```
+
+
+<!--- 
+Alter the connect cluster to add another connector resource. this will be camel elasticsearch connector
+-->
+
+<!--- 
+Add another connector with kfk connect connector
+-->
+
+

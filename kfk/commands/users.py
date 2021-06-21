@@ -109,7 +109,7 @@ def delete(cluster, namespace, user):
 
 def alter(user, authentication_type, authorization_type, add_acl, delete_acl, operation_tuple, host, type,
           resource_type, resource_name, resource_pattern_type, quota_tuple, delete_quota_tuple, cluster, namespace):
-    stream = get_resource_as_stream("kafkausers", user, cluster, namespace)
+    stream = get_resource_as_stream("kafkausers", resource_name=user, namespace=namespace)
     user_dict = yaml.full_load(stream)
 
     delete_last_applied_configuration(user_dict)

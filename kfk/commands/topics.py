@@ -104,7 +104,7 @@ def delete(topic, namespace):
 
 
 def alter(topic, partitions, replication_factor, config, delete_config, cluster, namespace):
-    stream = get_resource_as_stream("kafkatopics", topic, cluster, namespace)
+    stream = get_resource_as_stream("kafkatopics", resource_name=topic, namespace=namespace)
     topic_dict = yaml.full_load(stream)
 
     delete_last_applied_configuration(topic_dict)

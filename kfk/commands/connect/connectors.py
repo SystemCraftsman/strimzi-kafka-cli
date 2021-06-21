@@ -92,8 +92,9 @@ def delete(connector, namespace):
 def alter(config_file, cluster, namespace):
     connector_properties = get_properties_from_file(config_file)
 
-    stream = get_resource_as_stream("kafkaconnectors", connector_properties.get(SpecialTexts.CONNECTOR_NAME).data,
-                                    cluster, namespace)
+    stream = get_resource_as_stream("kafkaconnectors",
+                                    resource_name=connector_properties.get(SpecialTexts.CONNECTOR_NAME).data,
+                                    namespace=namespace)
 
     connector_dict = yaml.full_load(stream)
 
