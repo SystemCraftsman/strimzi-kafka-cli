@@ -1,0 +1,47 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+spec:
+  auth: {}
+  http:
+    service:
+      metadata:
+        creationTimestamp: null
+      spec: {}
+    tls:
+      certificate: {}
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+    - config:
+        node.data: true
+        node.ingest: true
+        node.master: true
+        node.store.allow_mmap: false
+        xpack.security.authc:
+          anonymous:
+            authz_exception: true
+            roles: superuser
+      count: 1
+      name: default
+      podTemplate:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app.openshift.io/runtime: elasticsearch
+        spec:
+          containers:
+            - env:
+                - name: ES_JAVA_OPTS
+                  value: '-Xms1g -Xmx1g'
+              name: elasticsearch
+              resources: {}
+  transport:
+    service:
+      metadata:
+        creationTimestamp: null
+      spec: {}
+  updateStrategy:
+    changeBudget: {}
+  version: 7.12.1

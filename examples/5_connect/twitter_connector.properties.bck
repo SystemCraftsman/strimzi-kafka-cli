@@ -13,7 +13,7 @@ filter.keywords=kafka
 kafka.status.topic=twitter-status-connect
 kafka.delete.topic=twitter-deletes-connect
 # put your own credentials here - don't share with anyone
-twitter.oauth.consumerKey=
-twitter.oauth.consumerSecret=
-twitter.oauth.accessToken=
-twitter.oauth.accessTokenSecret=
+twitter.oauth.consumerKey=OD8xEDp43zjU38OIxHqMqKeO3
+twitter.oauth.consumerSecret=MUmqjyCkbpmii7qwH9EnNWUz8NtG79fYv8Z4lJB4QRQQ9X7h4i
+twitter.oauth.accessToken=380267617-IBF0DnIb3NIcIOLKRqbRhIijGrDCX7heBLzhazdy
+twitter.oauth.accessTokenSecret=SUMN1WaiYkVMLPGd8rGQqxyt1e8Rw6niA4YrRW1GnPm2b

@@ -35,12 +35,12 @@ kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication
 Dont run this, just show them how it works. run the next
 -->
 ```shell
-kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n mabulgu-kafka-cluster connect.properties twitter_connector.properties
+kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties
 ```
 
 
 ```shell
-kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n mabulgu-kafka-cluster connect.properties twitter_connector.properties -y
+kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
 ```
 
 ```
@@ -76,12 +76,26 @@ kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect_v2.pr
 ```
 
 <!--- 
-Add another connector with kfk connect connector
+Show the connector is being built again
 -->
 ```shell
-kfk connect connectors --create -c my-connect-cluster -n kafka camel_elasticsearch_connector.properties
+watch kubectl get pods -n kafka
 ```
 
 <!--- 
-Open elasticsearch and show them some newly indexed tweets
+Add another connector with kfk connect connector
 -->
+```shell
+kfk connect connectors --create -c my-connect-cluster -n kafka camel_es_connector.properties
+```
+
+```shell
+watch "curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search | jq -r '.hits.total.value'"
+```
+
+<!--- 
+Open elasticsearch and show them some newly indexed tweets and search for some
+-->
+```shell
+curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
+```
