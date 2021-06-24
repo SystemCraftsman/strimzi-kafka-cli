@@ -2,6 +2,7 @@
 
 In the previous example we implemented TLS authentication on Strimzi Kafka cluster with Strimzi Kafka CLI. In this example, we will be continuing with enabling the ACL authorization, so that we will be able to restrict access to our topics and only allow the users or groups we want to.
 
+
 Let's first see our cluster list. 
 
 ```shell
