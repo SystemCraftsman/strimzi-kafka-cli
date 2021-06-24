@@ -152,7 +152,7 @@ Be careful while entering that because there is no mechanism that checks this pa
 In case of any problem just delete the Connect cluster with the following command and create it again:
 
 ```shell
-kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y ;
+kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ````
 
 Or you can delete/create the push secret that is created if you are familiar enough.
@@ -249,5 +249,5 @@ kfk connect connectors --delete --connector camel-elasticsearch-sink-demo -c my-
 ## Deleting Connect Cluster
 
 ```shell
-kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y ;
+kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ```
