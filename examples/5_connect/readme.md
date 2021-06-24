@@ -17,21 +17,21 @@ In this example we are going to use it with one of our Kafka Connect connectors.
 As a recommendation create the namespace first:
 
 ```shell
-oc new-project kafka
+$ oc new-project kafka
 ```
 
 Then install the Strimzi Operator if its not installed.
 You can use Strimzi CLI for this:
 
 ```shell
-kfk operator --install -n kafka
+$ kfk operator --install -n kafka
 ```
 
 Create Kafka and Elasticsearch cluster by running the `setup_example.sh` script:
 
 ```shell
-chmod +x ./scripts/setup_example.sh
-./scripts/setup_example.sh
+$ chmod +x ./scripts/setup_example.sh
+$ ./scripts/setup_example.sh
 ```
 
 This will create a Kafka cluster with 2 brokers, and an Elasticsearch cluster that's accessible through a Route.
@@ -125,11 +125,11 @@ Because we are going to need the `twitter-status-connect` and `twitter-deletes-c
 You must have remembered our `kfk topics --create` commands topics creation with Strimzi Kafka CLI:
 
 ```shell
-kfk topics --create --topic twitter-status-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
+$ kfk topics --create --topic twitter-status-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
 ```
 
 ```shell
-kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
+$ kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
 ```
 
 Now let's continue with our Connect cluster's creation.
@@ -221,7 +221,7 @@ Now lets run the Kafka Connect cluster in a way that we used to do with the trad
 In order to start a standalone Kafka Connect cluster traditionally some must be familiar with a command like the following:
 
 ```shell
-./bin/connect-standalone.sh connect.properties connector.properties
+$ ./bin/connect-standalone.sh connect.properties connector.properties
 ```
 
 The command syntax for Strimzi Kafka CLI is the same.
@@ -233,7 +233,7 @@ Don't forget to replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER
 
 
 ```shell
-kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
+$ kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
 ```
 
 ---
@@ -262,7 +262,7 @@ Be careful while entering that because there is no mechanism that checks this pa
 In case of any problem just delete the Connect cluster with the following command and create it again:
 
 ```shell
-kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
+$ kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ````
 
 Or you can delete/create the push secret that is created if you are experienced enough.
@@ -272,7 +272,7 @@ Or you can delete/create the push secret that is created if you are experienced 
 Now you can check the pods and wait till the Connect cluster pod runs without a problem.
 
 ```shell
-watch kubectl get pods -n kafka
+$ watch kubectl get pods -n kafka
 ```
 
 ```
@@ -286,7 +286,7 @@ If everything is ok with the connect cluster, now you should see some messages i
 Let's consume messages from `twitter-status-connect` topic to see if our Twitter Source Connector works.
 
 ```shell
-kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
+$ kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 ```
 
 ```
@@ -321,7 +321,7 @@ plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/downl
 Now run the `kfk connect clusters` command this time with `--alter` flag.
 
 ```shell
-kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect.properties
+$ kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect.properties
 ```
 
 ```
@@ -331,7 +331,7 @@ kafkaconnect.kafka.strimzi.io/my-connect-cluster replaced
 Observe the connector is being build again by watching the pods.
 
 ```shell
-watch kubectl get pods -n kafka
+$ watch kubectl get pods -n kafka
 ```
 
 Wait until the build finishes, and the connector pod is up and running again.
@@ -379,7 +379,7 @@ If you defined a topic or another object of Strimzi via Strimzi Kafka CLI before
 Run the following command to create the connector for Camel Elasticsearch REST Sink:
 
 ```shell
-kfk connect connectors --create -c my-connect-cluster -n kafka camel_es_connector.properties
+$ kfk connect connectors --create -c my-connect-cluster -n kafka camel_es_connector.properties
 ```
 
 ```
@@ -390,7 +390,7 @@ After the resource created run the following `curl` command in the watch mode to
 Change the `_ELASTIC_EXTERNAL_URL_` with your Route or Ingress URL of the Elasticsearch cluster you created as a prerequisite.
 
 ```shell
-watch "curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search | jq -r '.hits.total.value'"
+$ watch "curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search | jq -r '.hits.total.value'"
 ```
 
 In another terminal window you can run the console consumer again to see both the Twitter Source connector and the Camel Elasticsearch Sink connector in action:
@@ -402,7 +402,7 @@ Image here
 In a browser or with curl, call the following URl for searching `Apache` word in the tweet texts.
 
 ```shell
-curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
+$ curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
 ```
 
 ```
@@ -422,7 +422,7 @@ Since we are almost done with our example let's delete the resources one by one 
 First let's delete our connectors one by one:
 
 ```shell
-kfk connect connectors --delete --connector twitter-source-demo -c my-connect-cluster -n kafka
+$ kfk connect connectors --delete --connector twitter-source-demo -c my-connect-cluster -n kafka
 ```
 
 ```
@@ -430,7 +430,7 @@ kafkaconnector.kafka.strimzi.io "twitter-source-demo" deleted
 ```
 
 ```shell
-kfk connect connectors --delete --connector camel-elasticsearch-sink-demo -c my-connect-cluster -n kafka
+$ kfk connect connectors --delete --connector camel-elasticsearch-sink-demo -c my-connect-cluster -n kafka
 ```
 
 ```
@@ -443,7 +443,7 @@ Now we can also delete the `my-connect-cluster` Kafka Connect cluster.
 Notice that it is pretty much the same with the Kafka cluster deletion syntax of Strimzi CLI.
 
 ```shell
-kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
+$ kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ```
 
 This command will both delete the `KafkaConnect` resource and the push secret that is created for the Connect image.
@@ -456,7 +456,7 @@ secret "my-connect-cluster-push-secret" deleted
 Check the Connect cluster pod is terminated by the Strimzi operator:
 
 ```shell
-kubectl get pods -n kafka
+$ kubectl get pods -n kafka
 ```
 
 ```
