@@ -9,7 +9,7 @@ Instead we will use traditional `.property` files that are used for Kafka Connec
 
 * A Kubernetes/OpenShift cluster that has Strimzi Kafka Operator installed.
 * A namespace called `kafka` and a Kafka cluster called `my-cluster`
-* An elasticsearch instance up and running in the same  namespace.
+* An elasticsearch instance up and running in the same namespace.
 * A public image registry that has a repository called `demo-connect-cluster`.
 * Most importantly, a `Twitter Developer Account` that enables you to use Twitter API for development purposes.
 In this example we are going to use it with one of our Kafka Connect connectors.
@@ -36,12 +36,15 @@ chmod +x ./scripts/setup_example.sh
 
 This will create a Kafka cluster with 2 brokers, and an Elasticsearch cluster that's accessible through a Route.
 
+Keep in mind that this script doesn't Elasticsearch operator which Elasticsearch resource that is created in this script needs.
+So first you will need to install the operator for Elasticsearch before running the helper script.
+
 ---
 **NOTE**
 
 If you are using Kubernetes you can create an Ingress and expose the Elasticsearch instance.
 
-Exposing the Elasticsearch instance is not mandatory.
+Exposing the Elasticsearch instance is not mandatory; you can access the Elasticsearch instance cluster internally.
 
 ---
 
@@ -153,6 +156,14 @@ Enter the password and observe the CLI response as follows:
 TODO:
 ```
 
+WYou should see the following output:
+
+```
+secret/my-connect-cluster-push-secret created
+kafkaconnect.kafka.strimzi.io/my-connect-cluster created
+kafkaconnector.kafka.strimzi.io/twitter-source-demo created
+```
+
 ---
 **IMPORTANT**
 
@@ -168,24 +179,42 @@ Or you can delete/create the push secret that is created if you are experienced 
 
 ---
 
-```
-secret/my-connect-cluster-push-secret created
-kafkaconnect.kafka.strimzi.io/my-connect-cluster created
-kafkaconnector.kafka.strimzi.io/twitter-source-demo created
-```
-
+Now you can check the pods and wait till the Connect cluster pod runs without a problem.
 
 ```shell
 watch kubectl get pods -n kafka
 ```
 
 ```
-...output omitted...
+...Output omitted...
 my-connect-cluster-connect-8444df69c9-x7xf6   1/1     Running     0          3m43s
-...output omitted...
+...Output omitted...
 ```
 
 ## Creating a Twitter Source Connector
+
+Because we have our Connect cluster now, lets create a connector that uses the Twitter Source Connector resources that is available in our Connect cluster.
+
+In the repository that you cloned to your local, open the file `twitter.properties` which includes the configuration for the Twitter Source Connector.
+
+```properties
+name=TwitterSourceDemo
+tasks.max=1
+connector.class=com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
+
+# Set these required values
+process.deletes=false
+filter.keywords=bitcoin
+kafka.status.topic=twitter_status_connect
+kafka.delete.topic=twitter_deletes_connect
+# put your own credentials here - don't share with anyone
+twitter.oauth.consumerKey=
+twitter.oauth.consumerSecret=
+twitter.oauth.accessToken=
+twitter.oauth.accessTokenSecret=
+```
+
+
 
 ```shell
 kfk topics --create --topic twitter-status-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
