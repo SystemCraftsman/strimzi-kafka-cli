@@ -93,7 +93,7 @@ Enter your Twitter OAuth keys which you can get from your Twitter Developer Acco
 For the creation of a `Twitter Developer Account`, Stephane explains this perfectly in his [Kafka For Beginners](https://www.udemy.com/course/apache-kafka/learn/lecture/11567036#overview) course on Udemy.
 So I recommend you to take a look at both the course and the twitter setup that is explained.
 
-Finally, change the `bitcoin` filter to `kafka` for our demo 
+Finally, change the `bitcoin` filter to `kafka` for our demo (Or you can change it to anything that you want to see the tweets of).
 
 The final connector configuration file should look like this:
 
@@ -267,16 +267,29 @@ watch kubectl get pods -n kafka
 ```
 ...Output omitted...
 my-connect-cluster-connect-8444df69c9-x7xf6   1/1     Running     0          3m43s
+my-connect-cluster-connect-build-1-build      0/1     Completed   0          6m47s
 ...Output omitted...
 ```
 
+If everything is ok with the connect cluster, now you should see some messages in one of the topics we created before running the Connect cluster.
+Let's consume messages from `twitter-status-connect` topic to see if our Twitter Source Connector works.
 
-<!--- 
-Show them the tweet stream by consuming the twitter-status-connect topic
--->
 ```shell
 kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 ```
+
+```
+...Output omitted...
+{"CreatedAt":1624542267000,"Id":1408058441428439047,"Text":"@Ch1pmaster @KAFKA_Dev Of het is gewoon het zoveelste boelsjit verhaal van Bauke...
+...Output omitted...
+```
+
+Observe that in the console tweets appear one by one while they are created in the `twitter-status-connect` topic and consumed by the consumer.
+
+As you can see we took a couple of traditional config files from one of the most loved Kafka instructor's samples and with just a few changes on the configuration, we could create our Kafka Connect cluster along with a Twitter Source connector easily.
+
+Now let's take a step forward and try another thing.
+What about putting these tweets in an elasticsearch index and make it searchable?
 
 ## Altering the Connect Cluster
 
