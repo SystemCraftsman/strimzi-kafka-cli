@@ -131,17 +131,42 @@ output.image=quay.io/systemcraftsman/demo-connect-cluster:latest
 plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
 ```
 
-<!--- 
-Dont run this, just show them how it works. run the next
--->
-```shell
-kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties
-```
-
-
 ```shell
 kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
 ```
+
+Replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER_` and run the command.
+
+You should be asked for the registry password.
+Enter the password and observe the CLI response as follows:
+
+```
+TODO:
+```
+
+---
+**IMPORTANT**
+
+Be careful while entering that because there is no mechanism that checks this password in Strimzi Kafka CLI, so if the password is wrong, simply the Connect image will be built sucessfully, but Strimzi won't be able to push it to the registry you specified before.
+
+In case of any problem just delete the Connect cluster with the following command and create it again:
+
+```shell
+kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y ;
+````
+
+Or you can delete/create the push secret that is created if you are familiar enough.
+
+---
+
+---
+**IMPORTANT**
+
+You can also create the cluster with a more controlled way; by not passing the `-y` flag.
+Without the `-y` flag, Strimzi Kafka CLI shows you the resource YAML of the Kafka Connect cluster in an editor, and you can modify or just save the resource before the creation.
+In this example we skip this part with `-y` flag.
+
+---
 
 ```
 secret/my-connect-cluster-push-secret created
