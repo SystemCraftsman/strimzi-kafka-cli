@@ -102,7 +102,7 @@ As a prerequisite, you have to create this repository and make the credentials r
 
 Apart from the `plugin.path`, we can do a few changes like changing the offset storage to a topic instead of a file and disabling the key/value converter schemas because we will just barely need to see the data itself; we don't need the JSON schemas.
 
-So the final connector.properties file should look like this:
+So the final `connector.properties` file should look like this:
 
 ```properties
 ...Output omitted...
@@ -135,6 +135,15 @@ plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/downl
 kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
 ```
 
+---
+**IMPORTANT**
+
+You can also create the cluster with a more controlled way; by not passing the `-y` flag.
+Without the `-y` flag, Strimzi Kafka CLI shows you the resource YAML of the Kafka Connect cluster in an editor, and you can modify or just save the resource before the creation.
+In this example we skip this part with `-y` flag.
+
+---
+
 Replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER_` and run the command.
 
 You should be asked for the registry password.
@@ -155,16 +164,7 @@ In case of any problem just delete the Connect cluster with the following comman
 kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ````
 
-Or you can delete/create the push secret that is created if you are familiar enough.
-
----
-
----
-**IMPORTANT**
-
-You can also create the cluster with a more controlled way; by not passing the `-y` flag.
-Without the `-y` flag, Strimzi Kafka CLI shows you the resource YAML of the Kafka Connect cluster in an editor, and you can modify or just save the resource before the creation.
-In this example we skip this part with `-y` flag.
+Or you can delete/create the push secret that is created if you are experienced enough.
 
 ---
 
