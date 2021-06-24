@@ -51,13 +51,85 @@ Exposing the Elasticsearch instance is not mandatory; you can access the Elastic
 Lastly create an empty repository in any image registry of your choice.
 For this example we are going to use Quay.io as our repository will be `quay.io/systemcraftsman/demo-connect-cluster`.
 
-## Creating a Kafka Connect Cluster
+## Creating a Kafka Connect Cluster with a Twitter Source Connector
 
 For this example, to show how it is easy to create a Kafka Connect cluster with a traditional properties file, we will use an example of a well-known Kafka instructor, Stephane Maarek, who demonstrates a very basic Twitter Source Connector in one of his courses.
 
 So let's clone the repository `https://github.com/simplesteph/kafka-beginners-course.git` and change directory into the `kafka-connect` folder in the repository.
 
-In the repository we have this `connect-standalone.properties` file which has the following config in it:
+In the repository we have this `twitter.properties` file which has the following config in it:
+
+```properties
+name=TwitterSourceDemo
+tasks.max=1
+connector.class=com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
+
+# Set these required values
+process.deletes=false
+filter.keywords=bitcoin
+kafka.status.topic=twitter_status_connect
+kafka.delete.topic=twitter_deletes_connect
+# put your own credentials here - don't share with anyone
+twitter.oauth.consumerKey=
+twitter.oauth.consumerSecret=
+twitter.oauth.accessToken=
+twitter.oauth.accessTokenSecret=
+```
+This connector get the tweets statuses or deletions and saves them into the `twitter_status_connect` or `twitter_deletes_connect` depending on the action.
+The `filter.keywords` defines the keywords to be filtered for the returned tweets.
+In this case it is set as `bitcoin`, so this will consume every tweet that has bitcoin and put it in the relevant topics.
+
+Now let's make a few changes on this file regarding the content and restrictions that Strimzi has for topic names.
+
+Copy the `twitter.properties` file and save it as `twitter_connector.properties` which you will be editing.
+
+In the new file change the `twitter_status_connect` to `twitter-status-connect` which Strimzi will complain about since it is not a good name for a topic.
+Normally Apache Kafka returns a warning about this but allows this `underscore(_)` convention.
+Since Strimzi uses custom resources for managing Kafka resources, it is not a good practice to use underscores in the topic names, or in any other custom resource of Strimzi.
+
+Also change the `twitter_deletes_connect` to `twitter-deletes-connect` and the connector name to `twitter-source-demo` for a common convention.
+
+Enter your Twitter OAuth keys which you can get from your Twitter Developer Account.
+For the creation of a `Twitter Developer Account`, Stephane explains this perfectly in his [Kafka For Beginners](https://www.udemy.com/course/apache-kafka/learn/lecture/11567036#overview) course on Udemy.
+So I recommend you to take a look at both the course and the twitter setup that is explained.
+
+Finally, change the `bitcoin` filter to `kafka` for our demo 
+
+The final connector configuration file should look like this:
+
+```properties
+name=twitter-source-demo
+tasks.max=1
+connector.class=com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
+
+# Set these required values
+process.deletes=false
+filter.keywords=kafka
+kafka.status.topic=twitter-status-connect
+kafka.delete.topic=twitter-deletes-connect
+# put your own credentials here - don't share with anyone
+twitter.oauth.consumerKey=_YOUR_CONSUMER_KEY_
+twitter.oauth.consumerSecret=_YOUR_CONSUMER_SECRET_
+twitter.oauth.accessToken=_YOUR_ACCESS_TOKEN_
+twitter.oauth.accessTokenSecret=_YOUR_ACCESS_TOKEN_SECRET_
+```
+
+Notice how little we changed (actually just the names) in order to use it in the Strimzi Kafka Connect cluster.
+
+Because we are going to need the `twitter-status-connect` and `twitter-deletes-connect` topics, let's create them upfront and continue our configuration.
+You must have remembered our `kfk topics --create` commands topics creation with Strimzi Kafka CLI:
+
+```shell
+kfk topics --create --topic twitter-status-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
+```
+
+```shell
+kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
+```
+
+Now let's continue with our Connect cluster's creation.
+
+In the same repository we have this `connect-standalone.properties` file which has the following config in it:
 
 ```properties
 ...Output omitted...
@@ -105,7 +177,7 @@ As a prerequisite, you have to create this repository and make the credentials r
 
 Apart from the `plugin.path`, we can do a few changes like changing the offset storage to a topic instead of a file and disabling the key/value converter schemas because we will just barely need to see the data itself; we don't need the JSON schemas.
 
-So the final `connector.properties` file should look like this:
+So the final `connect.properties` file should look like this:
 
 ```properties
 ...Output omitted...
@@ -134,6 +206,21 @@ output.image=quay.io/systemcraftsman/demo-connect-cluster:latest
 plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
 ```
 
+Again notice how the changes are small to make it compatible for a Strimzi Kafka Connect cluster.
+Now lets run the Kafka Connect cluster in a way that we used to do with the traditional CLI of Kafka.
+
+In order to start a standalone Kafka Connect cluster traditionally some must be familiar with a command like the following:
+
+```shell
+./bin/connect-standalone.sh connect.properties connector.properties
+```
+
+The command syntax for Strimzi Kafka CLI is the same. The only difference is, Strimzi runs the Connect cluster in the distributed mode.
+
+Run the following command to create to create a connect cluster called `my-connect-cluster` and a connector called `twitter-source-demo`.
+Don't forget to replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER_`.
+
+
 ```shell
 kfk connect clusters --create --cluster my-connect-cluster --replicas 1 -n kafka connect.properties twitter_connector.properties -u _YOUR_IMAGE_REGISTRY_USER_ -y
 ```
@@ -147,16 +234,8 @@ In this example we skip this part with `-y` flag.
 
 ---
 
-Replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER_` and run the command.
-
-You should be asked for the registry password.
+You should be prompted for the registry password.
 Enter the password and observe the CLI response as follows:
-
-```
-TODO:
-```
-
-WYou should see the following output:
 
 ```
 secret/my-connect-cluster-push-secret created
@@ -189,39 +268,6 @@ watch kubectl get pods -n kafka
 ...Output omitted...
 my-connect-cluster-connect-8444df69c9-x7xf6   1/1     Running     0          3m43s
 ...Output omitted...
-```
-
-## Creating a Twitter Source Connector
-
-Because we have our Connect cluster now, lets create a connector that uses the Twitter Source Connector resources that is available in our Connect cluster.
-
-In the repository that you cloned to your local, open the file `twitter.properties` which includes the configuration for the Twitter Source Connector.
-
-```properties
-name=TwitterSourceDemo
-tasks.max=1
-connector.class=com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector
-
-# Set these required values
-process.deletes=false
-filter.keywords=bitcoin
-kafka.status.topic=twitter_status_connect
-kafka.delete.topic=twitter_deletes_connect
-# put your own credentials here - don't share with anyone
-twitter.oauth.consumerKey=
-twitter.oauth.consumerSecret=
-twitter.oauth.accessToken=
-twitter.oauth.accessTokenSecret=
-```
-
-
-
-```shell
-kfk topics --create --topic twitter-status-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
-```
-
-```shell
-kfk topics --create --topic twitter-deletes-connect --partitions 3 --replication-factor 1 -c my-cluster -n kafka
 ```
 
 
