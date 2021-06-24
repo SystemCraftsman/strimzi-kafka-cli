@@ -51,6 +51,11 @@ Exposing the Elasticsearch instance is not mandatory; you can access the Elastic
 Lastly create an empty repository in any image registry of your choice.
 For this example we are going to use Quay.io as our repository will be `quay.io/systemcraftsman/demo-connect-cluster`.
 
+<!---
+## An Overview of Strimzi Kafka CLI for Kafka Connect
+TODO
+-->
+
 ## Creating a Kafka Connect Cluster with a Twitter Source Connector
 
 For this example, to show how it is easy to create a Kafka Connect cluster with a traditional properties file, we will use an example of a well-known Kafka instructor, Stephane Maarek, who demonstrates a very basic Twitter Source Connector in one of his courses.
@@ -136,6 +141,10 @@ In the same repository we have this `connect-standalone.properties` file which h
 bootstrap.servers=localhost:9092
 
 ...Output omitted...
+key.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+
+...Output omitted...
 key.converter.schemas.enable=true
 value.converter.schemas.enable=true
 
@@ -215,7 +224,9 @@ In order to start a standalone Kafka Connect cluster traditionally some must be 
 ./bin/connect-standalone.sh connect.properties connector.properties
 ```
 
-The command syntax for Strimzi Kafka CLI is the same. The only difference is, Strimzi runs the Connect cluster in the distributed mode.
+The command syntax for Strimzi Kafka CLI is the same.
+This means you can create a Connect cluster along with one or more connectors by providing their config properties.
+The only difference is, Strimzi runs the Connect cluster in the distributed mode.
 
 Run the following command to create to create a connect cluster called `my-connect-cluster` and a connector called `twitter-source-demo`.
 Don't forget to replace your image registry user with `_YOUR_IMAGE_REGISTRY_USER_`.
@@ -289,53 +300,172 @@ Observe that in the console tweets appear one by one while they are created in t
 As you can see we took a couple of traditional config files from one of the most loved Kafka instructor's samples and with just a few changes on the configuration, we could create our Kafka Connect cluster along with a Twitter Source connector easily.
 
 Now let's take a step forward and try another thing.
-What about putting these tweets in an elasticsearch index and make it searchable?
+What about putting these tweets in an elasticsearch index and make them searchable?
 
-## Altering the Connect Cluster
+## Altering the Kafka Connect Cluster
 
-<!--- 
-Alter the connect cluster to add another connector resource. this will be camel elasticsearch connector
--->
-```shell
-kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect_v2.properties
+In order to get the tweets from the `twitter-status-connect` topic and index them in Elasticsearch we need to use a connector that does this for us.
+
+[Camel Elasticsearch REST Kafka Sink Connector](https://camel.apache.org/camel-kafka-connector/latest/reference/connectors/camel-elasticsearch-rest-kafka-sink-connector.html) is the connector that will do the magic for us.
+
+First we need to add the relevant plugin resources of Camel Elasticsearch REST Sink Connector in our current `connect.properties` file that configures our Kafka Connect cluster.
+
+Add the URL of the connector like the following in the `connect.properties` file:
+
+```properties
+...Output omitted...
+plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz,https://repo.maven.apache.org/maven2/org/apache/camel/kafkaconnector/camel-elasticsearch-rest-kafka-connector/0.10.0/camel-elasticsearch-rest-kafka-connector-0.10.0-package.tar.gz
+...Output omitted...
 ```
 
-<!--- 
-Show the connector is being built again
--->
+Now run the `kfk connect clusters` command this time with `--alter` flag.
+
+```shell
+kfk connect clusters --alter --cluster my-connect-cluster -n kafka connect.properties
+```
+
+```
+kafkaconnect.kafka.strimzi.io/my-connect-cluster replaced
+```
+
+Observe the connector is being build again by watching the pods.
+
 ```shell
 watch kubectl get pods -n kafka
 ```
 
+Wait until the build finishes, and the connector pod is up and running again.
+
+```
+...Output omitted...
+my-connect-cluster-connect-7b575b6cf9-rdmbt   1/1     Running     0          111s
+...Output omitted...
+my-connect-cluster-connect-build-2-build      0/1     Completed   0          2m37s
+```
+
+Because we have a running Connect cluster ready for a Camel Elasticsearch REST Sink Connector, we can create our connector now, this time using the `kfk connect connectors` command.
+
 ## Creating a Camel Elasticsearch REST Sink Connector
 
-<!--- 
-Add another connector with kfk connect connector
--->
+Create a file called `camel_es_connector.properties` and paste the following in it.
+
+```properties
+name=camel-elasticsearch-sink-demo
+tasks.max=1
+connector.class=org.apache.camel.kafkaconnector.elasticsearchrest.CamelElasticsearchrestSinkConnector
+
+value.converter=org.apache.kafka.connect.storage.StringConverter
+
+topics=twitter-status-connect
+camel.sink.endpoint.hostAddresses=elasticsearch-es-http:9200
+camel.sink.endpoint.indexName=tweets
+camel.sink.endpoint.operation=Index
+camel.sink.path.clusterName=elasticsearch
+errors.tolerance=all
+errors.log.enable=true
+errors.log.include.messages=true
+```
+
+Observe that our connector's name is `camel-elasticsearch-sink-demo` and we use the `CamelElasticsearchrestSinkConnector` class to read the tweets from `twitter-status-connect` topic.
+
+Properties starting with `camel.sink.` defines the connector specific properties.
+With these properties the connector will create an index called `tweets` in the Elasticsearch cluster which is accesible from `elasticsearch-es-http:9200` host and port.
+
+For more details for this connector, please visit the connector's configuration page link that we provided above.
+
+Creating a connector is very simple.
+If you defined a topic or another object of Strimzi via Strimzi Kafka CLI before, you will notice the syntax is pretty much the same.
+
+Run the following command to create the connector for Camel Elasticsearch REST Sink:
+
 ```shell
 kfk connect connectors --create -c my-connect-cluster -n kafka camel_es_connector.properties
 ```
+
+```
+kafkaconnector.kafka.strimzi.io/camel-elasticsearch-sink-demo created
+```
+
+After the resource created run the following `curl` command in the watch mode to observe how the indexed values increases per tweet consumption.
+Change the `_ELASTIC_EXTERNAL_URL_` with your Route or Ingress URL of the Elasticsearch cluster you created as a prerequisite.
 
 ```shell
 watch "curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search | jq -r '.hits.total.value'"
 ```
 
+In another terminal window you can run the console consumer again to see both the Twitter Source connector and the Camel Elasticsearch Sink connector in action:
+
 <!--- 
-Open elasticsearch and show them some newly indexed tweets and search for some
+Image here
 -->
+
+In a browser or with curl, call the following URl for searching `Apache` word in the tweet texts.
+
 ```shell
 curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
 ```
 
-## Deleting Connectors
-
-```shell
-kfk connect connectors --delete --connector twitter-source-demo -c my-connect-cluster -n kafka ;
-kfk connect connectors --delete --connector camel-elasticsearch-sink-demo -c my-connect-cluster -n kafka ;
+```
+{"took":3,"timed_out":false,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0},"hits":{"total":{"value":3,"relation":"eq"},"max_score":5.769906,"hits":[{"_index":"tweets","_type":"_doc","_id":"bm6aPnoBRxta4q47oss0","_score":5.769906,"_source":{"CreatedAt":1624542084000,"Id":1408057673577345026,"Text":"RT @KCUserGroups: June 29: Kansas City Apache Kafka® Meetup by Confluent - Testing with AsyncAPI for Apache Kafka: Brokering the Complexity…","Source":"<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>","Truncated":false,"InReplyToStatusId":-1,"InReplyToUserId":-1,"InReplyToScreenName":null,"GeoLocation":null,"Place":null,"Favorited":false,"Retweeted":false,"FavoriteCount":0,"User":{"Id":87489271,"Name":"Fran Méndez","ScreenName":"fmvilas","Location":"Badajoz, España","Description":"Founder of @AsyncAPISpec. Director of Engineering at @getpostman.\n\nAtheist, feminist, proud husband of @e_morcillo, and father of Ada & 2 cats \uD83D\uDC31\uD83D\uDC08 he/him","ContributorsEnabled":false,"ProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_normal.jpg","BiggerProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_bigger.jpg","MiniProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_mini.jpg","OriginalProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh.jpg","ProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_normal.jpg","BiggerProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_bigger.jpg","MiniProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_mini.jpg","OriginalProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh.jpg","DefaultProfileImage":false,"URL":"http://www.fmvilas.com","Protected":false,"FollowersCount":1983,"ProfileBackgroundColor":"000000","ProfileTextColor":"000000","ProfileLinkColor":"1B95E0","ProfileSidebarFillColor":"000000","ProfileSidebarBorderColor":"000000","ProfileUseBackgroundImage":false,"DefaultProfile":false,"ShowAllInlineMedia":false,"FriendsCount":3197,
+...Output omitted...
 ```
 
-## Deleting Connect Cluster
+Cool! We hit some `Apache Kafka` tweets with our `Apache` search in Twitter tweets related to `kafka`.
+How about yours?
+If you don't hit anything you can do the search with any word of your choice.
+
+Since we are almost done with our example let's delete the resources one by one to observe how Strimzi Kafka CLI works with the deletion of the Kafka Connect resources.
+
+## Deleting Connectors and the Kafka Connect Cluster
+
+First let's delete our connectors one by one:
+
+```shell
+kfk connect connectors --delete --connector twitter-source-demo -c my-connect-cluster -n kafka
+```
+
+```
+kafkaconnector.kafka.strimzi.io "twitter-source-demo" deleted
+```
+
+```shell
+kfk connect connectors --delete --connector camel-elasticsearch-sink-demo -c my-connect-cluster -n kafka
+```
+
+```
+kafkaconnector.kafka.strimzi.io "camel-elasticsearch-sink-demo" deleted
+```
+
+Observe no more tweets are produced in the `twitter-status-connect` topic and no more data is indexed in Elasticsearch anymore.
+
+Now we can also delete the `my-connect-cluster` Kafka Connect cluster.
+Notice that it is pretty much the same with the Kafka cluster deletion syntax of Strimzi CLI.
 
 ```shell
 kfk connect clusters --delete --cluster my-connect-cluster -n kafka -y
 ```
+
+This command will both delete the `KafkaConnect` resource and the push secret that is created for the Connect image.
+
+```
+kafkaconnect.kafka.strimzi.io "my-connect-cluster" deleted
+secret "my-connect-cluster-push-secret" deleted
+```
+
+Check the Connect cluster pod is terminated by the Strimzi operator:
+
+```shell
+kubectl get pods -n kafka
+```
+
+```
+NAME                                          READY   STATUS    RESTARTS   AGE
+elastic-operator-84774b4d49-v2lbr             1/1     Running   0          4h9m
+elasticsearch-es-default-0                    1/1     Running   0          4h8m
+my-cluster-entity-operator-5c84b64ddf-22t9p   3/3     Running   0          4h8m
+my-cluster-kafka-0                            1/1     Running   0          4h8m
+my-cluster-kafka-1                            1/1     Running   0          4h8m
+my-cluster-zookeeper-0                        1/1     Running   0          4h8m
+```
+
+This concludes our example.
