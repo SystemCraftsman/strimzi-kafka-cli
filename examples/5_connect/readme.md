@@ -410,7 +410,8 @@ curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
 ...Output omitted...
 ```
 
-Cool! We hit some `Apache Kafka` tweets with our `Apache` search in Twitter tweets related to `kafka`.
+Cool!
+We hit some `Apache Kafka` tweets with our `Apache` search in Twitter tweets related to `kafka`.
 How about yours?
 If you don't hit anything you can do the search with any word of your choice.
 
