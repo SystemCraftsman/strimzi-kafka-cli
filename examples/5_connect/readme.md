@@ -469,4 +469,9 @@ my-cluster-kafka-1                            1/1     Running   0          4h8m
 my-cluster-zookeeper-0                        1/1     Running   0          4h8m
 ```
 
-This concludes our example.
+Congratulations!
+
+In this example we are able to create a Kafka Connect cluster along with a Twitter Source connector with Strimzi Kafka CLI, to consume the tweets from Twitter and write them to one of our topics that we defined in the configuration.
+We also altered the Kafka Connect Cluster and added new plugin resources for Camel Elasticsearch REST Sink connector, to write our tweets from the relevant topic to an Elasticsearch index with a single `--alter` command of Strimzi Kafka CLI.
+This made our consumed tweets searchable, so that we could search for the word `Apache` in our `tweets` Elasticsearch index.
+After finishing the example, we cleared up our resources by deleting them easily with the CLI.
