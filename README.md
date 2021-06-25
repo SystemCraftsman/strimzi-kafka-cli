@@ -65,6 +65,7 @@ Project requires: Python >=3.6
 * [TLS Authentication](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/2_tls_authentication)
 * [Simple ACL Authorization](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/3_simple_acl_authorization)
 * [Topic, User and Broker Configuration](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/4_configuration)
+* [Kafka Connect](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/5_connect)
 
 ## Dependencies
 ### Python Dependencies
