@@ -395,9 +395,7 @@ $ watch "curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search | jq -r '.hits.tot
 
 In another terminal window you can run the console consumer again to see both the Twitter Source connector and the Camel Elasticsearch Sink connector in action:
 
-<!--- 
-Image here
--->
+![tweets_flowing](https://user-images.githubusercontent.com/10568159/123325803-25480700-d541-11eb-9a6b-0028ea2cfada.png)
 
 In a browser or with curl, call the following URl for searching `Apache` word in the tweet texts.
 
