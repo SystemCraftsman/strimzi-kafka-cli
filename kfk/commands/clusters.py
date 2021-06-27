@@ -16,12 +16,12 @@ from kfk.messages import Messages
               multiple=True)
 @click.option('--config', help='A cluster configuration override for the cluster being altered.',
               multiple=True)
-@click.option('--alter', 'is_alter', help='Alter the Kafka cluster.', is_flag=True)
-@click.option('--delete', 'is_delete', help='Delete the Kafka cluster.', is_flag=True)
+@click.option('--alter', 'is_alter', help='Alters the Kafka cluster.', is_flag=True)
+@click.option('--delete', 'is_delete', help='Deletes the Kafka cluster.', is_flag=True)
 @click.option('--zk-replicas', help='The number of zookeeper replicas for the cluster.', type=int)
 @click.option('--replicas', help='The number of broker replicas for the cluster.', type=int)
-@click.option('--create', 'is_create', help='Create a Kafka cluster.', is_flag=True)
-@click.option('--describe', 'is_describe', help='List details for the given cluster.', is_flag=True)
+@click.option('--create', 'is_create', help='Creates a Kafka cluster.', is_flag=True)
+@click.option('--describe', 'is_describe', help='Lists details for the given cluster.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
@@ -60,7 +60,7 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
 
         _update_replicas(replicas, zk_replicas, cluster_dict)
 
-        _add_config_if_exists(config, cluster_dict)
+        _add_config_if_provided(config, cluster_dict)
 
         cluster_yaml = yaml.dump(cluster_dict)
 
@@ -102,7 +102,7 @@ def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
 
         _update_replicas(replicas, zk_replicas, cluster_dict)
 
-        _add_config_if_exists(config, cluster_dict)
+        _add_config_if_provided(config, cluster_dict)
 
         if len(delete_config) > 0:
             if cluster_dict["spec"]["kafka"].get("config") is not None:
@@ -132,7 +132,7 @@ def _update_replicas(replicas, zk_replicas, cluster_dict):
         cluster_dict["spec"]["zookeeper"]["replicas"] = int(zk_replicas)
 
 
-def _add_config_if_exists(config, cluster_dict):
+def _add_config_if_provided(config, cluster_dict):
     if len(config) > 0:
         if cluster_dict["spec"]["kafka"].get("config") is None:
             cluster_dict["spec"]["kafka"]["config"] = {}

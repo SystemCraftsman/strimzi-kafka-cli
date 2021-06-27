@@ -19,19 +19,19 @@ CONNECT_SKIPPED_PROPERTIES = (
 
 @click.option('-y', '--yes', 'is_yes', help='"Yes" confirmation', is_flag=True)
 @click.option('-n', '--namespace', help='Namespace to use')
-@click.option('--alter', 'is_alter', help='Alter the connect cluster.', is_flag=True)
-@click.option('--delete', 'is_delete', help='Delete the connect cluster.', is_flag=True)
+@click.option('--alter', 'is_alter', help='Alters the connect cluster.', is_flag=True)
+@click.option('--delete', 'is_delete', help='Deletes the connect cluster.', is_flag=True)
 @click.argument('connector_config_files', nargs=-1, type=click.File('r'))
 @click.argument('config_file', type=click.File('r'), cls=argument_extensions.RequiredIf, arguments=['is_create'])
 @click.option('-p', '--registry-password', help='Image registry password for Connect image')
 @click.option('-u', '--registry-username', help='Image registry username for Connect image')
 @click.option('--replicas', help='The number of connect replicas for the cluster.', type=int)
-@click.option('--create', 'is_create', help='Create a new connect cluster.', is_flag=True)
+@click.option('--create', 'is_create', help='Creates a new connect cluster.', is_flag=True)
 @click.option('--describe', 'is_describe', help='List details for the given cluster.', is_flag=True)
 @click.option('-o', '--output',
               help='Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath'
                    '|jsonpath-file.')
-@click.option('--list', 'is_list', help='List all available clusters.', required=True, is_flag=True)
+@click.option('--list', 'is_list', help='Lists all available clusters.', required=True, is_flag=True)
 @click.option('--cluster', help='Connect cluster name', required=True, cls=option_extensions.NotRequiredIf,
               options=['is_list'])
 @connect.command()
