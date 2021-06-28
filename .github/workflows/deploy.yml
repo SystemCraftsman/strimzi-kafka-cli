@@ -30,12 +30,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Build and publish
+    - name: Build
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python setup.py sdist bdist_wheel
         twine upload dist/*
       continue-on-error: true
     - name: Sleep for 3 mins
