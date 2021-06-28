@@ -68,7 +68,7 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_dict["spec"]["partitions"] = int(partitions)
         topic_dict["spec"]["replicas"] = int(replication_factor)
 
-        _add_config_if_exists(config, topic_dict)
+        _add_config_if_provided(config, topic_dict)
 
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
@@ -115,7 +115,7 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
     if replication_factor is not None:
         topic_dict["spec"]["replicas"] = int(replication_factor)
 
-    _add_config_if_exists(config, topic_dict)
+    _add_config_if_provided(config, topic_dict)
 
     if len(delete_config) > 0:
         if topic_dict["spec"].get("config") is not None:
@@ -131,7 +131,7 @@ def alter(topic, partitions, replication_factor, config, delete_config, cluster,
     topic_temp_file.close()
 
 
-def _add_config_if_exists(config, topic_dict):
+def _add_config_if_provided(config, topic_dict):
     if len(config) > 0:
         if topic_dict["spec"].get("config") is None:
             topic_dict["spec"]["config"] = {}
