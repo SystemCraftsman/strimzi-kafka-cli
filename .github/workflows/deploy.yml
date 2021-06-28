@@ -37,10 +37,11 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
-    - name: Sleep for 5 mins
+      continue-on-error: true
+    - name: Sleep for 3 mins
       uses: jakejarvis/wait-action@master
       with:
-        time: '300s'
+        time: '180s'
     - name: Bake and push image
       uses: docker/build-push-action@v1.1.0
       with:
