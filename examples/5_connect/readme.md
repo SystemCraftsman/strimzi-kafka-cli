@@ -17,6 +17,12 @@ In this example we are going to use it with one of our Kafka Connect connectors.
 As a recommendation create the namespace first:
 
 ```shell
+$ kubectl create namespace kafka
+```
+
+Or you can use the `new-project` command if you are using OpenShift.
+
+```shell
 $ oc new-project kafka
 ```
 
