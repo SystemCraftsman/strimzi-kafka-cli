@@ -46,7 +46,6 @@ Commands:
   operator          Installs/Uninstalls Strimzi Kafka Operator
   topics            Creates, alters, deletes, describes Kafka topic(s).
   users             Creates, alters, deletes, describes Kafka users(s).
-  version           Prints the version of Strimzi Kafka CLI
 ```
 
 Please take a look at the relevant article [Strimzi Kafka CLI: Managing Strimzi in a Kafka Native Way](https://www.systemcraftsman.com/2020/08/25/strimzi-kafka-cli-managing-strimzi-in-a-kafka-native-way/) for more details.
