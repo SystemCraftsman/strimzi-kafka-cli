@@ -13,6 +13,8 @@ Instead we will use traditional `.property` files that are used for Kafka Connec
 * A public image registry that has a repository called `demo-connect-cluster`.
 * Most importantly, a `Twitter Developer Account` that enables you to use Twitter API for development purposes.
 In this example we are going to use it with one of our Kafka Connect connectors.
+  * [This](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/5_connect) part of the repository.
+    Clone this repository to be able to use the scripts provided for this example.
 
 As a recommendation create the namespace first:
 
@@ -33,7 +35,13 @@ You can use Strimzi CLI for this:
 $ kfk operator --install -n kafka
 ```
 
-Create Kafka and Elasticsearch cluster by running the `setup_example.sh` script:
+Clone the repo if you haven't done before and cd into the example's directory.
+```shell
+$ git clone https://github.com/systemcraftsman/strimzi-kafka-cli.git
+$ cd strimzi-kafka-cli/examples/5_connect
+```
+
+Create Kafka and Elasticsearch cluster by running the `setup_example.sh` script in the example's directory:
 
 ```shell
 $ chmod +x ./scripts/setup_example.sh
