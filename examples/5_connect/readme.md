@@ -151,14 +151,14 @@ Now let's continue with our Connect cluster's creation.
 In the same repository we have this `connect-standalone.properties` file which has the following config in it:
 
 ```properties
-...Output omitted...
+...output omitted...
 bootstrap.servers=localhost:9092
 
-...Output omitted...
+...output omitted...
 key.converter=org.apache.kafka.connect.json.JsonConverter
 value.converter=org.apache.kafka.connect.json.JsonConverter
 
-...Output omitted...
+...output omitted...
 key.converter.schemas.enable=true
 value.converter.schemas.enable=true
 
@@ -166,7 +166,7 @@ offset.storage.file.filename=/tmp/connect.offsets
 # Flush much faster than normal, which is useful for testing/debugging
 offset.flush.interval.ms=10000
 
-...Output omitted...
+...output omitted...
 plugin.path=connectors
 ```
 
@@ -203,7 +203,7 @@ Apart from the `plugin.path`, we can do a few changes like changing the offset s
 So the final `connect.properties` file should look like this:
 
 ```properties
-...Output omitted...
+...output omitted...
 
 bootstrap.servers=my-cluster-kafka-bootstrap:9092
 
@@ -223,7 +223,7 @@ config.storage.replication.factor=1
 offset.storage.replication.factor=1
 status.storage.replication.factor=1
 
-...Output omitted...
+...output omitted...
 
 output.image=quay.io/systemcraftsman/demo-connect-cluster:latest
 plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
@@ -290,10 +290,10 @@ $ watch kubectl get pods -n kafka
 ```
 
 ```
-...Output omitted...
+...output omitted...
 my-connect-cluster-connect-8444df69c9-x7xf6   1/1     Running     0          3m43s
 my-connect-cluster-connect-build-1-build      0/1     Completed   0          6m47s
-...Output omitted...
+...output omitted...
 ```
 
 If everything is ok with the connect cluster, now you should see some messages in one of the topics we created before running the Connect cluster.
@@ -304,9 +304,9 @@ $ kfk console-consumer --topic twitter-status-connect -c my-cluster -n kafka
 ```
 
 ```
-...Output omitted...
+...output omitted...
 {"CreatedAt":1624542267000,"Id":1408058441428439047,"Text":"@Ch1pmaster @KAFKA_Dev Of het is gewoon het zoveelste boelsjit verhaal van Bauke...
-...Output omitted...
+...output omitted...
 ```
 
 Observe that in the console tweets appear one by one while they are created in the `twitter-status-connect` topic and consumed by the consumer.
@@ -327,9 +327,9 @@ First we need to add the relevant plugin resources of Camel Elasticsearch REST S
 Add the URL of the connector like the following in the `connect.properties` file:
 
 ```properties
-...Output omitted...
+...output omitted...
 plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz,https://repo.maven.apache.org/maven2/org/apache/camel/kafkaconnector/camel-elasticsearch-rest-kafka-connector/0.10.0/camel-elasticsearch-rest-kafka-connector-0.10.0-package.tar.gz
-...Output omitted...
+...output omitted...
 ```
 
 Now run the `kfk connect clusters` command this time with `--alter` flag.
@@ -351,9 +351,9 @@ $ watch kubectl get pods -n kafka
 Wait until the build finishes, and the connector pod is up and running again.
 
 ```
-...Output omitted...
+...output omitted...
 my-connect-cluster-connect-7b575b6cf9-rdmbt   1/1     Running     0          111s
-...Output omitted...
+...output omitted...
 my-connect-cluster-connect-build-2-build      0/1     Completed   0          2m37s
 ```
 
@@ -400,6 +400,18 @@ $ kfk connect connectors --create -c my-connect-cluster -n kafka camel_es_connec
 kafkaconnector.kafka.strimzi.io/camel-elasticsearch-sink-demo created
 ```
 
+You can list the created connectors so far:
+
+```shell
+kfk connect connectors --list -c my-connect-cluster -n kafka
+```
+
+```
+NAME                            CLUSTER              CONNECTOR CLASS                                                                         MAX TASKS   READY
+twitter-source-demo             my-connect-cluster   com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector                   1           1
+camel-elasticsearch-sink-demo   my-connect-cluster   org.apache.camel.kafkaconnector.elasticsearchrest.CamelElasticsearchrestSinkConnector   1           1
+```
+
 After the resource created run the following `curl` command in the watch mode to observe how the indexed values increases per tweet consumption.
 Change the `_ELASTIC_EXTERNAL_URL_` with your Route or Ingress URL of the Elasticsearch cluster you created as a prerequisite.
 
@@ -419,7 +431,7 @@ $ curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
 
 ```
 {"took":3,"timed_out":false,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0},"hits":{"total":{"value":3,"relation":"eq"},"max_score":5.769906,"hits":[{"_index":"tweets","_type":"_doc","_id":"bm6aPnoBRxta4q47oss0","_score":5.769906,"_source":{"CreatedAt":1624542084000,"Id":1408057673577345026,"Text":"RT @KCUserGroups: June 29: Kansas City Apache Kafka® Meetup by Confluent - Testing with AsyncAPI for Apache Kafka: Brokering the Complexity…","Source":"<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>","Truncated":false,"InReplyToStatusId":-1,"InReplyToUserId":-1,"InReplyToScreenName":null,"GeoLocation":null,"Place":null,"Favorited":false,"Retweeted":false,"FavoriteCount":0,"User":{"Id":87489271,"Name":"Fran Méndez","ScreenName":"fmvilas","Location":"Badajoz, España","Description":"Founder of @AsyncAPISpec. Director of Engineering at @getpostman.\n\nAtheist, feminist, proud husband of @e_morcillo, and father of Ada & 2 cats \uD83D\uDC31\uD83D\uDC08 he/him","ContributorsEnabled":false,"ProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_normal.jpg","BiggerProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_bigger.jpg","MiniProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_mini.jpg","OriginalProfileImageURL":"http://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh.jpg","ProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_normal.jpg","BiggerProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_bigger.jpg","MiniProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh_mini.jpg","OriginalProfileImageURLHttps":"https://pbs.twimg.com/profile_images/1373387614238179328/cB1gp6Lh.jpg","DefaultProfileImage":false,"URL":"http://www.fmvilas.com","Protected":false,"FollowersCount":1983,"ProfileBackgroundColor":"000000","ProfileTextColor":"000000","ProfileLinkColor":"1B95E0","ProfileSidebarFillColor":"000000","ProfileSidebarBorderColor":"000000","ProfileUseBackgroundImage":false,"DefaultProfile":false,"ShowAllInlineMedia":false,"FriendsCount":3197,
-...Output omitted...
+...output omitted...
 ```
 
 Cool!
