@@ -50,7 +50,7 @@ $ ./scripts/setup_example.sh
 
 This will create a Kafka cluster with 2 brokers, and an Elasticsearch cluster that's accessible through a Route.
 
-Keep in mind that this script doesn't Elasticsearch operator which Elasticsearch resource that is created in this script needs.
+Keep in mind that this script doesn't create the Elasticsearch operator which Elasticsearch resource that is created in this script needs.
 So first you will need to install the operator for Elasticsearch before running the helper script.
 
 ---
@@ -200,6 +200,8 @@ As a prerequisite, you have to create this repository and make the credentials r
 
 Apart from the `plugin.path`, we can do a few changes like changing the offset storage to a topic instead of a file and disabling the key/value converter schemas because we will just barely need to see the data itself; we don't need the JSON schemas.
 
+Lastly change the `bootstrap.servers` value to `my-cluster-kafka-bootstrap:9092`, as `my-cluster-kafka-bootstrap` is the `my-cluster` Kafka cluster's Kubernetes internal host name that is provided by a Kubernetes Service.
+ 
 So the final `connect.properties` file should look like this:
 
 ```properties
@@ -403,7 +405,7 @@ kafkaconnector.kafka.strimzi.io/camel-elasticsearch-sink-demo created
 You can list the created connectors so far:
 
 ```shell
-kfk connect connectors --list -c my-connect-cluster -n kafka
+$ kfk connect connectors --list -c my-connect-cluster -n kafka
 ```
 
 ```
@@ -423,7 +425,7 @@ In another terminal window you can run the console consumer again to see both th
 
 ![tweets_flowing](https://user-images.githubusercontent.com/10568159/123325803-25480700-d541-11eb-9a6b-0028ea2cfada.png)
 
-In a browser or with curl, call the following URl for searching `Apache` word in the tweet texts.
+In a browser or with curl, call the following URL for searching `Apache` word in the tweet texts.
 
 ```shell
 $ curl -s http://_ELASTIC_EXTERNAL_URL_/tweets/_search?q=Text:Apache
