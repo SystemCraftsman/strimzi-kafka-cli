@@ -187,7 +187,7 @@ By comparing to the original repository, you can see in the `connectors` folder 
 The url that you set above has the same resources archived.
 Strimzi extracts them while building the Connect image in the Kubernetes/OpenShift cluster.
 
-Speaking of the image, we have to set a `image`, actually an image repository path, that Strimzi can push the built image into.
+Speaking of the image, we have to set an `image`, actually an image repository path, that Strimzi can push the built image into.
 This can be either an internal registry of yours, or a public one like Docker Hub or Quay.
 In this example we will use Quay and we should set the image URL like the following:
 
