@@ -13,7 +13,7 @@ from kfk import argument_extensions, option_extensions
 from kfk.commands.connect import connectors
 
 CONNECT_SKIPPED_PROPERTIES = (
-    SpecialTexts.CONNECT_BOOTSTRAP_SERVERS, SpecialTexts.CONNECT_OUTPUT_IMAGE, SpecialTexts.CONNECT_PLUGIN_URL,
+    SpecialTexts.CONNECT_BOOTSTRAP_SERVERS, SpecialTexts.CONNECT_IMAGE, SpecialTexts.CONNECT_PLUGIN_URL,
     SpecialTexts.CONNECT_PLUGIN_PATH)
 
 
@@ -73,30 +73,33 @@ def create(cluster, replicas, registry_username, registry_password, config_file,
 
         connect_properties = get_properties_from_file(config_file)
 
-        del cluster_dict["spec"]["tls"]
+        cluster_dict["spec"].pop("tls")
 
         cluster_dict["spec"]["bootstrapServers"] = connect_properties.get(
             SpecialTexts.CONNECT_BOOTSTRAP_SERVERS).data
 
-        cluster_dict["spec"]["build"] = {}
-        cluster_dict["spec"]["build"]["output"] = {}
-        cluster_dict["spec"]["build"]["output"]["type"] = CONNECT_OUTPUT_TYPE_DOCKER
-        cluster_dict["spec"]["build"]["output"]["image"] = connect_properties.get(
-            SpecialTexts.CONNECT_OUTPUT_IMAGE).data
-        cluster_dict["spec"]["build"]["output"]["pushSecret"] = f"{cluster}-push-secret"
-        cluster_dict["spec"]["build"]["plugins"] = []
+        if connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL) is None:
+            cluster_dict["spec"]["image"] = connect_properties.get(
+                SpecialTexts.CONNECT_IMAGE).data
+        else:
+            cluster_dict["spec"]["build"] = {}
+            cluster_dict["spec"]["build"]["output"] = {}
+            cluster_dict["spec"]["build"]["output"]["type"] = CONNECT_OUTPUT_TYPE_DOCKER
+            cluster_dict["spec"]["build"]["output"]["image"] = connect_properties.get(SpecialTexts.CONNECT_IMAGE).data
+            cluster_dict["spec"]["build"]["output"]["pushSecret"] = f"{cluster}-push-secret"
+            cluster_dict["spec"]["build"]["plugins"] = []
 
-        for i, plugin_url in enumerate(
-                get_list_by_split_string(connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL).data, COMMA),
-                start=1):
+            for i, plugin_url in enumerate(
+                    get_list_by_split_string(connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL).data, COMMA),
+                    start=1):
 
-            if not is_valid_url(plugin_url):
-                raise click.ClickException(Errors.NOT_A_VALID_URL + f": {plugin_url}")
+                if not is_valid_url(plugin_url):
+                    raise click.ClickException(Errors.NOT_A_VALID_URL + f": {plugin_url}")
 
-            plugin_dict = {"name": f"connector-{i}",
-                           "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
+                plugin_dict = {"name": f"connector-{i}",
+                               "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
 
-            cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
+                cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
 
         cluster_dict["spec"]["config"] = {}
 
@@ -113,17 +116,20 @@ def create(cluster, replicas, registry_username, registry_password, config_file,
             is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
 
         if is_confirmed:
-            username = registry_username if registry_username is not None else click.prompt(
-                Messages.IMAGE_REGISTRY_USER_NAME, hide_input=False)
-            password = registry_password if registry_password is not None else click.prompt(
-                Messages.IMAGE_REGISTRY_PASSWORD, hide_input=True)
+            return_code = 0
 
-            return_code = os.system(
-                Kubectl().create().secret("docker-registry", f"{cluster}-push-secret",
-                                          "--docker-username={username}", "--docker-password={password}",
-                                          "--docker-server={server}").namespace(
-                    namespace).build().format(username=username, password=password, server=connect_properties.get(
-                    SpecialTexts.CONNECT_OUTPUT_IMAGE).data))
+            if connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL) is not None:
+                username = registry_username if registry_username is not None else click.prompt(
+                    Messages.IMAGE_REGISTRY_USER_NAME, hide_input=False)
+                password = registry_password if registry_password is not None else click.prompt(
+                    Messages.IMAGE_REGISTRY_PASSWORD, hide_input=True)
+
+                return_code = os.system(
+                    Kubectl().create().secret("docker-registry", f"{cluster}-push-secret",
+                                              "--docker-username={username}", "--docker-password={password}",
+                                              "--docker-server={server}").namespace(
+                        namespace).build().format(username=username, password=password, server=connect_properties.get(
+                        SpecialTexts.CONNECT_IMAGE).data))
 
             if return_code == 0:
                 return_code = os.system(
@@ -172,22 +178,27 @@ def alter(cluster, replicas, config_file, namespace):
             cluster_dict["spec"]["bootstrapServers"] = connect_properties.get(
                 SpecialTexts.CONNECT_BOOTSTRAP_SERVERS).data
 
-            cluster_dict["spec"]["build"]["output"]["image"] = connect_properties.get(
-                SpecialTexts.CONNECT_OUTPUT_IMAGE).data
+            if connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL) is None:
+                cluster_dict["spec"].pop("build", None)
+                cluster_dict["spec"]["image"] = connect_properties.get(SpecialTexts.CONNECT_IMAGE).data
+            else:
+                cluster_dict["spec"].pop("image", None)
+                cluster_dict["spec"]["build"]["output"]["image"] = connect_properties.get(
+                    SpecialTexts.CONNECT_IMAGE).data
 
-            cluster_dict["spec"]["build"]["plugins"] = []
+                cluster_dict["spec"]["build"]["plugins"] = []
 
-            for i, plugin_url in enumerate(
-                    get_list_by_split_string(connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL).data, COMMA),
-                    start=1):
+                for i, plugin_url in enumerate(
+                        get_list_by_split_string(connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL).data, COMMA),
+                        start=1):
 
-                if not is_valid_url(plugin_url):
-                    raise click.ClickException(Errors.NOT_A_VALID_URL + f": {plugin_url}")
+                    if not is_valid_url(plugin_url):
+                        raise click.ClickException(Errors.NOT_A_VALID_URL + f": {plugin_url}")
 
-                plugin_dict = {"name": f"connector-{i}",
-                               "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
+                    plugin_dict = {"name": f"connector-{i}",
+                                   "artifacts": [{"type": _get_plugin_type(plugin_url), "url": plugin_url}]}
 
-                cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
+                    cluster_dict["spec"]["build"]["plugins"].append(plugin_dict)
 
             cluster_dict["spec"]["config"] = {}
 

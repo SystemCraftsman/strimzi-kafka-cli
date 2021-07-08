@@ -187,12 +187,12 @@ By comparing to the original repository, you can see in the `connectors` folder 
 The url that you set above has the same resources archived.
 Strimzi extracts them while building the Connect image in the Kubernetes/OpenShift cluster.
 
-Speaking of the image, we have to set a `output.image`, actually a image repository path, that Strimzi can push the built image into.
+Speaking of the image, we have to set a `image`, actually an image repository path, that Strimzi can push the built image into.
 This can be either an internal registry of yours, or a public one like Docker Hub or Quay.
 In this example we will use Quay and we should set the image URL like the following:
 
 ```properties
-output.image=quay.io/systemcraftsman/demo-connect-cluster:latest
+image=quay.io/systemcraftsman/demo-connect-cluster:latest
 ```
 
 Here you can set the repository URL of your choice instead of `quay.io/systemcraftsman/demo-connect-cluster:latest`.
@@ -227,7 +227,7 @@ status.storage.replication.factor=1
 
 ...output omitted...
 
-output.image=quay.io/systemcraftsman/demo-connect-cluster:latest
+image=quay.io/systemcraftsman/demo-connect-cluster:latest
 plugin.url=https://github.com/jcustenborder/kafka-connect-twitter/releases/download/0.2.26/kafka-connect-twitter-0.2.26.tar.gz
 ```
 

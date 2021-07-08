@@ -54,7 +54,7 @@ class TestKfkConnect(TestCase):
 
             assert expected_connect_yaml == result_connect_yaml
 
-        mock_os.system.assert_called_with(
+        mock_os.system.assert_any_call(
             Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
                 self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
@@ -65,8 +65,40 @@ class TestKfkConnect(TestCase):
     @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
     @mock.patch('kfk.commands.connect.clusters.click.confirm')
     @mock.patch('kfk.commands.connect.clusters.os')
-    def test_create_cluster_with_command_error(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor, mock_create_temp_file,
-                            mock_click_prompt):
+    def test_create_cluster_with_image(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
+                                       mock_create_temp_file, mock_click_prompt):
+        mock_click_confirm.return_value = True
+        mock_click_prompt.return_value = self.registry_userpass
+
+        result = self.runner.invoke(connect,
+                                    ['clusters', '--create', '--cluster', self.cluster,
+                                     'files/connect_with_only_image.properties', '-n', self.namespace])
+        assert result.exit_code == 0
+
+        result_connect_yaml = mock_create_temp_file.call_args[0][0]
+
+        with open(r'files/yaml/kafka-connect_with_image.yaml') as file:
+            expected_connect_yaml = file.read()
+
+            assert expected_connect_yaml == result_connect_yaml
+
+        try:
+            mock_os.system.assert_any_call(
+                Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
+                                          "--docker-password={password} --docker-server={registry_server}").namespace(
+                    self.namespace).build().format(username=self.registry_userpass, password=self.registry_userpass,
+                                                   registry_server=self.registry_server))
+        except Exception:
+            self.assertRaises(AssertionError)
+
+    @mock.patch('kfk.commands.connect.clusters.click.prompt')
+    @mock.patch('kfk.commands.connect.clusters.create_temp_file')
+    @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
+    @mock.patch('kfk.commands.connect.clusters.click.confirm')
+    @mock.patch('kfk.commands.connect.clusters.os')
+    def test_create_cluster_with_command_error(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
+                                               mock_create_temp_file,
+                                               mock_click_prompt):
         mock_click_confirm.return_value = True
         mock_click_prompt.return_value = self.registry_userpass
         mock_os.system.return_value = 1
@@ -100,7 +132,7 @@ class TestKfkConnect(TestCase):
 
             assert expected_connect_yaml == result_connect_yaml
 
-        mock_os.system.assert_called_with(
+        mock_os.system.assert_any_call(
             Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
                 self.namespace).build().format(
@@ -144,7 +176,7 @@ class TestKfkConnect(TestCase):
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
 
-        mock_os.system.assert_called_with(
+        mock_os.system.assert_any_call(
             Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
                 self.namespace).build().format(
@@ -170,7 +202,7 @@ class TestKfkConnect(TestCase):
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
 
-        mock_os.system.assert_called_with(
+        mock_os.system.assert_any_call(
             Kubectl().create().secret("docker-registry", self.push_secret_name, "--docker-username={username}",
                                       "--docker-password={password} --docker-server={registry_server}").namespace(
                 self.namespace).build().format(
@@ -218,9 +250,10 @@ class TestKfkConnect(TestCase):
     @mock.patch('kfk.commands.connect.clusters.open_file_in_system_editor')
     @mock.patch('kfk.commands.connect.clusters.click.confirm')
     @mock.patch('kfk.commands.connect.clusters.os')
-    def test_create_cluster_with_two_connectors_config(self, mock_os, mock_click_confirm, mock_open_file_in_system_editor,
-                                                  mock_create_temp_file, mock_click_prompt, mock_os_connectors,
-                                                  mock_create_temp_file_connectors):
+    def test_create_cluster_with_two_connectors_config(self, mock_os, mock_click_confirm,
+                                                       mock_open_file_in_system_editor,
+                                                       mock_create_temp_file, mock_click_prompt, mock_os_connectors,
+                                                       mock_create_temp_file_connectors):
         mock_click_confirm.return_value = True
         mock_click_prompt.return_value = self.registry_userpass
         mock_os.system.return_value = 0
@@ -340,6 +373,25 @@ class TestKfkConnect(TestCase):
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-connect_with_zip_jar_plugins.yaml') as file:
+                expected_connect_yaml = file.read()
+                result_connect_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_connect_yaml == result_connect_yaml
+
+    @mock.patch('kfk.commands.connect.clusters.create_temp_file')
+    @mock.patch('kfk.commons.get_resource_yaml')
+    @mock.patch('kfk.commands.connect.clusters.os')
+    def test_alter_cluster_with_only_image_config_file(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
+        with open(r'files/yaml/kafka-connect.yaml') as file:
+            connect_yaml = file.read()
+
+            mock_get_resource_yaml.return_value = connect_yaml
+
+            result = self.runner.invoke(connect, ['clusters', '--alter', '--cluster', self.cluster,
+                                                  'files/connect_with_only_image.properties', '-n',
+                                                  self.namespace])
+            assert result.exit_code == 0
+
+            with open(r'files/yaml/kafka-connect_with_image.yaml') as file:
                 expected_connect_yaml = file.read()
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml

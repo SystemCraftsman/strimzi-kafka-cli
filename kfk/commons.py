@@ -70,10 +70,9 @@ def delete_resource_config(config, dict_part, *converters):
         for config_str in config:
             for converter in converters:
                 config_str = converter(config_str)
-            if config_str in dict_part:
-                del dict_part[config_str]
+            dict_part.pop(config_str, None)
     else:
-        del dict_part[config]
+        dict_part.pop(config, None)
 
 
 def resource_exists(resource_type=None, resource_name=None, cluster=None, namespace=None):

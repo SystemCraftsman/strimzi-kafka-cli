@@ -79,7 +79,7 @@ def create(user, authentication_type, quota, cluster, namespace):
         user_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
 
         user_dict["spec"]["authentication"]["type"] = authentication_type
-        del user_dict["spec"]["authorization"]
+        user_dict["spec"].pop("authorization")
 
         if len(quota) > 0:
             if user_dict["spec"].get("quotas") is None:
@@ -125,7 +125,7 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
         if authorization_type != "none":
             user_dict["spec"]["authorization"]["type"] = authorization_type
         else:
-            del user_dict["spec"]["authorization"]
+            user_dict["spec"].pop("authorization")
 
     if add_acl:
         if user_dict["spec"].get("authorization") is not None:
