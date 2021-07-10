@@ -9,7 +9,7 @@ a [Kubernetes operator](https://operatorhub.io/operator/strimzi-kafka-operator) 
 
 The main intention is to ramp up Strimzi usage by creating a similar CLI experience with the traditional Apache Kafka tools that mostly starts with `kafka-*` prefix under the `bin` directory in an ordinary Kafka package.
 
-Strimzi Kafka CLI uses the `kfk` command as an abbreviation for `kafka` which also stands for the **kafka-**\* prefix.
+Strimzi Kafka CLI uses the `kfk` command as an abbreviation for `kafka` which also stands for the `kafka-*` prefix of the traditional tools.
 
 Following are the commands of the current version of Strimzi Kafka CLI, that are used for different purposes:
 
