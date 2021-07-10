@@ -4,27 +4,14 @@
 
 # Strimzi Kafka CLI
 
-Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users
--both developers and administrators- to easily adapt [Strimzi](https://strimzi.io/),
-a [Kubernetes
-operator](https://operatorhub.io/operator/strimzi-kafka-operator) for
-[Apache Kafka](https://kafka.apache.org/).
+Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users -both developers and administrators- to easily adopt [Strimzi](https://strimzi.io/),
+a [Kubernetes operator](https://operatorhub.io/operator/strimzi-kafka-operator) for [Apache Kafka](https://kafka.apache.org/).
 
-The main intention is to ramp up Apache Kafka with Strimzi usage by creating a similar CLI
-experience with traditional Apache Kafka tools.
+The main intention is to ramp up Strimzi usage by creating a similar CLI experience with the traditional Apache Kafka tools that mostly starts with `kafka-*` prefix under the `bin` directory in an ordinary Kafka package.
 
-**kfk** command stands for the usual **kafka-**\* prefix of the
-Apache Kafka runnable files which are located in *bin* directory. There
-are options provided like *topics*, *console-consumer*, etc. which also
-mostly stand for the rest of the runnable file names like
-*kafka-topic.sh*.
+Strimzi Kafka CLI uses the `kfk` command as an abbreviation for `kafka` which also stands for the **kafka-**\* prefix.
 
-However, because of the nature of Strimzi and its capabilities, there
-are also unusual options like *clusters* which is used for
-cluster configuration or *users* which is used for user management and
-configuration.
-
-Following is the high-level output of the Strimzi Kafka CLI:
+Following are the commands of the current version of Strimzi Kafka CLI, that are used for different purposes:
 
 ``` bash
 Usage: kfk [OPTIONS] COMMAND [ARGS]...
