@@ -11,6 +11,8 @@ The main intention is to ramp up Strimzi usage by creating a similar CLI experie
 
 Strimzi Kafka CLI uses the `kfk` command as an abbreviation for `kafka` which also stands for the `kafka-*` prefix of the traditional tools.
 
+While having similar set of commands or options for some of the common objects, Strimzi Kafka CLI has some extra capabilities for managing or configuring Strimzi related resources.
+
 Following are the commands of the current version of Strimzi Kafka CLI, that are used for different purposes:
 
 ``` bash
