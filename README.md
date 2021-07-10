@@ -10,8 +10,8 @@ a [Kubernetes
 operator](https://operatorhub.io/operator/strimzi-kafka-operator) for
 [Apache Kafka](https://kafka.apache.org/).
 
-Intention here is to ramp up Strimzi usage by creating a similar CLI
-experience with traditional Apache Kafka binaries.
+The main intention is to ramp up Apache Kafka with Strimzi usage by creating a similar CLI
+experience with traditional Apache Kafka tools.
 
 **kfk** command stands for the usual **kafka-**\* prefix of the
 Apache Kafka runnable files which are located in *bin* directory. There
