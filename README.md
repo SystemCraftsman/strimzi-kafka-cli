@@ -63,12 +63,12 @@ Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-c
 `kubectl` and `Strimzi resources` are the tools that Strimzi Kafka CLI uses. These dependencies are automatically downloaded when the first `kfk` command is run. You can always check the dependency versions of your CLI with the following command:
 
 ``` bash
-kfk version
+kfk --version
 ```
 
 If you want to change the `kubectl` and `Strimzi resources` folder, you can simply change their version with the help of some environment veriables in order to let Strimzi Kafka CLI download the version you want, or change the PATH of any if you want to use a custom kubectl or Strimzi binary folder. Current versions are recommended, so use these environment variables at your own risk.
 
-**STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is set in `~/.strimzi-kafka-cli` as default.
+**STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is `~/.strimzi-kafka-cli` as default.
 
 **STRIMZI_KAFKA_CLI_STRIMZI_VERSION:** Set this if you want to use a different Strimzi version.
 

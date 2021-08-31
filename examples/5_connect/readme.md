@@ -10,6 +10,7 @@ Instead we will use traditional `.property` files that are used for Kafka Connec
 * A Kubernetes/OpenShift cluster that has Strimzi Kafka Operator installed.
 * A namespace called `kafka` and a Kafka cluster called `my-cluster`
 * An elasticsearch instance up and running in the same namespace.
+(You can use the `elasticsearch.yaml` file in the repository if you have the ElasticSearch Operator running.)
 * A public image registry that has a repository called `demo-connect-cluster`.
 * Most importantly, a `Twitter Developer Account` that enables you to use Twitter API for development purposes.
 In this example we are going to use it with one of our Kafka Connect connectors.
