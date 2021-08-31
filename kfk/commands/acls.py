@@ -50,16 +50,15 @@ def acls(list, topic, cluster, group, add, allow_principal, deny_principal, oper
                                                cluster=(cluster and '--cluster ' + cluster or ''),
                                                group=(group and '--group ' + group or '')))
     elif add or remove:
-        alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host,
-              deny_host,
-              resource_pattern_type, kafka_cluster, namespace)
+        add_or_remove(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host,
+                      deny_host, resource_pattern_type, kafka_cluster, namespace)
     else:
         print_missing_options_for_command("acls")
 
 
-def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
-          resource_pattern_type, kafka_cluster, namespace):
-    resource_type_dict = get_resource_type_dict(topic, cluster, group)
+def add_or_remove(topic, cluster, group, add, remove, allow_principal, deny_principal, operation_tuple, allow_host, deny_host,
+                  resource_pattern_type, kafka_cluster, namespace):
+    resource_type_dict = _get_resource_type_dict(topic, cluster, group)
 
     if allow_principal:
         type = "allow"
@@ -75,6 +74,7 @@ def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, o
         principal_type = deny_principal_arr[0]
         principal_name = deny_principal_arr[1]
         host = deny_host
+
     if principal_type == "User":
         for resource_type, resource_name in resource_type_dict.items():
             users.alter(principal_name, None, None, add, remove, operation_tuple, host, type,
@@ -82,7 +82,7 @@ def alter(topic, cluster, group, add, remove, allow_principal, deny_principal, o
                                 kafka_cluster, namespace)
 
 
-def get_resource_type_dict(topic, cluster, group):
+def _get_resource_type_dict(topic, cluster, group):
     resource_type_dict = {}
 
     if topic is not None:
