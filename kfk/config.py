@@ -4,6 +4,9 @@ import os
 
 from pathlib import Path
 
+STRIMZI_VERSION = "0.25.0"
+KUBECTL_VERSION = "v1.21.1"
+
 
 def _get_processor_type():
     if _is_64_bit():
@@ -21,9 +24,6 @@ def _get_processor_type():
 def _is_64_bit():
     return sys.maxsize > 2 ** 32
 
-
-STRIMZI_VERSION = "0.24.0"
-KUBECTL_VERSION = "v1.21.1"
 
 BASE_FOLDER = ".strimzi-kafka-cli"
 BASE_PATH = (str(Path.home()) + "/" + BASE_FOLDER) if os.environ.get(
