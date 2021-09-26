@@ -70,7 +70,7 @@ def list(cluster, namespace):
             cluster=cluster))
 
 
-def create(user, authentication_type, quota, cluster, namespace):
+def create(user, authentication_type, quota_tuple, cluster, namespace):
     with open('{strimzi_path}/examples/user/kafka-user.yaml'.format(strimzi_path=STRIMZI_PATH).format(
             version=STRIMZI_VERSION)) as file:
         user_dict = yaml.full_load(file)
@@ -81,10 +81,10 @@ def create(user, authentication_type, quota, cluster, namespace):
         user_dict["spec"]["authentication"]["type"] = authentication_type
         user_dict["spec"].pop("authorization")
 
-        if len(quota) > 0:
+        if len(quota_tuple) > 0:
             if user_dict["spec"].get("quotas") is None:
                 user_dict["spec"]["quotas"] = {}
-            add_kv_config_to_resource(quota, user_dict["spec"]["quotas"])
+            add_kv_config_to_resource(quota_tuple, user_dict["spec"]["quotas"])
 
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
@@ -115,8 +115,6 @@ def alter(user, authentication_type, authorization_type, add_acl, delete_acl, op
     delete_last_applied_configuration(user_dict)
 
     if authentication_type is not None:
-        if user_dict["spec"].get("authentication") is None:
-            user_dict["spec"]["authentication"] = {}
         user_dict["spec"]["authentication"]["type"] = authentication_type
 
     if authorization_type is not None:
@@ -173,4 +171,7 @@ def _delete_acl_option(user_dict, operation, host, type, resource_type, resource
                                       'resource': {'type': resource_type, 'name': resource_name,
                                                    'patternType': resource_pattern_type}}
             if acl_dict == acl_dict_to_be_deleted:
-                user_dict["spec"]["authorization"]["acls"].remove(acl_dict)
+                if len(user_dict["spec"]["authorization"]["acls"]) == 1:
+                    user_dict["spec"].pop("authorization")
+                else:
+                    user_dict["spec"]["authorization"]["acls"].remove(acl_dict)

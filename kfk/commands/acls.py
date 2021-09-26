@@ -77,7 +77,7 @@ def add_or_remove(topic, cluster, group, add, remove, allow_principal, deny_prin
 
     if principal_type == "User":
         for resource_type, resource_name in resource_type_dict.items():
-            users.alter(principal_name, None, None, add, remove, operation_tuple, host, type,
+            users.alter(principal_name, None, "simple", add, remove, operation_tuple, host, type,
                                 resource_type, resource_name, resource_pattern_type, tuple(), tuple(),
                                 kafka_cluster, namespace)
 
