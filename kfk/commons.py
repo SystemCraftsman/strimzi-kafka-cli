@@ -14,17 +14,15 @@ from jproperties import Properties
 # TODO: Message string to messages.py
 
 def print_missing_options_for_command(command_str):
-    click.echo("Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.".format(
-        command_str=command_str))
+    click.echo(f"Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.")
 
 
 def print_cluster_resource_not_found_msg(cluster, namespace):
-    click.echo("No resource found in Kafka cluster: {cluster}, namespace: {namespace}".format(
-        cluster=cluster, namespace=namespace))
+    click.echo(f"No resource found in Kafka cluster: {cluster}, namespace: {namespace}")
 
 
 def print_resource_not_found_msg(namespace):
-    click.echo("No resource found in namespace: {namespace}".format(namespace=namespace))
+    click.echo(f"No resource found in namespace: {namespace}")
 
 
 def delete_last_applied_configuration(resource_dict):
@@ -114,8 +112,7 @@ def open_file_in_system_editor(file):
 
 
 def transfer_file_to_container(source_file_path, dest_file_path, container, pod, namespace):
-    os.system(Kubectl().cp(source_file_path, "{namespace}/{pod}:" + dest_file_path).container(container).build().format(
-        namespace=namespace, pod=pod))
+    os.system(Kubectl().cp(source_file_path, f"{namespace}/{pod}:" + dest_file_path).container(container).build())
 
 
 def apply_client_config_from_file(native_command, config_file_path, config_file_flag, container, pod, namespace):

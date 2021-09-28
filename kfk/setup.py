@@ -20,7 +20,7 @@ def setup():
 
 def download_kubectl_if_not_exists():
     if not os.path.exists(KUBECTL_PATH):
-        print("Creating Strimzi Kafka CLI Dependencies folder: {base_path}\n".format(base_path=BASE_PATH))
+        print(f"Creating Strimzi Kafka CLI Dependencies folder: {BASE_PATH}\n")
         Path(BASE_PATH).mkdir(exist_ok=True)
 
         _download_kubectl()
@@ -36,7 +36,7 @@ def update_kubectl_if_new_version_exists():
 
 
 def _download_kubectl():
-    print("Downloading dependency: kubectl {version}...\n".format(version=KUBECTL_VERSION))
+    print(f"Downloading dependency: kubectl {KUBECTL_VERSION}...\n")
     wget.download(KUBECTL_RELEASE_URL, KUBECTL_PATH)
     print("\nDownload successfully completed!\n")
     current_stat = os.stat(KUBECTL_PATH)
@@ -48,13 +48,13 @@ def download_strimzi_if_not_exists():
         strimzi_tarfile_path = STRIMZI_PATH + ".tar.gz"
 
         print(
-            "Creating Strimzi Kafka CLI Dependencies folder: {base_path}\n".format(base_path=BASE_PATH))
+            f"Creating Strimzi Kafka CLI Dependencies folder: {BASE_PATH}\n")
         Path(BASE_PATH).mkdir(exist_ok=True)
 
-        print("Downloading dependency: Strimzi {version}...\n".format(version=STRIMZI_VERSION))
+        print(f"Downloading dependency: Strimzi {STRIMZI_VERSION}...\n")
         wget.download(STRIMZI_RELEASE_URL, strimzi_tarfile_path)
         print("\nDownload successfully completed!\n")
-        print("Extracting Strimzi {version}...\n".format(version=STRIMZI_VERSION))
+        print(f"Extracting Strimzi {STRIMZI_VERSION}...\n")
         tar = tarfile.open(strimzi_tarfile_path)
         tar.extractall(path=BASE_PATH)
         tar.close()
