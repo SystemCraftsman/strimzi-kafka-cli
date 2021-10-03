@@ -41,10 +41,20 @@ Please take a look at the relevant article [Strimzi Kafka CLI: Managing Strimzi 
 
 ## Installation
 
-Strimzi Kafka CLI can be installed via pip (python package installer).
+### Using Python Package Installer
 
 ``` bash
 sudo pip install strimzi-kafka-cli
+```
+
+### Using Homebrew
+
+``` bash
+#Tap the homebrew repository first.
+brew tap systemcraftsman/strimzi-kafka-cli
+
+#Install Strimzi Kafka CLI
+brew install strimzi-kafka-cli
 ```
 
 Project requires: Python >=3.6
