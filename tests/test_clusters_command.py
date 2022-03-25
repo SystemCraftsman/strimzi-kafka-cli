@@ -55,33 +55,33 @@ class TestKfkClusters(TestCase):
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_one_additional_config(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--config', 'unclean.leader.election.enable=true',
                                               '--cluster', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_two_additional_configs(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--config', 'unclean.leader.election.enable=true',
                                               '--config', 'log.retention.hours=168',
                                               '--cluster', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_two_additional_configs.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -89,16 +89,16 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_two_additional_configs_delete_one_config(self, mock_os, mock_get_resource_yaml,
                                                                          mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_with_two_additional_configs.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--delete-config', 'log.retention.hours',
                                               '--cluster', self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_one_additional_config.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -106,49 +106,49 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_two_additional_configs_delete_two_configs(self, mock_os, mock_get_resource_yaml,
                                                                           mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_with_two_additional_configs.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--delete-config', 'log.retention.hours',
                                               '--delete-config', 'unclean.leader.election.enable', '--cluster',
                                               self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_one_replica(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--replicas', 1, '--cluster', self.cluster, '-n',
                                               self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_one_replica.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
     @mock.patch('kfk.commands.clusters.os')
     def test_alter_cluster_with_two_replicas(self, mock_os, mock_get_resource_yaml, mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--replicas', 2, '--cluster', self.cluster, '-n',
                                               self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_two_replicas.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.create_temp_file')
     @mock.patch('kfk.commons.get_resource_yaml')
@@ -156,16 +156,16 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_one_replica_one_zk_replica(self, mock_os, mock_get_resource_yaml,
                                                            mock_create_temp_file):
         with open(r'files/yaml/kafka-ephemeral_name_updated.yaml') as file:
-            topic_yaml = file.read()
-            mock_get_resource_yaml.return_value = topic_yaml
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(kfk, ['clusters', '--alter', '--replicas', 1, '--zk-replicas', 1, '--cluster',
                                               self.cluster, '-n', self.namespace])
             assert result.exit_code == 0
 
             with open(r'files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml') as file:
-                expected_topic_yaml = file.read()
-                result_topic_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_topic_yaml == result_topic_yaml
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch('kfk.commands.clusters.click.confirm')
     @mock.patch('kfk.commands.clusters.os')

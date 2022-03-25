@@ -126,7 +126,9 @@ def _update_replicas(replicas, zk_replicas, cluster_dict):
             min_insync_replicas = replicas - 1
         cluster_dict["spec"]["kafka"]["config"]["offsets.topic.replication.factor"] = int(replicas)
         cluster_dict["spec"]["kafka"]["config"]["transaction.state.log.replication.factor"] = int(replicas)
+        cluster_dict["spec"]["kafka"]["config"]["default.replication.factor"] = int(replicas)
         cluster_dict["spec"]["kafka"]["config"]["transaction.state.log.min.isr"] = min_insync_replicas
+        cluster_dict["spec"]["kafka"]["config"]["min.insync.replicas"] = min_insync_replicas
 
     if zk_replicas is not None:
         cluster_dict["spec"]["zookeeper"]["replicas"] = int(zk_replicas)
