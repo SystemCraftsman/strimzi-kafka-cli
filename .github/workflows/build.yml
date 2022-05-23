@@ -39,4 +39,4 @@ jobs:
     - name: Test
       run: |
         kfk
-        cd tests && python -m unittest discover
+        cd tests && python -m pytest
