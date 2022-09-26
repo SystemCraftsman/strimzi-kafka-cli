@@ -19,4 +19,4 @@ spec:
     value.converter.schemas.enable: true
   image: quay.io/systemcraftsman/test-connect-cluster:latest
   replicas: 1
-  version: 3.2.1
+  version: 3.2.3
