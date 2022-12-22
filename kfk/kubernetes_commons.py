@@ -147,7 +147,7 @@ def _operate_using_dict_single_object(
     kind = re.sub('([a-z0-9])([A-Z])', r'\1_\2', kind).lower()
     name = yml_object["metadata"]["name"]
 
-    resp = getattr(sys.modules[__name__], f"{operation}_object")(
+    resp = getattr(sys.modules[__name__], f"_{operation}_object")(
         k8s_api, yml_object, kind, namespace=namespace
     )
     if verbose:
@@ -155,7 +155,7 @@ def _operate_using_dict_single_object(
         print(msg)
 
 
-def create_object(k8s_api, yml_object, kind, **kwargs):
+def _create_object(k8s_api, yml_object, kind, **kwargs):
     if hasattr(k8s_api, f"create_namespaced_{kind}"):
         if "namespace" in yml_object["metadata"]:
             namespace = yml_object["metadata"]["namespace"]
@@ -169,7 +169,7 @@ def create_object(k8s_api, yml_object, kind, **kwargs):
     return resp
 
 
-def delete_object(k8s_api, yml_object, kind, **kwargs):
+def _delete_object(k8s_api, yml_object, kind, **kwargs):
     try:
         if hasattr(k8s_api, "delete_namespaced_{0}".format(kind)):
             if "namespace" in yml_object["metadata"]:
