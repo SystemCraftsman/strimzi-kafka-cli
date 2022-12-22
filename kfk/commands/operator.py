@@ -5,7 +5,7 @@ from kfk.commons import print_missing_options_for_command, create_temp_file
 from kfk.kubectl_command_builder import Kubectl
 from kfk.config import *
 from kfk.constants import SpecialTexts
-from kubernetes import client, config, utils
+from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 
 
 @click.option('-n', '--namespace', help='Namespace to use', required=True)
@@ -25,10 +25,7 @@ def operator(is_install, is_uninstall, namespace):
                         stream = file.read().replace(SpecialTexts.OPERATOR_MY_PROJECT, namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
-
-                config.load_kube_config()
-                k8s_client = client.ApiClient()
-                utils.create_from_yaml(k8s_client, file_path, verbose=True, namespace=namespace)
+                create_using_yaml(file_path, namespace)
     elif is_uninstall:
         # TODO: refactor here
         for directory_name, dirs, files in os.walk("{strimzi_path}/install/cluster-operator/".format(
@@ -41,6 +38,6 @@ def operator(is_install, is_uninstall, namespace):
                         stream = file.read().replace(SpecialTexts.OPERATOR_MY_PROJECT, namespace)
                         temp_file = create_temp_file(stream)
                         file_path = temp_file.name
-                os.system(Kubectl().delete().from_file(file_path).namespace(namespace).build())
+                delete_using_yaml(file_path, namespace)
     else:
         print_missing_options_for_command("operator")
