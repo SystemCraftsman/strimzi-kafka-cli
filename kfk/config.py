@@ -4,7 +4,7 @@ import os
 
 from pathlib import Path
 
-STRIMZI_VERSION = "0.31.1"
+STRIMZI_VERSION = "0.32.0"
 KUBECTL_VERSION = "v1.25.2"
 
 
