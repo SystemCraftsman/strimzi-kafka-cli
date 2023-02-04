@@ -4,8 +4,8 @@ import os
 
 from pathlib import Path
 
-STRIMZI_VERSION = "0.32.0"
-KUBECTL_VERSION = "v1.25.2"
+STRIMZI_VERSION = "0.33.0"
+KUBECTL_VERSION = "v1.26.1"
 
 
 def _get_processor_type():
