@@ -57,7 +57,7 @@ brew tap systemcraftsman/strimzi-kafka-cli
 brew install strimzi-kafka-cli
 ```
 
-Project requires: Python >=3.6
+Project requires: Python >=3.7
 
 ## Examples
 
