@@ -9,6 +9,11 @@ config.load_kube_config()
 k8s_client = client.ApiClient()
 
 
+def delete_object(name, kind, namespace):
+    k8s_api = client.CoreV1Api(k8s_client)
+    _delete_object(k8s_api, name, kind, namespace=namespace)
+
+
 def create_using_yaml(file_path, namespace):
     _operate_using_yaml(k8s_client, file_path, "create", yaml_objects=None, verbose=True,
                         namespace=namespace)
@@ -21,30 +26,6 @@ def delete_using_yaml(file_path, namespace):
 
 def _operate_using_yaml(k8s_client, yaml_file=None, operation=None, yaml_objects=None, verbose=False,
                         namespace="default", **kwargs):
-    """
-    Input:
-    yaml_file: string. Contains the path to yaml file.
-    k8s_client: an ApiClient object, initialized with the client args.
-    verbose: If True, print confirmation from the create action.
-        Default is False.
-    namespace: string. Contains the namespace to create all
-        resources inside. The namespace must preexist otherwise
-        the resource creation will fail. If the API object in
-        the yaml file already contains a namespace definition
-        this parameter has no effect.
-    Available parameters for creating <kind>:
-    :param async_req bool
-    :param str pretty: If 'true', then the output is pretty printed.
-    :param str dry_run: When present, indicates that modifications
-        should not be persisted. An invalid or unrecognized dryRun
-        directive will result in an error response and no further
-        processing of the request.
-        Valid values are: - All: all dry run stages will be processed
-    Raises:
-        FailToExecuteError which holds list of `client.rest.ApiException`
-        instances for each object that failed to delete.
-    """
-
     def operate_with(objects):
         failures = []
         k8s_objects = []
@@ -76,23 +57,6 @@ def _operate_using_yaml(k8s_client, yaml_file=None, operation=None, yaml_objects
 
 def _operate_using_dict(k8s_client, yml_object, operation, verbose,
                         namespace="default", **kwargs):
-    """
-    Perform an operation kubernetes resource from a dictionary containing valid kubernetes
-    API object (i.e. List, Service, etc).
-    Input:
-    k8s_client: an ApiClient object, initialized with the client args.
-    yml_object: a dictionary holding valid kubernetes objects
-    verbose: If True, print confirmation from the create action.
-        Default is False.
-    namespace: string. Contains the namespace to create all
-        resources inside. The namespace must preexist otherwise
-        the resource creation will fail. If the API object in
-        the yaml file already contains a namespace definition
-        this parameter has no effect.
-    Raises:
-        FailToExecuteError which holds list of `client.rest.ApiException`
-        instances for each object that failed to create.
-    """
     api_exceptions = []
     if "List" in yml_object["kind"]:
         kind = yml_object["kind"].replace("List", "")
@@ -147,15 +111,15 @@ def _operate_using_dict_single_object(
     kind = re.sub('([a-z0-9])([A-Z])', r'\1_\2', kind).lower()
     name = yml_object["metadata"]["name"]
 
-    resp = getattr(sys.modules[__name__], f"_{operation}_object")(
-        k8s_api, yml_object, kind, namespace=namespace
+    resp = getattr(sys.modules[__name__], f"_{operation}_using_yaml_object")(
+        k8s_api, yml_object, kind, version.capitalize(), namespace=namespace
     )
     if verbose:
         msg = f"{kind} `{name}` {operation}d."
         print(msg)
 
 
-def _create_object(k8s_api, yml_object, kind, **kwargs):
+def _create_using_yaml_object(k8s_api, yml_object, kind, version, **kwargs):
     if hasattr(k8s_api, f"create_namespaced_{kind}"):
         if "namespace" in yml_object["metadata"]:
             namespace = yml_object["metadata"]["namespace"]
@@ -169,30 +133,31 @@ def _create_object(k8s_api, yml_object, kind, **kwargs):
     return resp
 
 
-def _delete_object(k8s_api, yml_object, kind, **kwargs):
+def _delete_using_yaml_object(k8s_api, yml_object, kind, version, **kwargs):
+    if "namespace" in yml_object["metadata"]:
+        namespace = yml_object["metadata"]["namespace"]
+        kwargs["namespace"] = namespace
+    name = yml_object["metadata"]["name"]
+    delete_object(k8s_api, name, kind, version, **kwargs)
+
+
+def _delete_object(k8s_api, name, kind, version="V1", **kwargs):
     try:
         if hasattr(k8s_api, "delete_namespaced_{0}".format(kind)):
-            if "namespace" in yml_object["metadata"]:
-                namespace = yml_object["metadata"]["namespace"]
-                kwargs["namespace"] = namespace
-            name = yml_object["metadata"]["name"]
             resp = getattr(k8s_api, "delete_namespaced_{}".format(kind))(
                 name=name,
-                body=client.V1DeleteOptions(propagation_policy="Background",
-                                            grace_period_seconds=5), **kwargs)
+                body=getattr(client, f"{version}DeleteOptions")(propagation_policy="Background",
+                                                                grace_period_seconds=5), **kwargs)
         else:
-            # get name of object to delete
-            name = yml_object["metadata"]["name"]
             kwargs.pop('namespace', None)
             resp = getattr(k8s_api, "delete_{}".format(kind))(
                 name=name,
-                body=client.V1DeleteOptions(propagation_policy="Background",
-                                            grace_period_seconds=5), **kwargs)
+                body=getattr(client, f"{version}DeleteOptions")(propagation_policy="Background",
+                                                                grace_period_seconds=5), **kwargs)
         return resp
     except client.rest.ApiException as api_exception:
         if api_exception.reason != "Not Found":
             raise api_exception
-
 
 
 class FailToExecuteError(Exception):

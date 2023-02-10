@@ -14,8 +14,9 @@ from kfk.commons import (
     print_missing_options_for_command,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.constants import KAFKA_PORT
 from kfk.kubectl_command_builder import Kubectl
+from kfk.constants import *
+from kfk.kubernetes_commons import delete_object, create_using_yaml
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 
 
@@ -157,14 +158,7 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
 
-        os.system(
-            Kubectl()
-            .create()
-            .from_file("{topic_temp_file_path}")
-            .namespace(namespace)
-            .build()
-            .format(topic_temp_file_path=topic_temp_file.name)
-        )
+        create_using_yaml(topic_temp_file.name, namespace)
 
         topic_temp_file.close()
 
@@ -212,7 +206,7 @@ def describe(topic, output, native, command_config, cluster, namespace):
 
 
 def delete(topic, namespace):
-    os.system(Kubectl().delete().kafkatopics(topic).namespace(namespace).build())
+    delete_object(topic, "topic", namespace)
 
 
 def alter(
