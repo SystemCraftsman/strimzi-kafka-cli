@@ -1,6 +1,6 @@
 ![Build](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg) ![Deploy](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg) [![PyPI](https://img.shields.io/pypi/v/strimzi-kafka-cli)](https://pypi.org/project/strimzi-kafka-cli/) [![Downloads](https://pepy.tech/badge/strimzi-kafka-cli)](https://pepy.tech/project/strimzi-kafka-cli) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Strimzi](https://img.shields.io/badge/Strimzi-0.33.0-blue)](https://github.com/strimzi/strimzi-kafka-operator/releases) [![AMQ Streams](https://img.shields.io/badge/AMQ&nbsp;Streams-2.3.0-red)](https://access.redhat.com/documentation/en-us/red_hat_amq_streams/2.1)
 
-![Strimzi CLI logo](https://github.com/SystemCraftsman/strimzi-kafka-cli/assets/10568159/75f376c3-8afb-4651-9730-1c917823e374)
+![Strimzi CLI logo](https://github.com/SystemCraftsman/strimzi-kafka-cli/assets/10568159/596ea147-9594-4262-a0c3-d63fa14f0577)
 
 # Strimzi Kafka CLI
 
