@@ -4,7 +4,7 @@
 
 # Strimzi Kafka CLI
 
-Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users -both developers and administrators- to easily adopt [Strimzi](https://strimzi.io/),
+Strimzi Kafka CLI is a CLI that helps traditional Apache Kafka users -both developers and administrators- to easily adapt to [Strimzi](https://strimzi.io/),
 a [Kubernetes operator](https://operatorhub.io/operator/strimzi-kafka-operator) for [Apache Kafka](https://kafka.apache.org/).
 
 The main intention is to ramp up Strimzi usage by creating a similar CLI experience with the traditional Apache Kafka tools that mostly starts with `kafka-*` prefix under the `bin` directory in an ordinary Kafka package.
