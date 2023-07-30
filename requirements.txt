@@ -3,3 +3,4 @@ PyYAML==6.0
 wget==3.2
 jproperties==2.1.1
 pytest==7.0.1
+flake8==6.1.0
