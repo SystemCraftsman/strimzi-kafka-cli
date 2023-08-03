@@ -35,4 +35,3 @@ class TestUtils(TestCase):
         self.assertTrue(is_valid_url(valid_url_str))
         self.assertFalse(is_valid_url(not_valid_url_str2))
         self.assertFalse(is_valid_url(not_valid_url_str3))
-

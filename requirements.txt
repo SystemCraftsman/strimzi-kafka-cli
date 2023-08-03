@@ -3,7 +3,9 @@ PyYAML==6.0
 wget==3.2
 jproperties==2.1.1
 pytest==7.0.1
-flake8
+flake8<=6.1.0
+black==23.7.0
+docformatter==1.7.5
 setuptools==68.0.0
 wheel==0.41.0
 twine==4.0.2

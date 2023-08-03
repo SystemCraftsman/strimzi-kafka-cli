@@ -10,10 +10,13 @@ clean:
 	-rm -rf dist build .eggs *.egg-info ${PIP_LOG}
 
 lint:
-	python -m flake8
+	python -m flake8 --extend-ignore=E203,E231,E501 --count
+
+format:
+	python -m black .; python -m docformatter -r kfk; python -m docformatter -r tests
 
 test:
-	python -m pytest -x
+	pushd tests; python -m pytest -x; popd
 
 build: clean
 	python setup.py sdist bdist_wheel

@@ -38,7 +38,7 @@ jobs:
     - name: Test
       run: |
         kfk
-        cd tests && python -m pytest
+        make test
     - name: Build
       run: |
         python setup.py sdist bdist_wheel

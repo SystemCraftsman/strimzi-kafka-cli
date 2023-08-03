@@ -4,8 +4,15 @@ import stat
 import wget
 import tarfile
 import ssl
-
-from kfk.config import *
+from kfk.config import (
+    BASE_PATH,
+    KUBECTL_PATH,
+    KUBECTL_VERSION,
+    KUBECTL_RELEASE_URL,
+    STRIMZI_PATH,
+    STRIMZI_VERSION,
+    STRIMZI_RELEASE_URL,
+)
 from pathlib import Path
 from kfk.kubectl_command_builder import Kubectl
 
@@ -27,10 +34,17 @@ def download_kubectl_if_not_exists():
 
 
 def update_kubectl_if_new_version_exists():
-    if os.path.exists(KUBECTL_PATH) and os.environ.get('STRIMZI_KAFKA_CLI_KUBECTL_VERSION') is None and os.environ.get(
-            'STRIMZI_KAFKA_CLI_KUBECTL_PATH') is None and KUBECTL_VERSION not in subprocess.check_output(
-            Kubectl().version("--client=true").build(), shell=True, stderr=subprocess.STDOUT).decode(
-            "utf-8"):
+    if (
+        os.path.exists(KUBECTL_PATH)
+        and os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_VERSION") is None
+        and os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_PATH") is None
+        and KUBECTL_VERSION
+        not in subprocess.check_output(
+            Kubectl().version("--client=true").build(),
+            shell=True,
+            stderr=subprocess.STDOUT,
+        ).decode("utf-8")
+    ):
         os.rename(KUBECTL_PATH, KUBECTL_PATH + "_old")
         _download_kubectl()
 
@@ -47,8 +61,7 @@ def download_strimzi_if_not_exists():
     if not os.path.exists(STRIMZI_PATH):
         strimzi_tarfile_path = STRIMZI_PATH + ".tar.gz"
 
-        print(
-            f"Creating Strimzi Kafka CLI Dependencies folder: {BASE_PATH}\n")
+        print(f"Creating Strimzi Kafka CLI Dependencies folder: {BASE_PATH}\n")
         Path(BASE_PATH).mkdir(exist_ok=True)
 
         print(f"Downloading dependency: Strimzi {STRIMZI_VERSION}...\n")
