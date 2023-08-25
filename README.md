@@ -44,7 +44,13 @@ Please take a look at the relevant article [Strimzi Kafka CLI: Managing Strimzi 
 ### Using Python Package Installer
 
 ``` bash
-sudo pip install strimzi-kafka-cli
+pip install strimzi-kafka-cli --user
+```
+
+Or to install Strimzi Kafka CLI in an isolated environment, you can simply use [pipx](https://pypa.github.io/pipx/):
+
+``` bash
+pipx install strimzi-kafka-cli
 ```
 
 ### Using Homebrew
@@ -56,6 +62,8 @@ brew tap systemcraftsman/strimzi-kafka-cli
 #Install Strimzi Kafka CLI
 brew install strimzi-kafka-cli
 ```
+
+> Installing the CLI by using Homebrew already uses a virtual environment, so you don;t have to worry about your main Python environment.
 
 Project requires: Python >=3.7
 
