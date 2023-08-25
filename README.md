@@ -63,7 +63,7 @@ brew tap systemcraftsman/strimzi-kafka-cli
 brew install strimzi-kafka-cli
 ```
 
-> Installing the CLI by using Homebrew already uses a virtual environment, so you don;t have to worry about your main Python environment.
+> Installing the CLI by using Homebrew already uses a virtual environment, so you don't have to worry about your main Python environment.
 
 Project requires: Python >=3.7
 
