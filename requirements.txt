@@ -1,9 +1,0 @@
-click==8.0.1
-PyYAML==6.0
-wget==3.2
-jproperties==2.1.1
-pytest==7.0.1
-flake8
-setuptools==68.0.0
-wheel==0.41.0
-twine==4.0.2
