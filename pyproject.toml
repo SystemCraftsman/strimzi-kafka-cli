@@ -51,6 +51,7 @@ black = "^23.7.0"
 mypy = "^1.4.1"
 pre-commit = "^3.3.3"
 flake8 = { version = "*", python = ">=3.8.1,<3.12.0" }
+flake8-pyproject = "^1.2.3"
 
 
 [tool.flake8]
@@ -63,6 +64,7 @@ extend-ignore = """
     E701,
     C901,
 """
+
 per-file-ignores = """
     __init__.py: F401
 """
