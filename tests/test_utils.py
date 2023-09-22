@@ -1,5 +1,6 @@
-from kfk.utils import *
 from unittest import TestCase
+
+from kfk.utils import convert_string_to_type, is_valid_url, snake_to_camel_case
 
 
 class TestUtils(TestCase):
@@ -35,4 +36,3 @@ class TestUtils(TestCase):
         self.assertTrue(is_valid_url(valid_url_str))
         self.assertFalse(is_valid_url(not_valid_url_str2))
         self.assertFalse(is_valid_url(not_valid_url_str3))
-

@@ -1,20 +1,18 @@
 import click
-import pkg_resources
 
+from kfk import __version__
 from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
 
-
-version = f"""CLI Version: {pkg_resources.require("strimzi-kafka-cli")[0].version}
+version = f"""CLI Version: {__version__}
 Strimzi Version: {STRIMZI_VERSION}
 Kubectl Version: {KUBECTL_VERSION}"""
 
 
-# @click.option('-v', '--version', help='Prints the version', is_flag=True)
-@click.version_option(version=1, message=version)
-@click.group(name='kfk')
+@click.version_option(version="1", message=version)
+@click.group(name="kfk", no_args_is_help=True)
 def kfk():
     """Strimzi Kafka CLI"""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     kfk()

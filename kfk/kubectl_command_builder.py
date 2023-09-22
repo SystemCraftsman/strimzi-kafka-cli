@@ -3,7 +3,6 @@ from kfk.constants import SPACE
 
 
 class Kubectl:
-
     def __init__(self):
         self.cmd_str = KUBECTL_PATH
 
@@ -46,11 +45,23 @@ class Kubectl:
         return self
 
     def exec_command(self, command):
-        self.cmd_str = self.cmd_str + SPACE + "--" + SPACE + "bash -c" + SPACE + "\"" + command + "\""
+        self.cmd_str = (
+            self.cmd_str
+            + SPACE
+            + "--"
+            + SPACE
+            + "bash -c"
+            + SPACE
+            + '"'
+            + command
+            + '"'
+        )
         return self
 
     def cp(self, source_path, destination_path):
-        self.cmd_str = self.cmd_str + SPACE + "cp" + SPACE + source_path + SPACE + destination_path
+        self.cmd_str = (
+            self.cmd_str + SPACE + "cp" + SPACE + source_path + SPACE + destination_path
+        )
         return self
 
     def kafkas(self, *vals):

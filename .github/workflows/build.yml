@@ -32,7 +32,7 @@ jobs:
             source venv/bin/activate
             python -m pip install --upgrade poetry
             poetry install
-                    
+
     - name: Lint with flake8
       run: |
         source venv/bin/activate
