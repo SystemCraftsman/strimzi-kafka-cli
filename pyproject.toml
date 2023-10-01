@@ -1,15 +1,11 @@
-[tool.poetry]
+[project]
 name = "strimzi-kafka-cli"
 version = "0.1.0-alpha68"
 description = "Command Line Interface for Strimzi Kafka Operator"
-authors = ["Aykut Bulgu <aykut@systemcraftsman.com>"]
-maintainers = ["Aykut Bulgu <aykut@systemcraftsman.com>"]
+authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
 readme = "README.md"
-license = "Apache-2.0"
-packages = [{include = "kfk"}]
-homepage = "https://github.com/systemcraftsman/strimzi-kafka-cli"
-repository = "https://github.com/systemcraftsman/strimzi-kafka-cli"
-documentation = "https://github.com/systemcraftsman/strimzi-kafka-cli/blob/main/README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.8,<3.12.0"
 keywords = ["kafka", "strimzi", "cli", "operator", "kubernetes", "k8s", "openshift","apache-kafka"]
 
 classifiers=[
@@ -29,29 +25,42 @@ classifiers=[
     'Operating System :: MacOS'
 ]
 
-[tool.poetry.urls]
+dependencies = [
+    "click == 8.0.1",
+    "pyyaml",
+    "wget",
+    "jproperties"
+]
+
+[project.optional-dependencies]
+dev = [
+    "twine",
+    "flake8",
+    "flake8-pyproject",
+    "pytest",
+    "wheel",
+    "build",
+    "ruff",
+    "isort",
+    "black",
+    "mypy",
+    "pre-commit",
+    "bandit",
+    "autoflake"
+]
+
+[tool.urls]
 Tracker = "https://github.com/systemcraftsman/strimzi-kafka-cli/issues"
-
-[tool.poetry.dependencies]
-python = ">=3.8,<3.12.0"
-click = "8.0.1"
-pyyaml = "^6.0.1"
-wget = "^3.2"
-jproperties = "^2.1.1"
+Homepage = "https://github.com/systemcraftsman/strimzi-kafka-cli"
+Repository = "https://github.com/systemcraftsman/strimzi-kafka-cli"
+Documentation = "https://github.com/systemcraftsman/strimzi-kafka-cli/blob/main/README.md"
 
 
-[tool.poetry.group.dev.dependencies]
-twine = "^4.0.2"
-pytest = "^7.4.2"
-wheel = "^0.40.0"
-build = "^0.10.0"
-ruff = "^0.0.280"
-isort = "^5.12.0"
-black = "^23.7.0"
-mypy = "^1.4.1"
-pre-commit = "^3.3.3"
-flake8 = { version = "*", python = ">=3.8.1,<3.12.0" }
-flake8-pyproject = "^1.2.3"
+[tool.setuptools]
+package-dir = {"kfk" = "kfk"}
+include-package-data = true
+license-files = ["LICENSE"]
+zip-safe = true
 
 
 [tool.flake8]
@@ -102,16 +111,9 @@ exclude = '''
 '''
 
 
-[tool.setuptools]
-include-package-data = false
-
-[tool.setuptools.packages.find]
-exclude = ["docs*", "test*","examples"]
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry.scripts]
+[project.scripts]
 kfk = "kfk.main:kfk"
-
