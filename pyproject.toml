@@ -1,0 +1,119 @@
+[project]
+name = "strimzi-kafka-cli"
+version = "0.1.0-alpha68"
+description = "Command Line Interface for Strimzi Kafka Operator"
+authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.8,<3.12.0"
+keywords = ["kafka", "strimzi", "cli", "operator", "kubernetes", "k8s", "openshift","apache-kafka"]
+
+classifiers=[
+    'Intended Audience :: Developers',
+    'Topic :: Software Development',
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3 :: Only',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS'
+]
+
+dependencies = [
+    "click == 8.0.1",
+    "pyyaml",
+    "wget",
+    "jproperties"
+]
+
+[project.optional-dependencies]
+dev = [
+    "twine",
+    "flake8",
+    "flake8-pyproject",
+    "pytest",
+    "wheel",
+    "build",
+    "ruff",
+    "isort",
+    "black",
+    "mypy",
+    "pre-commit",
+    "bandit",
+    "autoflake"
+]
+
+[tool.urls]
+Tracker = "https://github.com/systemcraftsman/strimzi-kafka-cli/issues"
+Homepage = "https://github.com/systemcraftsman/strimzi-kafka-cli"
+Repository = "https://github.com/systemcraftsman/strimzi-kafka-cli"
+Documentation = "https://github.com/systemcraftsman/strimzi-kafka-cli/blob/main/README.md"
+
+
+[tool.setuptools]
+package-dir = {"kfk" = "kfk"}
+include-package-data = true
+license-files = ["LICENSE"]
+zip-safe = true
+
+
+[tool.flake8]
+exclude = ".git,venv,.venv,env,.env,__pycache__,docs,dist"
+max-complexity = 10
+max-line-length = 88
+extend-ignore = """
+    W503,
+    E203,
+    E701,
+    C901,
+"""
+
+per-file-ignores = """
+    __init__.py: F401
+"""
+
+[tool.isort]
+line_length = 88
+profile = "black"
+
+[tool.bandit]
+target = ["tests", "kfk"]
+tests = ["B201", "B301"]
+
+[tool.autoflake]
+check = true
+imports = ["kfk"]
+
+
+[tool.black]
+target-version = ["py37"]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | docs
+)/
+'''
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+kfk = "kfk.main:kfk"
