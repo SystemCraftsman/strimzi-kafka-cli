@@ -76,7 +76,7 @@ Project requires: Python >=3.7
 
 ## Dependencies
 ### Python Dependencies
-Please see [requirements.txt](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/requirements.txt) file.
+Please see [pyproject.toml](https://github.com/SystemCraftsman/strimzi-kafka-cli/blob/main/pyproject.toml) file.
 ### External Dependencies
 `kubectl` and `Strimzi resources` are the tools that Strimzi Kafka CLI uses. These dependencies are automatically downloaded when the first `kfk` command is run. You can always check the dependency versions of your CLI with the following command:
 
