@@ -13,7 +13,10 @@ lint:
 	python -m flake8
 
 test:
-	python -m pytest -x
+	pushd tests; python -m pytest -x; popd
 
 build: clean
-	python setup.py sdist bdist_wheel
+	python -m build; twine check --strict dist/*
+
+install-dependencies:
+	pip install ".[dev]"
