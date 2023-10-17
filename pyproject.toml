@@ -92,7 +92,7 @@ imports = ["kfk"]
 
 
 [tool.black]
-target-version = ["py37"]
+target-version = ["py38", "py39", "py310", "py311"]
 line-length = 88
 include = '\.pyi?$'
 exclude = '''
