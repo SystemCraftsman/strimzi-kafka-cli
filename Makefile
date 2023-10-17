@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 PYPI_USER=
 PYPI_SERVER=
 
