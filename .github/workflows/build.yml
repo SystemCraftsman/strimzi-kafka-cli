@@ -29,8 +29,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
 
-    - name: Setup an environment for Python ${{ matrix.python-version }}
-      run: pip install ".[dev]"
+    - name: Install dependencies
+      run: make install-dependencies
 
     - name: Lint with flake8
       run: |
@@ -41,8 +41,6 @@ jobs:
     - name: Test
       run: |
         kfk
-        cd tests && pytest
+        make test
     - name: Build
-      run: |
-        python -m build
-        twine check --strict dist/*
+      run: make build
