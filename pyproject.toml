@@ -1,12 +1,12 @@
 [project]
 name = "strimzi-kafka-cli"
-version = "0.1.0-alpha69"
+version = "0.1.0-alpha70"
 description = "Command Line Interface for Strimzi Kafka Operator"
 authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
 readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.8,<3.12.0"
-keywords = ["kafka", "strimzi", "cli", "operator", "kubernetes", "k8s", "openshift","apache-kafka"]
+keywords = ["kafka", "strimzi", "cli", "operator", "kubernetes", "k8s", "openshift", "apache-kafka"]
 
 classifiers=[
     'Intended Audience :: Developers',
