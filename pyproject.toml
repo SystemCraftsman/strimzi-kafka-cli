@@ -40,7 +40,6 @@ dev = [
     "pytest",
     "wheel",
     "build",
-    "ruff",
     "isort",
     "black",
     "mypy",
