@@ -73,10 +73,9 @@ extend-ignore = """
     E701,
     C901,
 """
-
 per-file-ignores = """
-    __init__.py: F401
-"""
+        ./kfk/main.py: F401, F811
+    """
 
 [tool.isort]
 line_length = 88

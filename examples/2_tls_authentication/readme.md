@@ -8,7 +8,7 @@ First lets list the clusters and see our clusters list.
 ```shell
 kfk clusters --list
 ```
-    
+
 ---
 **IMPORTANT**
 
@@ -210,7 +210,7 @@ user.password:  12 bytes
 In order create the truststore and keystore files just run the get_keys.sh file in the [example directory](https://github.com/systemcraftsman/strimzi-kafka-cli/blob/master/examples/2_tls_authentication/get_keys.sh):
 
 ```shell
-chmod a+x ./get_keys.sh;./get_keys.sh 
+chmod a+x ./get_keys.sh;./get_keys.sh
 ```
 
 This will generate two files:
@@ -220,7 +220,7 @@ This will generate two files:
 
 TLS authentications are made with bidirectional TLS handshake. In order to do this apart from a truststore that has the public key imported, a keystore file that has both the public and private keys has to be created and defined in the client configuration file.
 
-So let's create our client configuration file. 
+So let's create our client configuration file.
 
 Our client configuration should have a few definitions like:
 
@@ -254,7 +254,7 @@ Be careful to run producer and consumer commands from example's directory. Other
 ```shell
 kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
 ```
-The console producer seems to be working just fine since we can produce messages. 
+The console producer seems to be working just fine since we can produce messages.
 
 ```
 >message1

@@ -5,7 +5,7 @@ class NotRequiredIf(click.Argument):
     # TODO: Refactor here
 
     def __init__(self, *args, **kwargs):
-        self.arguments = kwargs.pop('arguments')
+        self.arguments = kwargs.pop("arguments")
         assert self.arguments, "'arguments' parameter required"
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
@@ -20,16 +20,14 @@ class NotRequiredIf(click.Argument):
         if control_arguments_exist:
             self.required = None
 
-        return super(NotRequiredIf, self).handle_parse_result(
-            ctx, opts, args)
+        return super(NotRequiredIf, self).handle_parse_result(ctx, opts, args)
 
 
 class RequiredIf(click.Argument):
-
     # TODO: Refactor here
 
     def __init__(self, *args, **kwargs):
-        self.arguments = kwargs.pop('arguments')
+        self.arguments = kwargs.pop("arguments")
         assert self.arguments, "'arguments' parameter required"
         super(RequiredIf, self).__init__(*args, **kwargs)
 
@@ -46,5 +44,4 @@ class RequiredIf(click.Argument):
         else:
             self.required = None
 
-        return super(RequiredIf, self).handle_parse_result(
-            ctx, opts, args)
+        return super(RequiredIf, self).handle_parse_result(ctx, opts, args)

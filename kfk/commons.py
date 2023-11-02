@@ -1,20 +1,33 @@
-import os
 import io
-import tempfile
 import ntpath
-import click
-
-from kfk.kubectl_command_builder import Kubectl
-from kfk.utils import convert_string_to_type, get_list_by_split_string
-from kfk.constants import *
+import os
+import tempfile
 from subprocess import call
+
+import click
 from jproperties import Properties
 
+from kfk.constants import (
+    COMMA,
+    EQUALS,
+    KAFKA_PORT,
+    KAFKA_SECURE_PORT,
+    KAFKA_SSL,
+    NEW_LINE,
+    SEMICOLON,
+    SPACE,
+)
+from kfk.kubectl_command_builder import Kubectl
+from kfk.utils import convert_string_to_type, get_list_by_split_string
 
 # TODO: Message string to messages.py
 
+
 def print_missing_options_for_command(command_str):
-    click.echo(f"Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help' for help.")
+    click.echo(
+        f"Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help'"
+        " for help."
+    )
 
 
 def print_cluster_resource_not_found_msg(cluster, namespace):
@@ -27,7 +40,9 @@ def print_resource_not_found_msg(namespace):
 
 def delete_last_applied_configuration(resource_dict):
     if "annotations" in resource_dict["metadata"]:
-        resource_dict["metadata"]["annotations"].pop("kubectl.kubernetes.io/last-applied-configuration", None)
+        resource_dict["metadata"]["annotations"].pop(
+            "kubectl.kubernetes.io/last-applied-configuration", None
+        )
 
 
 def add_kv_config_to_resource(config, dict_part, *converters):
@@ -49,7 +64,9 @@ def add_properties_config_to_resource(properties, dict_part, *converters):
         for converter in converters:
             property_item = converter(property_item)
             if property_item is not None:
-                dict_part[property_item[0]] = convert_string_to_type(property_item[1].data)
+                dict_part[property_item[0]] = convert_string_to_type(
+                    property_item[1].data
+                )
 
 
 def get_kv_config_list(config_str):
@@ -73,7 +90,9 @@ def delete_resource_config(config, dict_part, *converters):
         dict_part.pop(config, None)
 
 
-def resource_exists(resource_type=None, resource_name=None, cluster=None, namespace=None):
+def resource_exists(
+    resource_type=None, resource_name=None, cluster=None, namespace=None
+):
     command = Kubectl().get().resource(resource_type).namespace(namespace)
 
     if cluster is not None:
@@ -82,8 +101,16 @@ def resource_exists(resource_type=None, resource_name=None, cluster=None, namesp
     return resource_name in os.popen(command.build()).read()
 
 
-def get_resource_yaml(resource_type=None, resource_name=None, cluster=None, namespace=None):
-    command = Kubectl().get().resource(resource_type, resource_name).namespace(namespace).output("yaml")
+def get_resource_yaml(
+    resource_type=None, resource_name=None, cluster=None, namespace=None
+):
+    command = (
+        Kubectl()
+        .get()
+        .resource(resource_type, resource_name)
+        .namespace(namespace)
+        .output("yaml")
+    )
 
     if cluster is not None:
         command = command.label(f"strimzi.io/cluster={cluster}")
@@ -91,7 +118,9 @@ def get_resource_yaml(resource_type=None, resource_name=None, cluster=None, name
     return os.popen(command.build()).read()
 
 
-def get_resource_as_stream(resource_type=None, resource_name=None, cluster=None, namespace=None):
+def get_resource_as_stream(
+    resource_type=None, resource_name=None, cluster=None, namespace=None
+):
     resource_yaml = get_resource_yaml(resource_type, resource_name, cluster, namespace)
 
     if not resource_yaml:
@@ -101,21 +130,30 @@ def get_resource_as_stream(resource_type=None, resource_name=None, cluster=None,
 
 
 def create_temp_file(stream):
-    temp_file = tempfile.NamedTemporaryFile(mode='w+')
+    temp_file = tempfile.NamedTemporaryFile(mode="w+")
     temp_file.write(stream)
     temp_file.flush()
     return temp_file
 
 
 def open_file_in_system_editor(file):
-    call([os.environ.get('EDITOR', 'vim'), file])
+    call([os.environ.get("EDITOR", "vim"), file])
 
 
-def transfer_file_to_container(source_file_path, dest_file_path, container, pod, namespace):
-    os.system(Kubectl().cp(source_file_path, f"{namespace}/{pod}:" + dest_file_path).container(container).build())
+def transfer_file_to_container(
+    source_file_path, dest_file_path, container, pod, namespace
+):
+    os.system(
+        Kubectl()
+        .cp(source_file_path, f"{namespace}/{pod}:" + dest_file_path)
+        .container(container)
+        .build()
+    )
 
 
-def apply_client_config_from_file(native_command, config_file_path, config_file_flag, container, pod, namespace):
+def apply_client_config_from_file(
+    native_command, config_file_path, config_file_flag, container, pod, namespace
+):
     port = KAFKA_PORT
     delete_file_command = ""
     with open(config_file_path) as file:
@@ -128,23 +166,42 @@ def apply_client_config_from_file(native_command, config_file_path, config_file_
                     producer_property_list = get_kv_config_list(producer_property)
                     if producer_property_list[1] == KAFKA_SSL:
                         port = KAFKA_SECURE_PORT
-                if "ssl.truststore.location" in producer_property or "ssl.keystore.location" in producer_property:
+                if (
+                    "ssl.truststore.location" in producer_property
+                    or "ssl.keystore.location" in producer_property
+                ):
                     producer_property_list = get_kv_config_list(producer_property)
                     file_path = producer_property_list[1]
                     new_file_path = "/tmp/" + ntpath.basename(file_path)
-                    transfer_file_to_container(file_path, new_file_path, container, pod, namespace)
+                    transfer_file_to_container(
+                        file_path, new_file_path, container, pod, namespace
+                    )
                     producer_property = producer_property_list[0] + "=" + new_file_path
-                    delete_file_command = delete_file_command + "rm -rf" + SPACE + new_file_path + SEMICOLON
+                    delete_file_command = (
+                        delete_file_command
+                        + "rm -rf"
+                        + SPACE
+                        + new_file_path
+                        + SEMICOLON
+                    )
                 lines.append(producer_property)
-        with open(temp_file.name, 'w') as temp_file:
+        with open(temp_file.name, "w") as temp_file:
             for line in lines:
                 temp_file.write(line + NEW_LINE)
         new_config_file_path = "/tmp/" + ntpath.basename(config_file_path)
-        transfer_file_to_container(temp_file.name, new_config_file_path, container, pod, namespace)
-        delete_file_command = delete_file_command + "rm -rf" + SPACE + new_config_file_path + SEMICOLON
-        native_command = native_command + SPACE + config_file_flag + SPACE + new_config_file_path
+        transfer_file_to_container(
+            temp_file.name, new_config_file_path, container, pod, namespace
+        )
+        delete_file_command = (
+            delete_file_command + "rm -rf" + SPACE + new_config_file_path + SEMICOLON
+        )
+        native_command = (
+            native_command + SPACE + config_file_flag + SPACE + new_config_file_path
+        )
         temp_file.close()
-    return native_command.format_map(SafeDict(port=port)) + SEMICOLON + delete_file_command
+    return (
+        native_command.format_map(SafeDict(port=port)) + SEMICOLON + delete_file_command
+    )
 
 
 def get_properties_from_file(file):
@@ -155,4 +212,4 @@ def get_properties_from_file(file):
 
 class SafeDict(dict):
     def __missing__(self, key):
-        return '{' + key + '}'
+        return "{" + key + "}"

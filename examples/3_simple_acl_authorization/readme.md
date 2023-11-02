@@ -3,7 +3,7 @@
 In the previous example we implemented TLS authentication on Strimzi Kafka cluster with Strimzi Kafka CLI. In this example, we will be continuing with enabling the ACL authorization, so that we will be able to restrict access to our topics and only allow the users or groups we want to.
 
 
-Let's first see our cluster list. 
+Let's first see our cluster list.
 
 ```shell
 kfk clusters --list
@@ -16,7 +16,7 @@ kafka        my-cluster        3                        3
 ---
 **IMPORTANT**
 
-You should have a cluster called `my-cluster` on the namespace `kafka` we created before. If you don't have the cluster and haven't yet done the authentication part please go back to the previous example and do it first since for authorization you will need authentication to be set up before. 
+You should have a cluster called `my-cluster` on the namespace `kafka` we created before. If you don't have the cluster and haven't yet done the authentication part please go back to the previous example and do it first since for authorization you will need authentication to be set up before.
 
 Also please copy the `truststore.jks` and the `user.p12` files or recreate them as explained in the previous example and put it along the example folder which we ignore in git.
 
@@ -47,7 +47,7 @@ my-user   tls
 
 As you can see we have the `my-user` user that we created and authenticated in the previous example.
 
-Now let's configure our cluster to enable for ACL authorization. We have to alter our cluster for this: 
+Now let's configure our cluster to enable for ACL authorization. We have to alter our cluster for this:
 
 ```shell
 kfk clusters --alter --cluster my-cluster -n kafka
@@ -89,7 +89,7 @@ Processed a total of 0 messages
 
 As you might also observe, both the producer and consumer returned `TopicAuthorizationException` by saying `Not authorized to access topics: [my-topic]`. So let's define authorization access to this topic for the user `my-user`.
 
-In order to enable user's authorization, we have to both define the user's authorization type as `simple` for it to use `SimpleAclAuthorizer` of Apache Kafka, and the ACL definitions for the relevant topic -in this case it is `my-topic`. To do this, we need to alter the user with the following command options: 
+In order to enable user's authorization, we have to both define the user's authorization type as `simple` for it to use `SimpleAclAuthorizer` of Apache Kafka, and the ACL definitions for the relevant topic -in this case it is `my-topic`. To do this, we need to alter the user with the following command options:
 
 ```shell
 kfk users --alter --user my-user --authorization-type simple --add-acl --resource-type topic --resource-name my-topic -n kafka -c my-cluster
@@ -122,7 +122,7 @@ So in this case we used the defaults of `type:allow`, `host:*` and `operation:Al
 kfk users --alter --user my-user --authorization-type simple --add-acl --resource-type topic --resource-name my-topic --type allow --host * --operation All -n kafka -c my-cluster
 ```
 
-In order to see the ACL that is defined for allowing all operations of `my-topic` for the user `my-user`, let's describe it, in this case as YAML format: 
+In order to see the ACL that is defined for allowing all operations of `my-topic` for the user `my-user`, let's describe it, in this case as YAML format:
 
 ```shell
 kfk users --describe --user my-user -n kafka -c my-cluster -o yaml
@@ -177,7 +177,7 @@ org.apache.kafka.common.errors.GroupAuthorizationException: Not authorized to ac
 Processed a total of 0 messages
 ```
 
-Whoops! It did not work like the producer. But why? Because the consumer group that is randomly generated for us (because we did not define it anywhere) doesn't have at least `read` permission on `my-topic` topic. 
+Whoops! It did not work like the producer. But why? Because the consumer group that is randomly generated for us (because we did not define it anywhere) doesn't have at least `read` permission on `my-topic` topic.
 
 ---
 **IMPORTANT**
@@ -188,7 +188,7 @@ In Apache Kafka, if you want to consume messages you have to do it via a consume
 
 Ok then. Now let's add the ACL for a group in order to give `read` permission for `my-topic` topic. Let's call this group `my-group`, which we will also use it as the group id in our consumer client configuration. This time let's use `kfk acls` command which works like `kfk users --alter --add-acl` command. In order to give the best traditional experience to Strimzi CLI users, just like the traditional `bin/kafka-acls.sh` command, we have the `kfk acls` command which works mostly the same with the traditional one.
 
-With the following command, we give the `my-group` group the `read` right for consuming the messages. 
+With the following command, we give the `my-group` group the `read` right for consuming the messages.
 
 ```shell
 kfk acls --add --allow-principal User:my-user --group my-group --operation Read -n kafka -c my-cluster
@@ -260,7 +260,7 @@ ssl.keystore.password=123456
 group.id=my-group
 ```
 
-Running the consumer again with the updated client configuration -this time consuming from the beginning- let's see the previously produced logs: 
+Running the consumer again with the updated client configuration -this time consuming from the beginning- let's see the previously produced logs:
 
 ```shell
 kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties --from-beginning
@@ -275,5 +275,3 @@ message3
 Voilà!
 
 We are able to configure the Strimzi cluster for ACL authorization, define ACLs easily with different methods and use the client configurations successfully with Strimzi Kafka CLI.
-
-

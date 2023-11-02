@@ -5,12 +5,12 @@ Strimzi Kafka CLI enables users to describe, create, delete configurations of to
 While `kfk configs` command can be used to change the configuration of these three entities, one can change relevant entities' configuration by using the following as well:
 
  * `kfk topics --config/--delete-config` for adding and deleting configurations to topics.
- 
+
  * `kfk users --quota/--delete-quota` for managing quotas as a part of the configuration of it.
- 
+
  * `kfk clusters --config/--delete-config` for adding and deleting configurations to all brokers.
- 
- In this example we will show you to do the configuration by using `kfk configs` only but will mention about the options above. 
+
+ In this example we will show you to do the configuration by using `kfk configs` only but will mention about the options above.
  So let's start with `topic` configuration.
 
 ## Topic Configuration
@@ -55,7 +55,7 @@ Dynamic configs for topic my-topic are:
 ---
 **INFO**
 
-Additionally you can describe all of the topic configurations natively on current cluster. 
+Additionally you can describe all of the topic configurations natively on current cluster.
 To do this, just remove the `entity-name` option:
 
 ```shell
@@ -78,7 +78,7 @@ Spec:
 ...
 ```
 
-Now let's add a configuration like `min.insync.replicas`, which configures the sync replica count through the broker, between the leaders and followers. 
+Now let's add a configuration like `min.insync.replicas`, which configures the sync replica count through the broker, between the leaders and followers.
 In order to add a configuration you must use `--alter` and for each config to be add `--add-config` following the `kfk config` command:
 
 
@@ -98,7 +98,7 @@ Alternatively you can set the topic configuration by using `kfk topics` with `--
 kfk topics --alter --topic my-topic --config min.insync.replicas=3 -c my-cluster -n kafka
 ```
 
-In order to add two configs -let's say that we wanted to add `cleanup.policy=compact` configuration along with `min.insync.replicas`- run a command like following: 
+In order to add two configs -let's say that we wanted to add `cleanup.policy=compact` configuration along with `min.insync.replicas`- run a command like following:
 
 ```shell
 kfk configs --alter --add-config 'min.insync.replicas=3,cleanup.policy=compact' --entity-type topics --entity-name my-topic -c my-cluster -n kafka
@@ -142,7 +142,7 @@ kfk configs --describe --entity-type topics --entity-name my-topic -c my-cluster
 ...
 ```
 
-Like adding a configuration, deleting a configuration is very easy. You can remove all the configurations 
+Like adding a configuration, deleting a configuration is very easy. You can remove all the configurations
 that you've just set with a single command:
 
 ```shell
@@ -167,7 +167,7 @@ Dynamic configs for topic my-topic are:
   retention.ms=7200000 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:retention.ms=7200000}
 ```
 
-As you can see we could easily manipulate the topic configurations almost like the native shell 
+As you can see we could easily manipulate the topic configurations almost like the native shell
 executables of Apache Kafka. Now let's see how it is done for user configuration.
 
 ## User Configuration
@@ -196,21 +196,21 @@ kfk users --alter --user my-user --quota request_percentage=55 --quota consumer_
 In traditional `kafka-configs.sh` command there are actually 5 configurations, 3 of which are quota related ones:
 
 ```
-consumer_byte_rate                    
-producer_byte_rate                    
-request_percentage  
+consumer_byte_rate
+producer_byte_rate
+request_percentage
 ```
 
 and the other 2 is for authentication type:
 
 ```
-SCRAM-SHA-256                         
-SCRAM-SHA-512 
+SCRAM-SHA-256
+SCRAM-SHA-512
 ```
 
-While these two configurations are also handled by `kafka-configs.sh` in traditional Kafka usage, 
-in Strimzi CLI they are configured by altering the cluster by running the `kfk clusters --alter` 
-command and altering the user by using the `kfk users --alter` command for adding the relevant authentication type. 
+While these two configurations are also handled by `kafka-configs.sh` in traditional Kafka usage,
+in Strimzi CLI they are configured by altering the cluster by running the `kfk clusters --alter`
+command and altering the user by using the `kfk users --alter` command for adding the relevant authentication type.
 So `kfk configs` command will not be used for these two configurations since it's not supported.
 
 ---
@@ -228,7 +228,7 @@ Configs for user-principal 'CN=my-user' are consumer_byte_rate=2097152.0, reques
 ---
 **INFO**
 
-Additionally you can describe all of the user configurations natively on current cluster. 
+Additionally you can describe all of the user configurations natively on current cluster.
 To do this, just remove the `entity-name` option:
 
 ```shell
@@ -270,13 +270,13 @@ You can see that empty response returning since there is no configuration anymor
 kfk configs --describe --entity-type users --entity-name my-user -c my-cluster -n kafka --native
 ```
 
-So we could easily update/create/delete the user configurations for Strimzi, almost like the native shell 
+So we could easily update/create/delete the user configurations for Strimzi, almost like the native shell
 executables of Apache Kafka. Now let's take our final step to see how it is done for broker configuration.
 
 ## Broker Configuration
 
 Adding configurations either as dynamic ones or static ones are as easy as it is for the topics and users.
-For both configuration types, Strimzi takes care about it itself by rolling update the brokers for the static 
+For both configuration types, Strimzi takes care about it itself by rolling update the brokers for the static
 configurations and reflecting directly the dynamic configurations.
 
 Here is a way to add a static configuration that will be reflected after the rolling update of the brokers:
@@ -294,7 +294,7 @@ kfk clusters --alter --cluster my-cluster --config log.retention.hours=168 -n ka
 ---
 **IMPORTANT**
 
-Unlike the native `kafka-configs.sh` command, for the `entity-name`, the Kafka cluster name should be set rather than the 
+Unlike the native `kafka-configs.sh` command, for the `entity-name`, the Kafka cluster name should be set rather than the
 broker ids.
 
 ---
@@ -344,8 +344,8 @@ the first broker's configuration which will be totally the same with the cluster
 
 ---
 
-Now let's add a dynamic configuration in order to see it while describing with `native` flag. 
-We will change `log.cleaner.threads` configuration which is responsible for controlling the background threads 
+Now let's add a dynamic configuration in order to see it while describing with `native` flag.
+We will change `log.cleaner.threads` configuration which is responsible for controlling the background threads
 that do log compaction and is 1 one by default.
 
 ```shell
@@ -432,7 +432,7 @@ transaction.state.log.min.isr=2
 transaction.state.log.replication.factor=3
 ```
 
-So that's all! 
+So that's all!
 
-We are able to create, update, delete the configurations of topics, users and Kafka cluster itself and describe the changed 
+We are able to create, update, delete the configurations of topics, users and Kafka cluster itself and describe the changed
 configurations both Kubernetes and Kafka natively using Strimzi Kafka CLI.

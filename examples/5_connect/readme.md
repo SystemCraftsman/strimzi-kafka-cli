@@ -202,7 +202,7 @@ As a prerequisite, you have to create this repository and make the credentials r
 Apart from the `plugin.path`, we can do a few changes like changing the offset storage to a topic instead of a file and disabling the key/value converter schemas because we will just barely need to see the data itself; we don't need the JSON schemas.
 
 Lastly change the `bootstrap.servers` value to `my-cluster-kafka-bootstrap:9092`, as `my-cluster-kafka-bootstrap` is the `my-cluster` Kafka cluster's Kubernetes internal host name that is provided by a Kubernetes Service.
- 
+
 So the final `connect.properties` file should look like this:
 
 ```properties
