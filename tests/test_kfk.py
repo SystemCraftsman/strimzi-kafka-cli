@@ -24,8 +24,8 @@ class TestKfk(TestCase):
 
         result = self.runner.invoke(kfk, ["--version"])
         assert result.exit_code == 0
-        expected_version = f"""CLI Version:
-        {pkg_resources.require("strimzi-kafka-cli")[0].version}
+        cli_version = pkg_resources.require("strimzi-kafka-cli")[0].version
+        expected_version = f"""CLI Version: {cli_version}
 Strimzi Version: {STRIMZI_VERSION}
 Kubectl Version: {KUBECTL_VERSION}
 """
