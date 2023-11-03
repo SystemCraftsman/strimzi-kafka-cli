@@ -11,7 +11,7 @@ class TestKfkConnectors(TestCase):
         self.runner = CliRunner()
         self.cluster = "my-connect-cluster"
         self.namespace = "kafka"
-        self.connector_config_file = "files/twitter-connector.properties"
+        self.connector_config_file = "tests/files/twitter-connector.properties"
         self.connector = "twitter-source-connector"
 
     def test_no_option(self):
@@ -148,7 +148,7 @@ class TestKfkConnectors(TestCase):
 
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-connect-connector-twitter.yaml") as file:
+        with open("tests/files/yaml/kafka-connect-connector-twitter.yaml") as file:
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connector_yaml == result_connector_yaml
@@ -166,7 +166,7 @@ class TestKfkConnectors(TestCase):
     def test_alter_connector(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-connect-connector-twitter.yaml") as file:
+        with open("tests/files/yaml/kafka-connect-connector-twitter.yaml") as file:
             connector_yaml = file.read()
             mock_get_resource_yaml.return_value = connector_yaml
 
@@ -175,7 +175,7 @@ class TestKfkConnectors(TestCase):
                 [
                     "connectors",
                     "--alter",
-                    "files/twitter_connector_with_config_change.properties",
+                    "tests/files/twitter_connector_with_config_change.properties",
                     "-c",
                     self.cluster,
                     "-n",
@@ -186,7 +186,8 @@ class TestKfkConnectors(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-connect-connector-twitter_with_config_change.yaml"
+                "tests/files/yaml/kafka-connect-connector-"
+                "twitter_with_config_change.yaml"
             ) as file:
                 expected_connector_yaml = file.read()
                 result_connector_yaml = mock_create_temp_file.call_args[0][0]

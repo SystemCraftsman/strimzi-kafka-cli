@@ -116,3 +116,8 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 kfk = "kfk.main:kfk"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]

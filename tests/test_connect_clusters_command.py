@@ -12,9 +12,9 @@ class TestKfkConnect(TestCase):
         self.runner = CliRunner()
         self.cluster = "my-connect-cluster"
         self.namespace = "kafka"
-        self.connect_config_file = "files/connect.properties"
-        self.connector_config_file_1 = "files/twitter-connector.properties"
-        self.connector_config_file_2 = "files/file-stream-connector.properties"
+        self.connect_config_file = "tests/files/connect.properties"
+        self.connector_config_file_1 = "tests/files/twitter-connector.properties"
+        self.connector_config_file_2 = "tests/files/file-stream-connector.properties"
         self.registry_userpass = "someuserpass"
         self.registry_server = "quay.io/systemcraftsman/test-connect-cluster:latest"
         self.push_secret_name = f"{self.cluster}-push-secret"
@@ -66,7 +66,7 @@ class TestKfkConnect(TestCase):
 
         result_connect_yaml = mock_create_temp_file.call_args[0][0]
 
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             expected_connect_yaml = file.read()
 
             assert expected_connect_yaml == result_connect_yaml
@@ -112,7 +112,7 @@ class TestKfkConnect(TestCase):
                 "--create",
                 "--cluster",
                 self.cluster,
-                "files/connect_with_only_image.properties",
+                "tests/files/connect_with_only_image.properties",
                 "-n",
                 self.namespace,
             ],
@@ -121,7 +121,7 @@ class TestKfkConnect(TestCase):
 
         result_connect_yaml = mock_create_temp_file.call_args[0][0]
 
-        with open(r"files/yaml/kafka-connect_with_image.yaml") as file:
+        with open("tests/files/yaml/kafka-connect_with_image.yaml") as file:
             expected_connect_yaml = file.read()
 
             assert expected_connect_yaml == result_connect_yaml
@@ -203,7 +203,7 @@ class TestKfkConnect(TestCase):
                 "--create",
                 "--cluster",
                 self.cluster,
-                "files/connect_with_zip_jar_plugins.properties",
+                "tests/files/connect_with_zip_jar_plugins.properties",
                 "-n",
                 self.namespace,
             ],
@@ -212,7 +212,7 @@ class TestKfkConnect(TestCase):
 
         result_connect_yaml = mock_create_temp_file.call_args[0][0]
 
-        with open(r"files/yaml/kafka-connect_with_zip_jar_plugins.yaml") as file:
+        with open("tests/files/yaml/kafka-connect_with_zip_jar_plugins.yaml") as file:
             expected_connect_yaml = file.read()
 
             assert expected_connect_yaml == result_connect_yaml
@@ -258,7 +258,7 @@ class TestKfkConnect(TestCase):
                 "--create",
                 "--cluster",
                 self.cluster,
-                "files/connect_with_invalid_url.properties",
+                "tests/files/connect_with_invalid_url.properties",
                 "-n",
                 self.namespace,
             ],
@@ -298,7 +298,7 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             expected_connect_yaml = file.read()
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
@@ -353,7 +353,7 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-connect_with_three_replicas.yaml") as file:
+        with open("tests/files/yaml/kafka-connect_with_three_replicas.yaml") as file:
             expected_connect_yaml = file.read()
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
@@ -412,7 +412,7 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             expected_connect_yaml = file.read()
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
@@ -435,7 +435,7 @@ class TestKfkConnect(TestCase):
             )
         )
 
-        with open(r"files/yaml/kafka-connect-connector-twitter.yaml") as file:
+        with open("tests/files/yaml/kafka-connect-connector-twitter.yaml") as file:
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file_connectors.call_args[0][0]
             assert expected_connector_yaml == result_connector_yaml
@@ -477,7 +477,7 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             expected_connect_yaml = file.read()
             result_connect_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connect_yaml == result_connect_yaml
@@ -500,14 +500,14 @@ class TestKfkConnect(TestCase):
             )
         )
 
-        with open(r"files/yaml/kafka-connect-connector-twitter.yaml") as file:
+        with open("tests/files/yaml/kafka-connect-connector-twitter.yaml") as file:
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file_connectors.call_args_list[0][
                 0
             ][0]
             assert expected_connector_yaml == result_connector_yaml
 
-        with open(r"files/yaml/kafka-connect-connector-file-stream.yaml") as file:
+        with open("tests/files/yaml/kafka-connect-connector-file-stream.yaml") as file:
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file_connectors.call_args_list[1][
                 0
@@ -635,7 +635,7 @@ class TestKfkConnect(TestCase):
     def test_alter_cluster_with_replica_param(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
 
             mock_get_resource_yaml.return_value = connect_yaml
@@ -655,7 +655,9 @@ class TestKfkConnect(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/kafka-connect_with_three_replicas.yaml") as file:
+            with open(
+                "tests/files/yaml/kafka-connect_with_three_replicas.yaml"
+            ) as file:
                 expected_connect_yaml = file.read()
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
@@ -666,7 +668,7 @@ class TestKfkConnect(TestCase):
     def test_alter_cluster_with_different_config_file(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
 
             mock_get_resource_yaml.return_value = connect_yaml
@@ -678,14 +680,16 @@ class TestKfkConnect(TestCase):
                     "--alter",
                     "--cluster",
                     self.cluster,
-                    "files/connect_with_zip_jar_plugins.properties",
+                    "tests/files/connect_with_zip_jar_plugins.properties",
                     "-n",
                     self.namespace,
                 ],
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/kafka-connect_with_zip_jar_plugins.yaml") as file:
+            with open(
+                "tests/files/yaml/kafka-connect_with_zip_jar_plugins.yaml"
+            ) as file:
                 expected_connect_yaml = file.read()
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
@@ -696,7 +700,7 @@ class TestKfkConnect(TestCase):
     def test_alter_cluster_with_only_image_config_file(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-connect.yaml") as file:
+        with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
 
             mock_get_resource_yaml.return_value = connect_yaml
@@ -708,14 +712,14 @@ class TestKfkConnect(TestCase):
                     "--alter",
                     "--cluster",
                     self.cluster,
-                    "files/connect_with_only_image.properties",
+                    "tests/files/connect_with_only_image.properties",
                     "-n",
                     self.namespace,
                 ],
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/kafka-connect_with_image.yaml") as file:
+            with open("tests/files/yaml/kafka-connect_with_image.yaml") as file:
                 expected_connect_yaml = file.read()
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml

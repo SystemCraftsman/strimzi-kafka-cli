@@ -122,7 +122,7 @@ class TestKfkAcls(TestCase):
     def test_add_topic_acl(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/user_with_authentication_tls.yaml") as file:
+        with open("tests/files/yaml/user_with_authentication_tls.yaml") as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -146,7 +146,7 @@ class TestKfkAcls(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+                "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
             ) as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
@@ -159,7 +159,7 @@ class TestKfkAcls(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+            "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
         ) as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -183,7 +183,7 @@ class TestKfkAcls(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/user_with_authentication_tls.yaml") as file:
+            with open("tests/files/yaml/user_with_authentication_tls.yaml") as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
@@ -195,7 +195,7 @@ class TestKfkAcls(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+            "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
         ) as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -220,7 +220,7 @@ class TestKfkAcls(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/user_with_authorization_with_two_topic_acls.yaml"
+                "tests/files/yaml/user_with_authorization_with_two_topic_acls.yaml"
             ) as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
@@ -233,7 +233,7 @@ class TestKfkAcls(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/user_with_authorization_with_two_topic_acls.yaml"
+            "tests/files/yaml/user_with_authorization_with_two_topic_acls.yaml"
         ) as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -258,7 +258,7 @@ class TestKfkAcls(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+                "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
             ) as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
@@ -271,7 +271,7 @@ class TestKfkAcls(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+            "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
         ) as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -298,7 +298,7 @@ class TestKfkAcls(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/user_with_authorization_with_three_topic_acls.yaml"
+                "tests/files/yaml/user_with_authorization_with_three_topic_acls.yaml"
             ) as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
@@ -311,7 +311,7 @@ class TestKfkAcls(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/user_with_authorization_with_one_topic_acl.yaml"
+            "tests/files/yaml/user_with_authorization_with_one_topic_acl.yaml"
         ) as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
@@ -336,7 +336,7 @@ class TestKfkAcls(TestCase):
             assert result.exit_code == 0
 
             with open(
-                "files/yaml/user_with_authorization_"
+                "tests/files/yaml/user_with_authorization_"
                 "with_one_topic_and_one_group_acls.yaml"
             ) as file:
                 expected_user_yaml = file.read()

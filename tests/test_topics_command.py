@@ -132,7 +132,7 @@ class TestKfkTopics(TestCase):
                 "--topic",
                 self.topic,
                 "--command-config",
-                "files/client.properties",
+                "tests/files/client.properties",
                 "-c",
                 self.cluster,
                 "-n",
@@ -179,7 +179,7 @@ class TestKfkTopics(TestCase):
 
         assert result.exit_code == 0
 
-        with open(r"files/yaml/topic.yaml") as file:
+        with open("tests/files/yaml/topic.yaml") as file:
             expected_topic_yaml = file.read()
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
@@ -209,7 +209,7 @@ class TestKfkTopics(TestCase):
 
         assert result.exit_code == 0
 
-        with open(r"files/yaml/topic_with_one_config.yaml") as file:
+        with open("tests/files/yaml/topic_with_one_config.yaml") as file:
             expected_topic_yaml = file.read()
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
@@ -258,7 +258,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_with_no_params(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic.yaml") as file:
+        with open("tests/files/yaml/topic.yaml") as file:
             expected_topic_yaml = file.read()
             mock_get_resource_yaml.return_value = expected_topic_yaml
 
@@ -287,7 +287,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_without_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic.yaml") as file:
+        with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -311,7 +311,7 @@ class TestKfkTopics(TestCase):
 
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_without_config.yaml") as file:
+            with open("tests/files/yaml/topic_without_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -322,7 +322,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_with_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic.yaml") as file:
+        with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -348,7 +348,7 @@ class TestKfkTopics(TestCase):
 
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_one_config.yaml") as file:
+            with open("tests/files/yaml/topic_with_one_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -359,7 +359,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_with_two_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic.yaml") as file:
+        with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -387,7 +387,7 @@ class TestKfkTopics(TestCase):
 
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_two_configs.yaml") as file:
+            with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -398,7 +398,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_with_two_configs_delete_one_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic_with_two_configs.yaml") as file:
+        with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -420,7 +420,7 @@ class TestKfkTopics(TestCase):
 
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_one_config.yaml") as file:
+            with open("tests/files/yaml/topic_with_one_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -431,7 +431,7 @@ class TestKfkTopics(TestCase):
     def test_alter_topic_with_two_configs_delete_two_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic_with_two_configs.yaml") as file:
+        with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -455,7 +455,7 @@ class TestKfkTopics(TestCase):
 
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_without_config.yaml") as file:
+            with open("tests/files/yaml/topic_without_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml

@@ -56,7 +56,7 @@ class TestKfkConfigs(TestCase):
     def test_add_one_topic_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic_without_config.yaml") as file:
+        with open("tests/files/yaml/topic_without_config.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -79,7 +79,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_one_config.yaml") as file:
+            with open("tests/files/yaml/topic_with_one_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -90,7 +90,7 @@ class TestKfkConfigs(TestCase):
     def test_add_two_topic_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic_without_config.yaml") as file:
+        with open("tests/files/yaml/topic_without_config.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -113,7 +113,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_two_configs.yaml") as file:
+            with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -124,7 +124,7 @@ class TestKfkConfigs(TestCase):
     def test_delete_one_topic_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/topic_with_two_configs.yaml") as file:
+        with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
             mock_get_resource_yaml.return_value = topic_yaml
 
@@ -147,7 +147,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/topic_with_one_config.yaml") as file:
+            with open("tests/files/yaml/topic_with_one_config.yaml") as file:
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
@@ -218,7 +218,7 @@ class TestKfkConfigs(TestCase):
     def test_add_one_user_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/user_with_authentication_scram.yaml") as file:
+        with open("tests/files/yaml/user_with_authentication_scram.yaml") as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -241,7 +241,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/user_with_one_quota.yaml") as file:
+            with open("tests/files/yaml/user_with_one_quota.yaml") as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
@@ -252,7 +252,7 @@ class TestKfkConfigs(TestCase):
     def test_add_two_user_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/user_with_authentication_scram.yaml") as file:
+        with open("tests/files/yaml/user_with_authentication_scram.yaml") as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -275,7 +275,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/user_with_two_quotas.yaml") as file:
+            with open("tests/files/yaml/user_with_two_quotas.yaml") as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
@@ -286,7 +286,7 @@ class TestKfkConfigs(TestCase):
     def test_delete_one_user_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/user_with_two_quotas.yaml") as file:
+        with open("tests/files/yaml/user_with_two_quotas.yaml") as file:
             user_yaml = file.read()
             mock_get_resource_yaml.return_value = user_yaml
 
@@ -309,7 +309,7 @@ class TestKfkConfigs(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/user_with_one_quota.yaml") as file:
+            with open("tests/files/yaml/user_with_one_quota.yaml") as file:
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
@@ -376,7 +376,7 @@ class TestKfkConfigs(TestCase):
     def test_add_one_broker_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             cluster_yaml = file.read()
             mock_get_resource_yaml.return_value = cluster_yaml
             result = self.runner.invoke(
@@ -399,7 +399,7 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
+                "tests/files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
             ) as file:
                 expected_cluster_yaml = file.read()
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
@@ -412,7 +412,7 @@ class TestKfkConfigs(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
+            "tests/files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
         ) as file:
             cluster_yaml = file.read()
             mock_get_resource_yaml.return_value = cluster_yaml
@@ -436,7 +436,7 @@ class TestKfkConfigs(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml"
+                "tests/files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml"
             ) as file:
                 expected_cluster_yaml = file.read()
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
@@ -469,7 +469,7 @@ class TestKfkConfigs(TestCase):
     def test_describe_broker_config_native(
         self, mock_os, mock_get_config_resource_yaml
     ):
-        with open(r"files/yaml/kafka-config.yaml") as file:
+        with open("tests/files/yaml/kafka-config.yaml") as file:
             config_yaml = file.read()
             mock_get_config_resource_yaml.return_value = config_yaml
             result = self.runner.invoke(
@@ -516,7 +516,7 @@ class TestKfkConfigs(TestCase):
     def test_describe_broker_config_native_with_id(
         self, mock_os, mock_get_config_resource_yaml
     ):
-        with open(r"files/yaml/kafka-config.yaml") as file:
+        with open("tests/files/yaml/kafka-config.yaml") as file:
             config_yaml = file.read()
             mock_get_config_resource_yaml.return_value = config_yaml
             result = self.runner.invoke(

@@ -87,7 +87,7 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_one_additional_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(
@@ -106,7 +106,7 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
+                "tests/files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
@@ -118,7 +118,7 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_two_additional_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(
@@ -139,7 +139,7 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
+                "tests/files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
@@ -152,7 +152,7 @@ class TestKfkClusters(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
+            "tests/files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
         ) as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
@@ -172,7 +172,7 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
+                "tests/files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
@@ -185,7 +185,7 @@ class TestKfkClusters(TestCase):
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
-            r"files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
+            "tests/files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
         ) as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
@@ -207,7 +207,7 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml"
+                "tests/files/yaml/kafka-ephemeral_two_additional_configs_deleted.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
@@ -219,7 +219,7 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_one_replica(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(
@@ -237,7 +237,7 @@ class TestKfkClusters(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
+            with open("tests/files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
@@ -248,7 +248,7 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_two_replicas(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(
@@ -266,7 +266,9 @@ class TestKfkClusters(TestCase):
             )
             assert result.exit_code == 0
 
-            with open(r"files/yaml/kafka-ephemeral_with_two_replicas.yaml") as file:
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_two_replicas.yaml"
+            ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
@@ -277,7 +279,7 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_one_replica_one_zk_replica(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
             mock_get_resource_yaml.return_value = kafka_yaml
             result = self.runner.invoke(
@@ -298,7 +300,7 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                r"files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
+                "tests/files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
@@ -364,7 +366,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -397,7 +399,7 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
 
         mock_open_file_in_system_editor.assert_not_called()
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -430,7 +432,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -463,7 +465,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-ephemeral_with_two_replicas.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_with_two_replicas.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -496,7 +498,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(r"files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -532,7 +534,7 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
 
         with open(
-            r"files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
+            "tests/files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
         ) as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]

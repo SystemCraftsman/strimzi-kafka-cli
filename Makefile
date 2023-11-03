@@ -15,7 +15,7 @@ lint:
 	python -m flake8
 
 test:
-	pushd tests; python -m pytest -x; popd
+	python -m pytest -x
 
 build: clean
 	python -m build; twine check --strict dist/*
