@@ -14,9 +14,9 @@ from kfk.commons import (
     print_missing_options_for_command,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
+from kfk.constants import KAFKA_PORT
 from kfk.kubectl_command_builder import Kubectl
-from kfk.constants import *
-from kfk.kubernetes_commons import delete_object, create_using_yaml
+from kfk.kubernetes_commons import create_using_yaml, delete_object
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 
 

@@ -1,5 +1,6 @@
 import re
 
+
 def convert_string_to_type(str_val):
     str_val = str(str_val)
     if str_val.isdigit():
