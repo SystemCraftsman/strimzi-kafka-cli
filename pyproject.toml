@@ -27,9 +27,9 @@ classifiers=[
 
 dependencies = [
     "click == 8.0.1",
-    "pyyaml",
-    "wget",
-    "jproperties"
+    "pyyaml == 6.0",
+    "wget == 3.2",
+    "jproperties == 2.1.1"
 ]
 
 [project.optional-dependencies]
