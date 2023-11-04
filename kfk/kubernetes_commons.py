@@ -9,9 +9,15 @@ config.load_kube_config()
 k8s_client = client.ApiClient()
 
 
-def delete_object(name, kind, namespace):
-    k8s_api = client.CoreV1Api(k8s_client)
-    _delete_object(k8s_api, name, kind, namespace=namespace)
+def yaml_object_argument_filter(func):
+    def inner(k8s_api, yml_object, kind, **kwargs):
+        if kind != "custom_object":
+            kwargs.pop("version")
+            kwargs.pop("group")
+            kwargs.pop("plural")
+        return func(k8s_api, yml_object, kind, **kwargs)
+
+    return inner
 
 
 def create_using_yaml(file_path, namespace):
@@ -45,7 +51,7 @@ def _operate_using_yaml(
     namespace="default",
     **kwargs,
 ):
-    def operate_with(objects):
+    def _operate_with(objects):
         failures = []
         k8s_objects = []
         for yml_object in objects:
@@ -69,11 +75,11 @@ def _operate_using_yaml(
 
     if yaml_objects:
         yml_object_all = yaml_objects
-        return operate_with(yml_object_all)
+        return _operate_with(yml_object_all)
     elif yaml_file:
         with open(path.abspath(yaml_file)) as f:
             yml_object_all = yaml.safe_load_all(f)
-            return operate_with(yml_object_all)
+            return _operate_with(yml_object_all)
     else:
         raise ValueError(
             "One of `yaml_file` or `yaml_objects` arguments must be provided"
@@ -121,68 +127,89 @@ def _operate_using_dict(
 def _operate_using_dict_single_object(
     k8s_client, yml_object, operation, verbose=False, namespace="default", **kwargs
 ):
+    object_type = ""
     # get group and version from apiVersion
     group, _, version = yml_object["apiVersion"].partition("/")
     if version == "":
         version = group
         group = "core"
     # Take care for the case e.g. api_type is "apiextensions.k8s.io"
-    group = "".join(group.rsplit(".k8s.io", 1))
+    group_prefix = "".join(group.rsplit(".k8s.io", 1))
     # convert group name from DNS subdomain format to
     # python class name convention
-    group = "".join(word.capitalize() for word in group.split("."))
-    func = "{0}{1}Api".format(group, version.capitalize())
-    k8s_api = getattr(client, func)(k8s_client)
+    group_prefix = "".join(word.capitalize() for word in group_prefix.split("."))
+    func = "{0}{1}Api".format(group_prefix, version.capitalize())
+
+    try:
+        k8s_api = getattr(client, func)(k8s_client)
+    except AttributeError:
+        func = "CustomObjectsApi"
+        k8s_api = getattr(client, func)(k8s_client)
+        object_type = "custom_object"
+
     kind = yml_object["kind"]
-    kind = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", kind)
-    kind = re.sub("([a-z0-9])([A-Z])", r"\1_\2", kind).lower()
+    kind_snake_case = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", kind)
+    object_type_from_kind = re.sub(
+        "([a-z0-9])([A-Z])", r"\1_\2", kind_snake_case
+    ).lower()
     name = yml_object["metadata"]["name"]
 
+    if not object_type:
+        object_type = object_type_from_kind
+
     getattr(sys.modules[__name__], f"_{operation}_using_yaml_object")(
-        k8s_api, yml_object, kind, version.capitalize(), namespace=namespace
+        k8s_api,
+        yml_object,
+        object_type,
+        version=version,
+        group=group,
+        plural=kind.lower() + "s",
+        namespace=namespace,
     )
     if verbose:
         msg = f"{kind} `{name}` {operation}d."
         print(msg)
 
 
-def _create_using_yaml_object(k8s_api, yml_object, kind, version, **kwargs):
-    if hasattr(k8s_api, f"create_namespaced_{kind}"):
+@yaml_object_argument_filter
+def _create_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
+    if hasattr(k8s_api, f"create_namespaced_{object_type}"):
         if "namespace" in yml_object["metadata"]:
             namespace = yml_object["metadata"]["namespace"]
             kwargs["namespace"] = namespace
-        resp = getattr(k8s_api, "create_namespaced_{0}".format(kind))(
+        resp = getattr(k8s_api, f"create_namespaced_{object_type}")(
             body=yml_object, **kwargs
         )
     else:
         kwargs.pop("namespace", None)
-        resp = getattr(k8s_api, "create_{0}".format(kind))(body=yml_object, **kwargs)
+        resp = getattr(k8s_api, f"create_{object_type}")(body=yml_object, **kwargs)
     return resp
 
 
-def _delete_using_yaml_object(k8s_api, yml_object, kind, version, **kwargs):
+@yaml_object_argument_filter
+def _delete_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
     if "namespace" in yml_object["metadata"]:
         namespace = yml_object["metadata"]["namespace"]
         kwargs["namespace"] = namespace
     name = yml_object["metadata"]["name"]
-    delete_object(k8s_api, name, kind, version, **kwargs)
+    _delete_object(k8s_api, name, object_type, **kwargs)
 
 
-def _delete_object(k8s_api, name, kind, version="V1", **kwargs):
+def _delete_object(k8s_api, name, object_type, delete_options_version="V1", **kwargs):
     try:
-        if hasattr(k8s_api, "delete_namespaced_{0}".format(kind)):
-            resp = getattr(k8s_api, "delete_namespaced_{}".format(kind))(
+        if hasattr(k8s_api, f"delete_namespaced_{object_type}"):
+            resp = getattr(k8s_api, f"delete_namespaced_{object_type}")(
                 name=name,
-                body=getattr(client, f"{version}DeleteOptions")(
+                body=getattr(client, f"{delete_options_version}DeleteOptions")(
                     propagation_policy="Background", grace_period_seconds=5
                 ),
                 **kwargs,
             )
         else:
             kwargs.pop("namespace", None)
-            resp = getattr(k8s_api, "delete_{}".format(kind))(
+            resp = getattr(k8s_api, f"delete_{object_type}")(
                 name=name,
-                body=getattr(client, f"{version}DeleteOptions")(
+                body=getattr(client, f"{delete_options_version}DeleteOptions")(
                     propagation_policy="Background", grace_period_seconds=5
                 ),
                 **kwargs,

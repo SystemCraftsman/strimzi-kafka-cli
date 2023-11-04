@@ -22,36 +22,24 @@ from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 @kfk.command()
 def operator(is_install, is_uninstall, namespace):
     """Installs/Uninstalls Strimzi Kafka Operator."""
-    if is_install:
-        for directory_name, dirs, files in os.walk(
-            "{strimzi_path}/install/cluster-operator/".format(strimzi_path=STRIMZI_PATH)
-        ):
-            for file_name in files:
-                file_path = os.path.join(directory_name, file_name)
 
-                if SpecialTexts.OPERATOR_ROLE_BINDING in file_name:
-                    with open(file_path) as file:
-                        stream = file.read().replace(
-                            SpecialTexts.OPERATOR_MY_PROJECT, namespace
-                        )
-                        temp_file = create_temp_file(stream)
-                        file_path = temp_file.name
+    for directory_name, dirs, files in os.walk(
+        "{strimzi_path}/install/cluster-operator/".format(strimzi_path=STRIMZI_PATH)
+    ):
+        for file_name in files:
+            file_path = os.path.join(directory_name, file_name)
+
+            if SpecialTexts.OPERATOR_ROLE_BINDING in file_name:
+                with open(file_path) as file:
+                    stream = file.read().replace(
+                        SpecialTexts.OPERATOR_MY_PROJECT, namespace
+                    )
+                    temp_file = create_temp_file(stream)
+                    file_path = temp_file.name
+            if is_install:
                 create_using_yaml(file_path, namespace)
-    elif is_uninstall:
-        # TODO: refactor here
-        for directory_name, dirs, files in os.walk(
-            "{strimzi_path}/install/cluster-operator/".format(strimzi_path=STRIMZI_PATH)
-        ):
-            for file_name in files:
-                file_path = os.path.join(directory_name, file_name)
-
-                if SpecialTexts.OPERATOR_ROLE_BINDING in file_name:
-                    with open(file_path) as file:
-                        stream = file.read().replace(
-                            SpecialTexts.OPERATOR_MY_PROJECT, namespace
-                        )
-                        temp_file = create_temp_file(stream)
-                        file_path = temp_file.name
+            elif is_uninstall:
                 delete_using_yaml(file_path, namespace)
-    else:
-        print_missing_options_for_command("operator")
+            else:
+                print_missing_options_for_command("operator")
+                break

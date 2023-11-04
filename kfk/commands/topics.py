@@ -16,7 +16,7 @@ from kfk.commons import (
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import KAFKA_PORT
 from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_object
+from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 
 
@@ -113,7 +113,7 @@ def topics(
     elif is_describe:
         describe(topic, output, native, command_config, cluster, namespace)
     elif is_delete:
-        delete(topic, namespace)
+        delete(topic, cluster, namespace)
     elif is_alter:
         alter(
             topic,
@@ -205,8 +205,23 @@ def describe(topic, output, native, command_config, cluster, namespace):
             )
 
 
-def delete(topic, namespace):
-    delete_object(topic, "topic", namespace)
+def delete(topic, cluster, namespace):
+    with open(
+        "{strimzi_path}/examples/topic/kafka-topic.yaml".format(
+            strimzi_path=STRIMZI_PATH
+        ).format(version=STRIMZI_VERSION)
+    ) as file:
+        topic_dict = yaml.full_load(file)
+
+        topic_dict["metadata"]["name"] = topic
+        topic_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
+
+        topic_yaml = yaml.dump(topic_dict)
+        topic_temp_file = create_temp_file(topic_yaml)
+
+        delete_using_yaml(topic_temp_file.name, namespace)
+
+        topic_temp_file.close()
 
 
 def alter(
