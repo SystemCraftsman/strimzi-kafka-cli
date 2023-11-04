@@ -38,10 +38,11 @@ jobs:
     - uses: actions/checkout@v4
     - name: Retrieve the kubeconfig and decode it to a file
       env:
-        KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG: ${{ secrets.KUBECONFIG }}
       run: |
         mkdir ~/.kube
-        echo $KUBECONFIG_BASE64 > ~/.kube/config
+        echo $KUBECONFIG
+        echo $KUBECONFIG > ~/.kube/config
 
     - name: Test
       run: |
