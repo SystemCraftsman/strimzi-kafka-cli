@@ -40,6 +40,7 @@ jobs:
       env:
         CERTIFICATE_BASE64: ${{ secrets.KUBECONFIG }}
       run: |
+        touch ~/.kube/config
         echo $CERTIFICATE_BASE64 | base64 --decode > ~/.kube/config
 
     - name: Test
