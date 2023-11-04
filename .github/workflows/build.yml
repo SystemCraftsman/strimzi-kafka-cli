@@ -35,6 +35,13 @@ jobs:
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
 
+    - uses: actions/checkout@v4
+    - name: Retrieve the kubeconfig and decode it to a file
+      env:
+        CERTIFICATE_BASE64: ${{ secrets.KUBECONFIG }}
+      run: |
+        echo $CERTIFICATE_BASE64 | base64 --decode > ~/.kube/config
+
     - name: Test
       run: |
         kfk
