@@ -122,10 +122,12 @@ class TestKfkConnect(TestCase):
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_command_error(
         self,
-        mock_os,
+        mock_create_using_yaml,
+        mock_create_registry_secret,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -133,7 +135,7 @@ class TestKfkConnect(TestCase):
     ):
         mock_click_confirm.return_value = True
         mock_click_prompt.return_value = self.registry_userpass
-        mock_os.system.return_value = 1
+        mock_create_using_yaml.system.return_value = 1
 
         result = self.runner.invoke(
             connect,
@@ -149,7 +151,8 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
 
-        assert mock_os.system.call_count == 1
+        assert mock_create_registry_secret.system.call_count == 0
+        assert mock_create_using_yaml.system.call_count == 0
 
     @mock.patch("kfk.commands.connect.clusters.click.prompt")
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
