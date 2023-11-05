@@ -85,8 +85,8 @@ class TestKfkUsers(TestCase):
         )
 
     @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commands.users.os")
-    def test_create_user(self, mock_os, mock_create_temp_file):
+    @mock.patch("kfk.commands.users.create_using_yaml")
+    def test_create_user(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             kfk,
             [
@@ -109,6 +109,8 @@ class TestKfkUsers(TestCase):
             expected_user_yaml = file.read()
             result_user_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_user_yaml == result_user_yaml
+
+        mock_create_using_yaml.assert_called_once()
 
     def test_create_user_without_auth(self):
         result = self.runner.invoke(
@@ -166,8 +168,8 @@ class TestKfkUsers(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.users.os")
-    def test_delete_user(self, mock_os):
+    @mock.patch("kfk.commands.users.delete_using_yaml")
+    def test_delete_user(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             kfk,
             [
@@ -182,9 +184,8 @@ class TestKfkUsers(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().delete().kafkausers(self.user).namespace(self.namespace).build()
-        )
+
+        mock_delete_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.users.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")

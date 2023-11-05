@@ -14,6 +14,7 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.utils import snake_to_camel_case
 
@@ -197,14 +198,7 @@ def create(user, authentication_type, quota_tuple, cluster, namespace):
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
 
-        os.system(
-            Kubectl()
-            .create()
-            .from_file("{user_temp_file_path}")
-            .namespace(namespace)
-            .build()
-            .format(user_temp_file_path=user_temp_file.name)
-        )
+        create_using_yaml(user_temp_file.name, namespace)
 
         user_temp_file.close()
 
@@ -219,7 +213,20 @@ def describe(user, output, cluster, namespace):
 
 
 def delete(cluster, namespace, user):
-    os.system(Kubectl().delete().kafkausers(user).namespace(namespace).build())
+    with open(
+        "{strimzi_path}/examples/user/kafka-user.yaml".format(
+            strimzi_path=STRIMZI_PATH
+        ).format(version=STRIMZI_VERSION)
+    ) as file:
+        user_dict = yaml.full_load(file)
+
+        user_dict["metadata"]["name"] = user
+        user_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
+
+        user_yaml = yaml.dump(user_dict)
+        user_temp_file = create_temp_file(user_yaml)
+
+        delete_using_yaml(user_temp_file.name, namespace)
 
 
 def alter(

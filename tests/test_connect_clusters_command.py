@@ -38,10 +38,12 @@ class TestKfkConnect(TestCase):
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster(
         self,
-        mock_os,
+        mock_create_using_yaml,
+        mock_create_registry_secret,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -71,32 +73,19 @@ class TestKfkConnect(TestCase):
 
             assert expected_connect_yaml == result_connect_yaml
 
-        mock_os.system.assert_any_call(
-            Kubectl()
-            .create()
-            .secret(
-                "docker-registry",
-                self.push_secret_name,
-                "--docker-username={username}",
-                "--docker-password={password} --docker-server={registry_server}",
-            )
-            .namespace(self.namespace)
-            .build()
-            .format(
-                username=self.registry_userpass,
-                password=self.registry_userpass,
-                registry_server=self.registry_server,
-            )
-        )
+        mock_create_registry_secret.assert_called_once()
+        mock_create_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.connect.clusters.click.prompt")
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_image(
         self,
-        mock_os,
+        mock_create_using_yaml,
+        mock_create_registry_secret,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -126,26 +115,8 @@ class TestKfkConnect(TestCase):
 
             assert expected_connect_yaml == result_connect_yaml
 
-        try:
-            mock_os.system.assert_any_call(
-                Kubectl()
-                .create()
-                .secret(
-                    "docker-registry",
-                    self.push_secret_name,
-                    "--docker-username={username}",
-                    "--docker-password={password} --docker-server={registry_server}",
-                )
-                .namespace(self.namespace)
-                .build()
-                .format(
-                    username=self.registry_userpass,
-                    password=self.registry_userpass,
-                    registry_server=self.registry_server,
-                )
-            )
-        except Exception:
-            self.assertRaises(AssertionError)
+        mock_create_registry_secret.assert_called_once()
+        mock_create_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.connect.clusters.click.prompt")
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")

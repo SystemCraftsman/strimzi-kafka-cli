@@ -26,6 +26,7 @@ from kfk.constants import (
     SpecialTexts,
 )
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import create_registry_secret, create_using_yaml
 from kfk.messages import Errors, Messages
 from kfk.utils import is_valid_url
 
@@ -223,8 +224,6 @@ def create(
             is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
 
         if is_confirmed:
-            return_code = 0
-
             if connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL) is not None:
                 username = (
                     registry_username
@@ -239,37 +238,17 @@ def create(
                     else click.prompt(Messages.IMAGE_REGISTRY_PASSWORD, hide_input=True)
                 )
 
-                return_code = os.system(
-                    Kubectl()
-                    .create()
-                    .secret(
-                        "docker-registry",
-                        f"{cluster}-push-secret",
-                        "--docker-username={username}",
-                        "--docker-password={password}",
-                        "--docker-server={server}",
-                    )
-                    .namespace(namespace)
-                    .build()
-                    .format(
-                        username=username,
-                        password=password,
-                        server=connect_properties.get(SpecialTexts.CONNECT_IMAGE).data,
-                    )
+                create_registry_secret(
+                    f"{cluster}-push-secret",
+                    connect_properties.get(SpecialTexts.CONNECT_IMAGE).data,
+                    username,
+                    password,
                 )
 
-            if return_code == 0:
-                return_code = os.system(
-                    Kubectl()
-                    .create()
-                    .from_file("{cluster_temp_file_path}")
-                    .namespace(namespace)
-                    .build()
-                    .format(cluster_temp_file_path=cluster_temp_file.name)
-                )
-                if return_code == 0:
-                    for connector_config_file in connector_config_files:
-                        connectors.create(connector_config_file, cluster, namespace)
+            create_using_yaml(cluster_temp_file.name, namespace)
+
+            for connector_config_file in connector_config_files:
+                connectors.create(connector_config_file, cluster, namespace)
 
         cluster_temp_file.close()
 

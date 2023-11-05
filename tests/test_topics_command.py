@@ -216,6 +216,8 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     def test_create_topic_without_required_params(self):
         result = self.runner.invoke(
             kfk,

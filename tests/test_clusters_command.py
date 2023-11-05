@@ -307,21 +307,21 @@ class TestKfkClusters(TestCase):
                 assert expected_kafka_yaml == result_kafka_yaml
 
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
-    def test_delete_cluster(self, mock_os, mock_click_confirm):
+    @mock.patch("kfk.commands.clusters.delete_using_yaml")
+    def test_delete_cluster(self, mock_delete_using_yaml, mock_click_confirm):
         mock_click_confirm.return_value = True
         result = self.runner.invoke(
             kfk,
             ["clusters", "--delete", "--cluster", self.cluster, "-n", self.namespace],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().delete().kafkas(self.cluster).namespace(self.namespace).build()
-        )
+        mock_delete_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
-    def test_delete_cluster_with_yes_flag(self, mock_os, mock_click_confirm):
+    @mock.patch("kfk.commands.clusters.delete_using_yaml")
+    def test_delete_cluster_with_yes_flag(
+        self, mock_delete_using_yaml, mock_click_confirm
+    ):
         mock_click_confirm.return_value = False
         result = self.runner.invoke(
             kfk,
@@ -336,17 +336,16 @@ class TestKfkClusters(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().delete().kafkas(self.cluster).namespace(self.namespace).build()
-        )
+
+        mock_delete_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -371,13 +370,15 @@ class TestKfkClusters(TestCase):
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_yes_flag(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -404,13 +405,15 @@ class TestKfkClusters(TestCase):
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_one_replica(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -437,13 +440,15 @@ class TestKfkClusters(TestCase):
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_two_replicas(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -470,13 +475,15 @@ class TestKfkClusters(TestCase):
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_three_replicas(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -503,13 +510,15 @@ class TestKfkClusters(TestCase):
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_one_replica_one_zk_replica(
         self,
-        mock_os,
+        mock_create_using_yaml,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -539,3 +548,5 @@ class TestKfkClusters(TestCase):
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_create_using_yaml.assert_called_once()

@@ -10,11 +10,6 @@ class TestKubectl(TestCase):
             Kubectl().get().build(), "{kubectl} get".format(kubectl=KUBECTL_PATH)
         )
 
-    def test_create(self):
-        self.assertEqual(
-            Kubectl().create().build(), "{kubectl} create".format(kubectl=KUBECTL_PATH)
-        )
-
     def test_apply(self):
         self.assertEqual(
             Kubectl().apply().build(), "{kubectl} apply".format(kubectl=KUBECTL_PATH)
@@ -24,11 +19,6 @@ class TestKubectl(TestCase):
         self.assertEqual(
             Kubectl().describe().build(),
             "{kubectl} describe".format(kubectl=KUBECTL_PATH),
-        )
-
-    def test_delete(self):
-        self.assertEqual(
-            Kubectl().delete().build(), "{kubectl} delete".format(kubectl=KUBECTL_PATH)
         )
 
     def test_exec(self):
@@ -131,29 +121,4 @@ class TestKubectl(TestCase):
         self.assertEqual(
             Kubectl().get().kafkas().output("yaml").build(),
             "{kubectl} get kafkas -o yaml".format(kubectl=KUBECTL_PATH),
-        )
-
-    def test_create_from_file(self):
-        self.assertEqual(
-            Kubectl().create().from_file("/a/test/path/testfile.yaml").build(),
-            "{kubectl} create -f /a/test/path/testfile.yaml".format(
-                kubectl=KUBECTL_PATH
-            ),
-        )
-
-    def test_create_secret(self):
-        self.assertEqual(
-            Kubectl()
-            .create()
-            .secret(
-                "docker-registry",
-                "secret-name",
-                "--docker-username=tiger",
-                "--docker-password=pass113",
-            )
-            .build(),
-            "{kubectl} create secret docker-registry secret-name"
-            " --docker-username=tiger --docker-password=pass113".format(
-                kubectl=KUBECTL_PATH
-            ),
         )

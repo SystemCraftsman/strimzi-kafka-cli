@@ -15,12 +15,20 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
 
 
 @click.option("-y", "--yes", "is_yes", help='"Yes" confirmation', is_flag=True)
-@click.option("-n", "--namespace", help="Namespace to use")
+@click.option(
+    "-n",
+    "--namespace",
+    help="Namespace to use",
+    required=True,
+    cls=NotRequiredIf,
+    options=["is_list"],
+)
 @click.option(
     "--delete-config",
     help="A cluster configuration override to be removed for an existing cluster",
@@ -121,7 +129,6 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
         _add_config_if_provided(config, cluster_dict)
 
         cluster_yaml = yaml.dump(cluster_dict)
-
         cluster_temp_file = create_temp_file(cluster_yaml)
 
         if is_yes:
@@ -130,14 +137,8 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
             open_file_in_system_editor(cluster_temp_file.name)
             is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
         if is_confirmed:
-            os.system(
-                Kubectl()
-                .create()
-                .from_file("{cluster_temp_file_path}")
-                .namespace(namespace)
-                .build()
-                .format(cluster_temp_file_path=cluster_temp_file.name)
-            )
+            create_using_yaml(cluster_temp_file.name, namespace)
+
         cluster_temp_file.close()
 
 
@@ -156,7 +157,21 @@ def delete(cluster, namespace, is_yes):
     else:
         is_confirmed = click.confirm(Messages.CLUSTER_DELETE_CONFIRMATION)
     if is_confirmed:
-        os.system(Kubectl().delete().kafkas(cluster).namespace(namespace).build())
+        with open(
+            "{strimzi_path}/examples/kafka/kafka-ephemeral.yaml".format(
+                strimzi_path=STRIMZI_PATH
+            ).format(version=STRIMZI_VERSION)
+        ) as file:
+            stream = file.read()
+
+            cluster_dict = yaml.full_load(stream)
+
+            cluster_dict["metadata"]["name"] = cluster
+
+            cluster_yaml = yaml.dump(cluster_dict)
+            cluster_temp_file = create_temp_file(cluster_yaml)
+
+            delete_using_yaml(cluster_temp_file.name, namespace)
 
 
 def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):

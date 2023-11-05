@@ -1,3 +1,5 @@
+import base64
+import json
 import re
 import sys
 from os import path
@@ -6,7 +8,7 @@ import yaml
 from kubernetes import client, config
 
 config.load_kube_config()
-k8s_client = client.ApiClient()
+api_client = client.ApiClient()
 
 
 def yaml_object_argument_filter(func):
@@ -20,9 +22,46 @@ def yaml_object_argument_filter(func):
     return inner
 
 
+def create_registry_secret(
+    name: str,
+    registry: str,
+    username: str,
+    password: str,
+):
+    core_api = client.CoreV1Api(api_client)
+
+    auth = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
+
+    docker_config_dict = {
+        "auths": {
+            registry: {
+                "username": username,
+                "password": password,
+                "email": "",
+                "auth": auth,
+            }
+        }
+    }
+
+    docker_config = base64.b64encode(
+        json.dumps(docker_config_dict).encode("utf-8")
+    ).decode("utf-8")
+
+    core_api.create_namespaced_secret(
+        namespace="default",
+        body=client.V1Secret(
+            metadata=client.V1ObjectMeta(
+                name=name,
+            ),
+            type="kubernetes.io/dockerconfigjson",
+            data={".dockerconfigjson": docker_config},
+        ),
+    )
+
+
 def create_using_yaml(file_path, namespace):
     _operate_using_yaml(
-        k8s_client,
+        api_client,
         file_path,
         "create",
         yaml_objects=None,
@@ -33,7 +72,7 @@ def create_using_yaml(file_path, namespace):
 
 def delete_using_yaml(file_path, namespace):
     _operate_using_yaml(
-        k8s_client,
+        api_client,
         file_path,
         "delete",
         yaml_objects=None,

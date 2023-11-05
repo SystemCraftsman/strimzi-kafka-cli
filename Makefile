@@ -15,7 +15,7 @@ lint:
 	python -m flake8
 
 test:
-	python -m pytest -x
+	python -m pytest
 
 build: clean
 	python -m build; twine check --strict dist/*

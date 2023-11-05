@@ -96,8 +96,8 @@ class TestKfkConnectors(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.connectors.os")
-    def test_delete_connector(self, mock_os):
+    @mock.patch("kfk.commands.connect.connectors.delete_using_yaml")
+    def test_delete_connector(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             connect,
             [
@@ -114,13 +114,7 @@ class TestKfkConnectors(TestCase):
 
         assert result.exit_code == 0
 
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .delete()
-            .kafkaconnectors(self.connector)
-            .namespace(self.namespace)
-            .build()
-        )
+        mock_delete_using_yaml.assert_called_once()
 
     def test_create_connector_without_config_file(self):
         result = self.runner.invoke(
@@ -131,8 +125,8 @@ class TestKfkConnectors(TestCase):
         assert result.exit_code == 2
 
     @mock.patch("kfk.commands.connect.connectors.create_temp_file")
-    @mock.patch("kfk.commands.connect.connectors.os")
-    def test_create_connector(self, mock_os, mock_create_temp_file):
+    @mock.patch("kfk.commands.connect.connectors.create_using_yaml")
+    def test_create_connector(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             connect,
             [
@@ -152,6 +146,8 @@ class TestKfkConnectors(TestCase):
             expected_connector_yaml = file.read()
             result_connector_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_connector_yaml == result_connector_yaml
+
+        mock_create_using_yaml.assert_called_once()
 
     def test_alter_connector_without_config_file(self):
         result = self.runner.invoke(
