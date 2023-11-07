@@ -22,22 +22,10 @@ def yaml_object_argument_filter(func):
     return inner
 
 
-def delete_object(name, kind, namespace):
+def delete_object(name, resource_type, namespace):
     k8s_api = client.CoreV1Api(api_client)
-    _delete_object(k8s_api, name, kind, namespace=namespace)
-
-
-def delete_custom_object(name, kind_plural, namespace):
-    k8s_api = client.CustomObjectsApi(api_client)
-    _delete_object(
-        k8s_api,
-        name,
-        "custom_object",
-        namespace=namespace,
-        group="kafka.strimzi.io",
-        version="v1beta2",
-        plural=kind_plural,
-    )
+    _delete_object(k8s_api, name, resource_type, namespace=namespace)
+    print(f"{resource_type.capitalize()} `{name}` deleted.")
 
 
 def create_registry_secret(
@@ -75,6 +63,8 @@ def create_registry_secret(
             data={".dockerconfigjson": docker_config},
         ),
     )
+
+    print(f"Registry Secret `{name}` created.")
 
 
 def create_using_yaml(file_path, namespace):
