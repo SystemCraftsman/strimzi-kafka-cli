@@ -11,7 +11,7 @@ from kfk.commons import (
     delete_last_applied_configuration,
     get_properties_from_file,
     get_resource_as_stream,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import SpecialTexts
@@ -83,7 +83,7 @@ def connectors(
     elif is_alter:
         alter(config_file, cluster, namespace)
     else:
-        print_missing_options_for_command("connectors")
+        raise_exception_for_missing_options("connectors")
 
 
 def list(cluster, namespace):
@@ -166,6 +166,8 @@ def delete(connector, cluster, namespace):
         connector_temp_file = create_temp_file(connector_yaml)
 
         delete_using_yaml(connector_temp_file.name, namespace)
+
+        connector_temp_file.close()
 
 
 def alter(config_file, cluster, namespace):

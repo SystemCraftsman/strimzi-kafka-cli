@@ -3,7 +3,7 @@ import os
 import click
 
 from kfk.commands.main import kfk
-from kfk.commons import create_temp_file, print_missing_options_for_command
+from kfk.commons import create_temp_file, raise_exception_for_missing_options
 from kfk.config import STRIMZI_PATH
 from kfk.constants import SpecialTexts
 from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
@@ -41,5 +41,5 @@ def operator(is_install, is_uninstall, namespace):
             elif is_uninstall:
                 delete_using_yaml(file_path, namespace)
             else:
-                print_missing_options_for_command("operator")
+                raise_exception_for_missing_options("operator")
                 break

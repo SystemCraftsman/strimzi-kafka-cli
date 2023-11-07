@@ -30,7 +30,7 @@ class TestKfkConfigs(TestCase):
                 self.namespace,
             ],
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk configs" in result.output
 
     def test_wrong_entity_type(self):

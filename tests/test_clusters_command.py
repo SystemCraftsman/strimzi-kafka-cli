@@ -17,7 +17,7 @@ class TestKfkClusters(TestCase):
         result = self.runner.invoke(
             kfk, ["clusters", "--cluster", self.cluster, "-n", self.namespace]
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk clusters" in result.output
 
     @mock.patch("kfk.commands.clusters.os")

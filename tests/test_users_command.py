@@ -18,7 +18,7 @@ class TestKfkUsers(TestCase):
             kfk,
             ["users", "--user", self.user, "-c", self.cluster, "-n", self.namespace],
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk users" in result.output
 
     @mock.patch("kfk.commands.users.os")

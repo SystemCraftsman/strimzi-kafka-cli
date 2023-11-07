@@ -18,7 +18,7 @@ class TestKfkTopics(TestCase):
             kfk,
             ["topics", "--topic", self.topic, "-c", self.cluster, "-n", self.namespace],
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk topics" in result.output
 
     @mock.patch("kfk.commands.topics.os")

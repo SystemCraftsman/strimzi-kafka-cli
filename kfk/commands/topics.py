@@ -11,7 +11,7 @@ from kfk.commons import (
     delete_last_applied_configuration,
     delete_resource_config,
     get_resource_as_stream,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import KAFKA_PORT
@@ -125,7 +125,7 @@ def topics(
             namespace,
         )
     else:
-        print_missing_options_for_command("topics")
+        raise_exception_for_missing_options("topics")
 
 
 def list(cluster, namespace):

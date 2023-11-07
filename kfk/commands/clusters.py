@@ -11,7 +11,7 @@ from kfk.commons import (
     delete_resource_config,
     get_resource_as_stream,
     open_file_in_system_editor,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
@@ -105,7 +105,7 @@ def clusters(
     elif is_alter:
         alter(cluster, replicas, zk_replicas, config, delete_config, namespace)
     else:
-        print_missing_options_for_command("clusters")
+        raise_exception_for_missing_options("clusters")
 
 
 def list(namespace):
@@ -172,6 +172,8 @@ def delete(cluster, namespace, is_yes):
             cluster_temp_file = create_temp_file(cluster_yaml)
 
             delete_using_yaml(cluster_temp_file.name, namespace)
+
+            cluster_temp_file.close()
 
 
 def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):

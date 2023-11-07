@@ -4,7 +4,7 @@ import click
 
 from kfk.commands import users
 from kfk.commands.main import kfk
-from kfk.commons import print_missing_options_for_command
+from kfk.commons import raise_exception_for_missing_options
 from kfk.constants import COLON
 from kfk.kubectl_command_builder import Kubectl
 from kfk.option_extensions import NotRequiredIf
@@ -124,7 +124,7 @@ def acls(
             namespace,
         )
     else:
-        print_missing_options_for_command("acls")
+        raise_exception_for_missing_options("acls")
 
 
 def add_or_remove(

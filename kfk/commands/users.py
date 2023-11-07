@@ -10,7 +10,7 @@ from kfk.commons import (
     delete_last_applied_configuration,
     delete_resource_config,
     get_resource_as_stream,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
@@ -141,7 +141,7 @@ def users(
     elif is_describe:
         describe(user, output, cluster, namespace)
     elif is_delete:
-        delete(cluster, namespace, user)
+        delete(user, cluster, namespace)
     elif is_alter:
         alter(
             user,
@@ -161,7 +161,7 @@ def users(
             namespace,
         )
     else:
-        print_missing_options_for_command("users")
+        raise_exception_for_missing_options("users")
 
 
 def list(cluster, namespace):
@@ -212,7 +212,7 @@ def describe(user, output, cluster, namespace):
         os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
 
 
-def delete(cluster, namespace, user):
+def delete(user, cluster, namespace):
     with open(
         "{strimzi_path}/examples/user/kafka-user.yaml".format(
             strimzi_path=STRIMZI_PATH
@@ -227,6 +227,8 @@ def delete(cluster, namespace, user):
         user_temp_file = create_temp_file(user_yaml)
 
         delete_using_yaml(user_temp_file.name, namespace)
+
+        user_temp_file.close()
 
 
 def alter(

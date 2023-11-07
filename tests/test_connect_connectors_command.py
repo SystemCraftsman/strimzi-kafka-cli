@@ -26,7 +26,7 @@ class TestKfkConnectors(TestCase):
                 self.namespace,
             ],
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk connectors" in result.output
 
     @mock.patch("kfk.commands.connect.connectors.os")
