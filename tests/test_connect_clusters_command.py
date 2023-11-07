@@ -485,8 +485,11 @@ class TestKfkConnect(TestCase):
         )
 
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("kfk.commands.connect.clusters.delete_object")
     @mock.patch("kfk.commands.connect.clusters.delete_using_yaml")
-    def test_delete_cluster(self, mock_delete_using_yaml, mock_click_confirm):
+    def test_delete_cluster(
+        self, mock_delete_using_yaml, mock_delete_object, mock_click_confirm
+    ):
         mock_click_confirm.return_value = True
         result = self.runner.invoke(
             connect,
@@ -494,11 +497,15 @@ class TestKfkConnect(TestCase):
         )
         assert result.exit_code == 0
         mock_delete_using_yaml.assert_called_once()
+        mock_delete_object.assert_called_with(
+            f"{self.cluster}-push-secret", "secret", self.namespace
+        )
 
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("kfk.commands.connect.clusters.delete_object")
     @mock.patch("kfk.commands.connect.clusters.delete_using_yaml")
     def test_delete_cluster_with_yes_flag(
-        self, mock_delete_using_yaml, mock_click_confirm
+        self, mock_delete_using_yaml, mock_delete_object, mock_click_confirm
     ):
         mock_click_confirm.return_value = False
         result = self.runner.invoke(
@@ -514,7 +521,11 @@ class TestKfkConnect(TestCase):
             ],
         )
         assert result.exit_code == 0
+
         mock_delete_using_yaml.assert_called_once()
+        mock_delete_object.assert_called_with(
+            f"{self.cluster}-push-secret", "secret", self.namespace
+        )
 
     @mock.patch("kfk.commands.connect.clusters.os")
     def test_alter_cluster_without_parameters(self, mock_os):
