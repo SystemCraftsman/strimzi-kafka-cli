@@ -11,11 +11,12 @@ from kfk.commons import (
     delete_last_applied_configuration,
     get_properties_from_file,
     get_resource_as_stream,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import SpecialTexts
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 
 CONNECTOR_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECTOR_NAME,
@@ -78,11 +79,11 @@ def connectors(
     elif is_describe:
         describe(connector, output, namespace)
     elif is_delete:
-        delete(connector, namespace)
+        delete(connector, cluster, namespace)
     elif is_alter:
         alter(config_file, cluster, namespace)
     else:
-        print_missing_options_for_command("connectors")
+        raise_exception_for_missing_options("connectors")
 
 
 def list(cluster, namespace):
@@ -129,14 +130,7 @@ def create(config_file, cluster, namespace):
         connector_yaml = yaml.dump(connector_dict)
         connector_temp_file = create_temp_file(connector_yaml)
 
-        os.system(
-            Kubectl()
-            .create()
-            .from_file("{connector_temp_file_path}")
-            .namespace(namespace)
-            .build()
-            .format(connector_temp_file_path=connector_temp_file.name)
-        )
+        create_using_yaml(connector_temp_file.name, namespace)
 
         connector_temp_file.close()
 
@@ -157,10 +151,23 @@ def describe(connector, output, namespace):
         )
 
 
-def delete(connector, namespace):
-    os.system(
-        Kubectl().delete().kafkaconnectors(connector).namespace(namespace).build()
-    )
+def delete(connector, cluster, namespace):
+    with open(
+        "{strimzi_path}/examples/connect/source-connector.yaml".format(
+            strimzi_path=STRIMZI_PATH
+        ).format(version=STRIMZI_VERSION)
+    ) as file:
+        connector_dict = yaml.full_load(file)
+
+        connector_dict["metadata"]["name"] = connector
+        connector_dict["metadata"]["labels"]["strimzi.io/cluster"] = cluster
+
+        connector_yaml = yaml.dump(connector_dict)
+        connector_temp_file = create_temp_file(connector_yaml)
+
+        delete_using_yaml(connector_temp_file.name, namespace)
+
+        connector_temp_file.close()
 
 
 def alter(config_file, cluster, namespace):

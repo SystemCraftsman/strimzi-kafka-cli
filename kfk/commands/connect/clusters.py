@@ -13,7 +13,7 @@ from kfk.commons import (
     get_properties_from_file,
     get_resource_as_stream,
     open_file_in_system_editor,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import (
@@ -26,6 +26,12 @@ from kfk.constants import (
     SpecialTexts,
 )
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import (
+    create_registry_secret,
+    create_using_yaml,
+    delete_object,
+    delete_using_yaml,
+)
 from kfk.messages import Errors, Messages
 from kfk.utils import is_valid_url
 
@@ -129,7 +135,7 @@ def clusters(
     elif is_alter:
         alter(cluster, replicas, config_file, namespace)
     else:
-        print_missing_options_for_command("connect")
+        raise_exception_for_missing_options("connect")
 
 
 def list(namespace):
@@ -223,8 +229,6 @@ def create(
             is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
 
         if is_confirmed:
-            return_code = 0
-
             if connect_properties.get(SpecialTexts.CONNECT_PLUGIN_URL) is not None:
                 username = (
                     registry_username
@@ -239,37 +243,17 @@ def create(
                     else click.prompt(Messages.IMAGE_REGISTRY_PASSWORD, hide_input=True)
                 )
 
-                return_code = os.system(
-                    Kubectl()
-                    .create()
-                    .secret(
-                        "docker-registry",
-                        f"{cluster}-push-secret",
-                        "--docker-username={username}",
-                        "--docker-password={password}",
-                        "--docker-server={server}",
-                    )
-                    .namespace(namespace)
-                    .build()
-                    .format(
-                        username=username,
-                        password=password,
-                        server=connect_properties.get(SpecialTexts.CONNECT_IMAGE).data,
-                    )
+                create_registry_secret(
+                    f"{cluster}-push-secret",
+                    connect_properties.get(SpecialTexts.CONNECT_IMAGE).data,
+                    username,
+                    password,
                 )
 
-            if return_code == 0:
-                return_code = os.system(
-                    Kubectl()
-                    .create()
-                    .from_file("{cluster_temp_file_path}")
-                    .namespace(namespace)
-                    .build()
-                    .format(cluster_temp_file_path=cluster_temp_file.name)
-                )
-                if return_code == 0:
-                    for connector_config_file in connector_config_files:
-                        connectors.create(connector_config_file, cluster, namespace)
+            create_using_yaml(cluster_temp_file.name, namespace)
+
+            for connector_config_file in connector_config_files:
+                connectors.create(connector_config_file, cluster, namespace)
 
         cluster_temp_file.close()
 
@@ -296,18 +280,23 @@ def delete(cluster, namespace, is_yes):
     else:
         is_confirmed = click.confirm(Messages.CLUSTER_DELETE_CONFIRMATION)
     if is_confirmed:
-        return_code = os.system(
-            Kubectl().delete().kafkaconnects(cluster).namespace(namespace).build()
-        )
+        with open(
+            "{strimzi_path}/examples/connect/kafka-connect.yaml".format(
+                strimzi_path=STRIMZI_PATH
+            ).format(version=STRIMZI_VERSION)
+        ) as file:
+            cluster_dict = yaml.full_load(file)
 
-        if return_code == 0:
-            os.system(
-                Kubectl()
-                .delete()
-                .secret(f"{cluster}-push-secret")
-                .namespace(namespace)
-                .build()
-            )
+            cluster_dict["metadata"]["name"] = cluster
+
+            cluster_yaml = yaml.dump(cluster_dict)
+            cluster_temp_file = create_temp_file(cluster_yaml)
+
+            delete_using_yaml(cluster_temp_file.name, namespace)
+
+            cluster_temp_file.close()
+
+        delete_object(f"{cluster}-push-secret", "secret", namespace)
 
 
 def alter(cluster, replicas, config_file, namespace):

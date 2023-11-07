@@ -23,8 +23,8 @@ from kfk.utils import convert_string_to_type, get_list_by_split_string
 # TODO: Message string to messages.py
 
 
-def print_missing_options_for_command(command_str):
-    click.echo(
+def raise_exception_for_missing_options(command_str):
+    raise click.ClickException(
         f"Missing options: kfk {command_str} [OPTIONS] \nTry 'kfk {command_str} --help'"
         " for help."
     )

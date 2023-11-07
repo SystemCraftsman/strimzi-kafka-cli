@@ -9,7 +9,7 @@ from kfk.commons import (
     get_config_list,
     get_list_by_split_string,
     get_resource_as_stream,
-    print_missing_options_for_command,
+    raise_exception_for_missing_options,
 )
 from kfk.constants import COMMON_NAME_PREFIX, KAFKA_PORT, NEW_LINE, SPACE, SpecialTexts
 from kfk.kubectl_command_builder import Kubectl
@@ -121,7 +121,7 @@ def configs(
                 entity_name, None, None, add_config_list, delete_config_list, namespace
             )
     else:
-        print_missing_options_for_command("configs")
+        raise_exception_for_missing_options("configs")
 
 
 def _describe_natively(entity_type, entity_name, cluster, namespace):

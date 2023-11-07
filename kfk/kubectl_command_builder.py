@@ -16,10 +16,6 @@ class Kubectl:
         self.cmd_str = self.cmd_str + SPACE + "get"
         return self
 
-    def create(self):
-        self.cmd_str = self.cmd_str + SPACE + "create"
-        return self
-
     def apply(self):
         self.cmd_str = self.cmd_str + SPACE + "apply"
         return self
@@ -30,10 +26,6 @@ class Kubectl:
 
     def describe(self):
         self.cmd_str = self.cmd_str + SPACE + "describe"
-        return self
-
-    def delete(self):
-        self.cmd_str = self.cmd_str + SPACE + "delete"
         return self
 
     def edit(self):

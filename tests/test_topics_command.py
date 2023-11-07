@@ -18,7 +18,7 @@ class TestKfkTopics(TestCase):
             kfk,
             ["topics", "--topic", self.topic, "-c", self.cluster, "-n", self.namespace],
         )
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Missing options: kfk topics" in result.output
 
     @mock.patch("kfk.commands.topics.os")
@@ -157,8 +157,8 @@ class TestKfkTopics(TestCase):
         )
 
     @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commands.topics.os")
-    def test_create_topic(self, mock_os, mock_create_temp_file):
+    @mock.patch("kfk.commands.topics.create_using_yaml")
+    def test_create_topic(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             kfk,
             [
@@ -185,8 +185,10 @@ class TestKfkTopics(TestCase):
             assert expected_topic_yaml == result_topic_yaml
 
     @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commands.topics.os")
-    def test_create_topic_with_config(self, mock_os, mock_create_temp_file):
+    @mock.patch("kfk.commands.topics.create_using_yaml")
+    def test_create_topic_with_config(
+        self, mock_create_using_yaml, mock_create_temp_file
+    ):
         result = self.runner.invoke(
             kfk,
             [
@@ -214,6 +216,8 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     def test_create_topic_without_required_params(self):
         result = self.runner.invoke(
             kfk,
@@ -230,8 +234,8 @@ class TestKfkTopics(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_delete_topic(self, mock_os):
+    @mock.patch("kfk.commands.topics.delete_using_yaml")
+    def test_delete_topic(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             kfk,
             [
@@ -248,9 +252,7 @@ class TestKfkTopics(TestCase):
 
         assert result.exit_code == 0
 
-        mock_os.system.assert_called_with(
-            Kubectl().delete().kafkatopics(self.topic).namespace(self.namespace).build()
-        )
+        mock_delete_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
