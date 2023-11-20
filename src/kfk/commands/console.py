@@ -2,10 +2,10 @@ import os
 
 import click
 
-from kfk.commands.main import kfk
-from kfk.commons import apply_client_config_from_file
-from kfk.constants import KAFKA_PORT
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands import kfk
+from src.kfk.commons import apply_client_config_from_file
+from src.kfk.constants import KAFKA_PORT
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)

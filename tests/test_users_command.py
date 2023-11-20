@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.users import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.users import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkUsers(TestCase):
@@ -21,7 +21,7 @@ class TestKfkUsers(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk users" in result.output
 
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.os")
     def test_list_users(self, mock_os):
         result = self.runner.invoke(
             kfk, ["users", "--list", "-c", self.cluster, "-n", self.namespace]
@@ -37,7 +37,7 @@ class TestKfkUsers(TestCase):
             .format(cluster=self.cluster)
         )
 
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.os")
     def test_describe_user(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -57,7 +57,7 @@ class TestKfkUsers(TestCase):
             Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.os")
     def test_describe_user_output_yaml(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -84,8 +84,8 @@ class TestKfkUsers(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commands.users.create_using_yaml")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commands.users.create_using_yaml")
     def test_create_user(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             kfk,
@@ -168,7 +168,7 @@ class TestKfkUsers(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.users.delete_using_yaml")
+    @mock.patch("src.kfk.commands.users.delete_using_yaml")
     def test_delete_user(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             kfk,
@@ -187,9 +187,9 @@ class TestKfkUsers(TestCase):
 
         mock_delete_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_with_no_params(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -215,9 +215,9 @@ class TestKfkUsers(TestCase):
             result_user_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authentication(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -247,9 +247,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -288,9 +288,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization_none(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -327,9 +327,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization_with_two_acl_operation(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -371,9 +371,9 @@ class TestKfkUsers(TestCase):
 
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization_none_with_two_acl_operation(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -415,9 +415,9 @@ class TestKfkUsers(TestCase):
 
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization_delete_acls_for_one_operation(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -459,9 +459,9 @@ class TestKfkUsers(TestCase):
 
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_authorization_delete_acls_for_two_operation(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -505,9 +505,9 @@ class TestKfkUsers(TestCase):
 
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_quota(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -539,9 +539,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_for_two_quotas(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -575,9 +575,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_with_two_quotas_delete_one_quota(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -607,9 +607,9 @@ class TestKfkUsers(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_alter_user_with_two_quotas_delete_two_quotas(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):

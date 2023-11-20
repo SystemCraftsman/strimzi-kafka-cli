@@ -7,7 +7,7 @@ from pathlib import Path
 
 import wget
 
-from kfk.config import (
+from src.kfk.config import (
     BASE_PATH,
     KUBECTL_PATH,
     KUBECTL_RELEASE_URL,
@@ -16,12 +16,12 @@ from kfk.config import (
     STRIMZI_RELEASE_URL,
     STRIMZI_VERSION,
 )
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.kubectl_command_builder import Kubectl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-def setup():
+def prepare_resources():
     download_kubectl_if_not_exists()
     update_kubectl_if_new_version_exists()
     download_strimzi_if_not_exists()

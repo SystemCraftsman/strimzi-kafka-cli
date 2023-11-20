@@ -57,7 +57,7 @@ Documentation = "https://github.com/systemcraftsman/strimzi-kafka-cli/blob/main/
 
 
 [tool.setuptools]
-package-dir = {"kfk" = "kfk"}
+package-dir = {"src" = "src"}
 include-package-data = true
 license-files = ["LICENSE"]
 zip-safe = true
@@ -74,7 +74,7 @@ extend-ignore = """
     C901,
 """
 per-file-ignores = """
-        ./kfk/main.py: F401, F811
+        ./src/kfk/__init__.py: F401, F811
     """
 
 [tool.isort]
@@ -115,7 +115,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-kfk = "kfk.main:kfk"
+kfk = "src.kfk:kfk"
 
 [tool.pytest.ini_options]
 addopts = [

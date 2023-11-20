@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.topics import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.topics import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkTopics(TestCase):
@@ -21,7 +21,7 @@ class TestKfkTopics(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk topics" in result.output
 
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_list_topics(self, mock_os):
         result = self.runner.invoke(
             kfk, ["topics", "--list", "-c", self.cluster, "-n", self.namespace]
@@ -37,7 +37,7 @@ class TestKfkTopics(TestCase):
             .format(cluster=self.cluster)
         )
 
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_describe_topic(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -61,7 +61,7 @@ class TestKfkTopics(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_describe_topic_output_yaml(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -88,7 +88,7 @@ class TestKfkTopics(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_describe_topic_native(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -119,8 +119,8 @@ class TestKfkTopics(TestCase):
             .format(topic=self.topic, cluster=self.cluster)
         )
 
-    @mock.patch("kfk.commons.transfer_file_to_container")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commons.transfer_file_to_container")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_describe_topic_native_with_command_config(
         self, mock_os, mock_transfer_file_to_container
     ):
@@ -156,8 +156,8 @@ class TestKfkTopics(TestCase):
             .format(topic=self.topic, cluster=self.cluster)
         )
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commands.topics.create_using_yaml")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commands.topics.create_using_yaml")
     def test_create_topic(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             kfk,
@@ -184,8 +184,8 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commands.topics.create_using_yaml")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commands.topics.create_using_yaml")
     def test_create_topic_with_config(
         self, mock_create_using_yaml, mock_create_temp_file
     ):
@@ -234,7 +234,7 @@ class TestKfkTopics(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.topics.delete_using_yaml")
+    @mock.patch("src.kfk.commands.topics.delete_using_yaml")
     def test_delete_topic(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             kfk,
@@ -254,9 +254,9 @@ class TestKfkTopics(TestCase):
 
         mock_delete_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_with_no_params(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -283,9 +283,9 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_without_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -318,9 +318,9 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_with_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -355,9 +355,9 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_with_two_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -394,9 +394,9 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_with_two_configs_delete_one_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -427,9 +427,9 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_alter_topic_with_two_configs_delete_two_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):

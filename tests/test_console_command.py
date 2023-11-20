@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.console import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.console import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkConsole(TestCase):
@@ -13,7 +13,7 @@ class TestKfkConsole(TestCase):
         self.namespace = "kafka"
         self.topic = "my-topic"
 
-    @mock.patch("kfk.commands.console.os")
+    @mock.patch("src.kfk.commands.console.os")
     def test_console_consumer(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -43,8 +43,8 @@ class TestKfkConsole(TestCase):
             .format(cluster=self.cluster, topic=self.topic)
         )
 
-    @mock.patch("kfk.commons.transfer_file_to_container")
-    @mock.patch("kfk.commands.console.os")
+    @mock.patch("src.kfk.commons.transfer_file_to_container")
+    @mock.patch("src.kfk.commands.console.os")
     def test_console_consumer_with_consumer_config(
         self, mock_os, mock_transfer_file_to_container
     ):
@@ -80,7 +80,7 @@ class TestKfkConsole(TestCase):
             .format(cluster=self.cluster, topic=self.topic)
         )
 
-    @mock.patch("kfk.commands.console.os")
+    @mock.patch("src.kfk.commands.console.os")
     def test_console_consumer_with_from_beginning(self, mock_os):
         from_beginning = True
         result = self.runner.invoke(
@@ -116,7 +116,7 @@ class TestKfkConsole(TestCase):
             )
         )
 
-    @mock.patch("kfk.commands.console.os")
+    @mock.patch("src.kfk.commands.console.os")
     def test_console_producer(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -145,8 +145,8 @@ class TestKfkConsole(TestCase):
             .format(cluster=self.cluster, topic=self.topic)
         )
 
-    @mock.patch("kfk.commons.transfer_file_to_container")
-    @mock.patch("kfk.commands.console.os")
+    @mock.patch("src.kfk.commons.transfer_file_to_container")
+    @mock.patch("src.kfk.commands.console.os")
     def test_console_producer_with_producer_config(
         self, mock_os, mock_transfer_file_to_container
     ):

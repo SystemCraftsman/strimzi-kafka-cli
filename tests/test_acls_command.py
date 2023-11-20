@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.acls import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.acls import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkAcls(TestCase):
@@ -15,7 +15,7 @@ class TestKfkAcls(TestCase):
         self.group = "my-group"
         self.user = "my-user"
 
-    @mock.patch("kfk.commands.acls.os")
+    @mock.patch("src.kfk.commands.acls.os")
     def test_list_all_acls(self, mock_os):
         result = self.runner.invoke(
             kfk, ["acls", "--list", "-n", self.namespace, "-c", self.kafka_cluster]
@@ -35,7 +35,7 @@ class TestKfkAcls(TestCase):
             .format(kafka_cluster=self.kafka_cluster)
         )
 
-    @mock.patch("kfk.commands.acls.os")
+    @mock.patch("src.kfk.commands.acls.os")
     def test_list_topic_acls(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -67,7 +67,7 @@ class TestKfkAcls(TestCase):
             .format(kafka_cluster=self.kafka_cluster)
         )
 
-    @mock.patch("kfk.commands.acls.os")
+    @mock.patch("src.kfk.commands.acls.os")
     def test_list_group_acls(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -99,7 +99,7 @@ class TestKfkAcls(TestCase):
             .format(kafka_cluster=self.kafka_cluster)
         )
 
-    @mock.patch("kfk.commands.acls.os")
+    @mock.patch("src.kfk.commands.acls.os")
     def test_add_acls_without_principal(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -116,9 +116,9 @@ class TestKfkAcls(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_topic_acl(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -152,9 +152,9 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_remove_topic_acl(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -188,9 +188,9 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_topic_acl_to_one_acl(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -226,9 +226,9 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_remove_topic_acl_from_two_acls(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -264,9 +264,9 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_topic_acl_with_two_operations(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -304,9 +304,9 @@ class TestKfkAcls(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_group_acl(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):

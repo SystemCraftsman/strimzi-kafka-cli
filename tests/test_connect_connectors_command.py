@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.connect.connectors import connect
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.connect.connectors import connect
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkConnectors(TestCase):
@@ -29,7 +29,7 @@ class TestKfkConnectors(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk connectors" in result.output
 
-    @mock.patch("kfk.commands.connect.connectors.os")
+    @mock.patch("src.kfk.commands.connect.connectors.os")
     def test_list_connectors(self, mock_os):
         result = self.runner.invoke(
             connect, ["connectors", "--list", "-c", self.cluster, "-n", self.namespace]
@@ -45,7 +45,7 @@ class TestKfkConnectors(TestCase):
             .format(cluster=self.cluster)
         )
 
-    @mock.patch("kfk.commands.connect.connectors.os")
+    @mock.patch("src.kfk.commands.connect.connectors.os")
     def test_describe_connector(self, mock_os):
         result = self.runner.invoke(
             connect,
@@ -69,7 +69,7 @@ class TestKfkConnectors(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.connectors.os")
+    @mock.patch("src.kfk.commands.connect.connectors.os")
     def test_describe_connector_output_yaml(self, mock_os):
         result = self.runner.invoke(
             connect,
@@ -96,7 +96,7 @@ class TestKfkConnectors(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.connectors.delete_using_yaml")
+    @mock.patch("src.kfk.commands.connect.connectors.delete_using_yaml")
     def test_delete_connector(self, mock_delete_using_yaml):
         result = self.runner.invoke(
             connect,
@@ -124,8 +124,8 @@ class TestKfkConnectors(TestCase):
 
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.connect.connectors.create_temp_file")
-    @mock.patch("kfk.commands.connect.connectors.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.connectors.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.connectors.create_using_yaml")
     def test_create_connector(self, mock_create_using_yaml, mock_create_temp_file):
         result = self.runner.invoke(
             connect,
@@ -156,9 +156,9 @@ class TestKfkConnectors(TestCase):
 
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.connect.connectors.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.connectors.os")
+    @mock.patch("src.kfk.commands.connect.connectors.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.connect.connectors.os")
     def test_alter_connector(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):

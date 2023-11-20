@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.configs import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.configs import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkConfigs(TestCase):
@@ -50,9 +50,9 @@ class TestKfkConfigs(TestCase):
         )
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_add_one_topic_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -84,9 +84,9 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_add_two_topic_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -118,9 +118,9 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_delete_one_topic_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -152,7 +152,7 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("src.kfk.commands.topics.os")
     def test_describe_topic_config(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -178,7 +178,7 @@ class TestKfkConfigs(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("src.kfk.commands.configs.os")
     def test_describe_topic_config_native(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -212,9 +212,9 @@ class TestKfkConfigs(TestCase):
             .format(cluster=self.cluster, entity_name=self.topic)
         )
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_one_user_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -246,9 +246,9 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_add_two_user_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -280,9 +280,9 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.users.os")
     def test_delete_one_user_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -314,7 +314,7 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("src.kfk.commands.users.os")
     def test_describe_user_config(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -336,7 +336,7 @@ class TestKfkConfigs(TestCase):
             Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("src.kfk.commands.configs.os")
     def test_describe_user_config_native(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -370,9 +370,9 @@ class TestKfkConfigs(TestCase):
             .format(cluster=self.cluster, entity_name=self.user)
         )
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_add_one_broker_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -405,9 +405,9 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_delete_one_broker_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -442,7 +442,7 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_describe_broker_config(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -464,8 +464,8 @@ class TestKfkConfigs(TestCase):
             Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.configs.os")
     def test_describe_broker_config_native(
         self, mock_os, mock_get_config_resource_yaml
     ):
@@ -511,8 +511,8 @@ class TestKfkConfigs(TestCase):
                 .format(cluster=self.cluster, entity_name=self.broker_count - 1)
             )
 
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.configs.os")
     def test_describe_broker_config_native_with_id(
         self, mock_os, mock_get_config_resource_yaml
     ):

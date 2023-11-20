@@ -3,8 +3,8 @@ import os
 import click
 import yaml
 
-from kfk.commands.main import kfk
-from kfk.commons import (
+from src.kfk.commands import kfk
+from src.kfk.commons import (
     add_kv_config_to_resource,
     create_temp_file,
     delete_last_applied_configuration,
@@ -13,11 +13,11 @@ from kfk.commons import (
     open_file_in_system_editor,
     raise_exception_for_missing_options,
 )
-from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
-from kfk.messages import Messages
-from kfk.option_extensions import NotRequiredIf
+from src.kfk.config import STRIMZI_PATH, STRIMZI_VERSION
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from src.kfk.messages import Messages
+from src.kfk.option_extensions import NotRequiredIf
 
 
 @click.option("-y", "--yes", "is_yes", help='"Yes" confirmation', is_flag=True)

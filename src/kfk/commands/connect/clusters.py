@@ -3,9 +3,9 @@ import os
 import click
 import yaml
 
-from kfk import argument_extensions, option_extensions
-from kfk.commands.connect import connect, connectors
-from kfk.commons import (
+from src.kfk import argument_extensions, option_extensions
+from src.kfk.commands.connect import connect, connectors
+from src.kfk.commons import (
     add_properties_config_to_resource,
     create_temp_file,
     delete_last_applied_configuration,
@@ -15,8 +15,8 @@ from kfk.commons import (
     open_file_in_system_editor,
     raise_exception_for_missing_options,
 )
-from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.constants import (
+from src.kfk.config import STRIMZI_PATH, STRIMZI_VERSION
+from src.kfk.constants import (
     COMMA,
     CONNECT_OUTPUT_TYPE_DOCKER,
     EXTENSION_JAR,
@@ -25,15 +25,15 @@ from kfk.constants import (
     TRUE,
     SpecialTexts,
 )
-from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import (
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.kubernetes_commons import (
     create_registry_secret,
     create_using_yaml,
     delete_object,
     delete_using_yaml,
 )
-from kfk.messages import Errors, Messages
-from kfk.utils import is_valid_url
+from src.kfk.messages import Errors, Messages
+from src.kfk.utils import is_valid_url
 
 CONNECT_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECT_BOOTSTRAP_SERVERS,

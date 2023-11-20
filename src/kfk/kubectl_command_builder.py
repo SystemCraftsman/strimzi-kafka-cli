@@ -1,5 +1,5 @@
-from kfk.config import KUBECTL_PATH
-from kfk.constants import SPACE
+from src.kfk.config import KUBECTL_PATH
+from src.kfk.constants import SPACE
 
 
 class Kubectl:

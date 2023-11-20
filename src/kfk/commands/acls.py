@@ -2,12 +2,11 @@ import os
 
 import click
 
-from kfk.commands import users
-from kfk.commands.main import kfk
-from kfk.commons import raise_exception_for_missing_options
-from kfk.constants import COLON
-from kfk.kubectl_command_builder import Kubectl
-from kfk.option_extensions import NotRequiredIf
+from src.kfk.commands import kfk, users
+from src.kfk.commons import raise_exception_for_missing_options
+from src.kfk.constants import COLON
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.option_extensions import NotRequiredIf
 
 
 @click.option("-n", "--namespace", help="Namespace to use.", required=True)

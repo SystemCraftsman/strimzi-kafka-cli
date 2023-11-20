@@ -3,9 +3,9 @@ import os
 import click
 import yaml
 
-from kfk import argument_extensions, option_extensions
-from kfk.commands.connect import connect
-from kfk.commons import (
+from src.kfk import argument_extensions, option_extensions
+from src.kfk.commands.connect import connect
+from src.kfk.commons import (
     add_properties_config_to_resource,
     create_temp_file,
     delete_last_applied_configuration,
@@ -13,10 +13,10 @@ from kfk.commons import (
     get_resource_as_stream,
     raise_exception_for_missing_options,
 )
-from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.constants import SpecialTexts
-from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from src.kfk.config import STRIMZI_PATH, STRIMZI_VERSION
+from src.kfk.constants import SpecialTexts
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 
 CONNECTOR_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECTOR_NAME,

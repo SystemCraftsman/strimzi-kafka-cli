@@ -3,18 +3,23 @@ import os
 import click
 import yaml
 
-from kfk.commands import clusters, topics, users
-from kfk.commands.main import kfk
-from kfk.commons import (
+from src.kfk.commands import clusters, kfk, topics, users
+from src.kfk.commons import (
     get_config_list,
     get_list_by_split_string,
     get_resource_as_stream,
     raise_exception_for_missing_options,
 )
-from kfk.constants import COMMON_NAME_PREFIX, KAFKA_PORT, NEW_LINE, SPACE, SpecialTexts
-from kfk.kubectl_command_builder import Kubectl
-from kfk.messages import Messages
-from kfk.option_extensions import NotRequiredIf
+from src.kfk.constants import (
+    COMMON_NAME_PREFIX,
+    KAFKA_PORT,
+    NEW_LINE,
+    SPACE,
+    SpecialTexts,
+)
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.messages import Messages
+from src.kfk.option_extensions import NotRequiredIf
 
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)

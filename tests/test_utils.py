@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from kfk.utils import convert_string_to_type, is_valid_url, snake_to_camel_case
+from src.kfk.utils import convert_string_to_type, is_valid_url, snake_to_camel_case
 
 
 class TestUtils(TestCase):

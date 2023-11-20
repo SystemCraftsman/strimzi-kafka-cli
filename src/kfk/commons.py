@@ -7,7 +7,7 @@ from subprocess import call
 import click
 from jproperties import Properties
 
-from kfk.constants import (
+from src.kfk.constants import (
     COMMA,
     EQUALS,
     KAFKA_PORT,
@@ -17,8 +17,8 @@ from kfk.constants import (
     SEMICOLON,
     SPACE,
 )
-from kfk.kubectl_command_builder import Kubectl
-from kfk.utils import convert_string_to_type, get_list_by_split_string
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.utils import convert_string_to_type, get_list_by_split_string
 
 # TODO: Message string to messages.py
 

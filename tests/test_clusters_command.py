@@ -2,8 +2,8 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.commands.clusters import kfk
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.clusters import kfk
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkClusters(TestCase):
@@ -20,7 +20,7 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk clusters" in result.output
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_list_clusters(self, mock_os):
         result = self.runner.invoke(kfk, ["clusters", "--list", "-n", self.namespace])
         assert result.exit_code == 0
@@ -28,13 +28,13 @@ class TestKfkClusters(TestCase):
             Kubectl().get().kafkas().namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_list_clusters_all_namespaces(self, mock_os):
         result = self.runner.invoke(kfk, ["clusters", "--list"])
         assert result.exit_code == 0
         mock_os.system.assert_called_with(Kubectl().get().kafkas().namespace().build())
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_describe_cluster(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -45,7 +45,7 @@ class TestKfkClusters(TestCase):
             Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_describe_cluster_output_yaml(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -70,7 +70,7 @@ class TestKfkClusters(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_without_parameters(self, mock_os):
         result = self.runner.invoke(
             kfk,
@@ -81,9 +81,9 @@ class TestKfkClusters(TestCase):
             Kubectl().edit().kafkas(self.cluster).namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_one_additional_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -112,9 +112,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_two_additional_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -145,9 +145,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_two_additional_configs_delete_one_config(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -178,9 +178,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_two_additional_configs_delete_two_configs(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -213,9 +213,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_one_replica(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -242,9 +242,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_two_replicas(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -273,9 +273,9 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.clusters.os")
     def test_alter_cluster_with_one_replica_one_zk_replica(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -306,8 +306,8 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.delete_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.delete_using_yaml")
     def test_delete_cluster(self, mock_delete_using_yaml, mock_click_confirm):
         mock_click_confirm.return_value = True
         result = self.runner.invoke(
@@ -317,8 +317,8 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         mock_delete_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.delete_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.delete_using_yaml")
     def test_delete_cluster_with_yes_flag(
         self, mock_delete_using_yaml, mock_click_confirm
     ):
@@ -339,10 +339,10 @@ class TestKfkClusters(TestCase):
 
         mock_delete_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster(
         self,
         mock_create_using_yaml,
@@ -372,10 +372,10 @@ class TestKfkClusters(TestCase):
 
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_yes_flag(
         self,
         mock_create_using_yaml,
@@ -407,10 +407,10 @@ class TestKfkClusters(TestCase):
 
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_one_replica(
         self,
         mock_create_using_yaml,
@@ -442,10 +442,10 @@ class TestKfkClusters(TestCase):
 
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_two_replicas(
         self,
         mock_create_using_yaml,
@@ -477,10 +477,10 @@ class TestKfkClusters(TestCase):
 
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_three_replicas(
         self,
         mock_create_using_yaml,
@@ -512,10 +512,10 @@ class TestKfkClusters(TestCase):
 
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.clusters.create_using_yaml")
     def test_create_cluster_with_one_replica_one_zk_replica(
         self,
         mock_create_using_yaml,

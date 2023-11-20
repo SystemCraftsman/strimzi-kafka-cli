@@ -4,8 +4,8 @@ import click
 from click import ClickException
 from click.testing import CliRunner
 
-from kfk.commands.connect.clusters import connect
-from kfk.kubectl_command_builder import Kubectl
+from src.kfk.commands.connect.clusters import connect
+from src.kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkConnect(TestCase):
@@ -35,12 +35,12 @@ class TestKfkConnect(TestCase):
 
         assert result.exit_code == 2
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster(
         self,
         mock_create_using_yaml,
@@ -77,12 +77,12 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_called_once()
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_image(
         self,
         mock_create_using_yaml,
@@ -119,12 +119,12 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_not_called()
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_command_error(
         self,
         mock_create_using_yaml,
@@ -155,12 +155,12 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_called_once()
         mock_create_using_yaml.assert_not_called()
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_zip_jar_plugins(
         self,
         mock_create_using_yaml,
@@ -197,11 +197,11 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_called_once()
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_create_cluster_with_invalid_url(
         self,
         mock_os,
@@ -229,12 +229,12 @@ class TestKfkConnect(TestCase):
 
         self.assertRaises(click.ClickException)
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_yes_flag(
         self,
         mock_create_using_yaml,
@@ -270,12 +270,12 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_called_once()
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_three_replicas(
         self,
         mock_create_using_yaml,
@@ -312,14 +312,14 @@ class TestKfkConnect(TestCase):
         mock_create_registry_secret.assert_called_once()
         mock_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.connectors.create_temp_file")
-    @mock.patch("kfk.commands.connect.connectors.create_using_yaml")
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.connectors.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.connectors.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_connector_config(
         self,
         mock_create_using_yaml,
@@ -364,14 +364,14 @@ class TestKfkConnect(TestCase):
 
         mock_connectors_create_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.connect.connectors.create_temp_file")
-    @mock.patch("kfk.commands.connect.connectors.create_using_yaml")
-    @mock.patch("kfk.commands.connect.clusters.click.prompt")
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.create_registry_secret")
-    @mock.patch("kfk.commands.connect.clusters.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.connectors.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.connectors.create_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.prompt")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commands.connect.clusters.open_file_in_system_editor")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.create_registry_secret")
+    @mock.patch("src.kfk.commands.connect.clusters.create_using_yaml")
     def test_create_cluster_with_two_connectors_config(
         self,
         mock_create_using_yaml,
@@ -426,7 +426,7 @@ class TestKfkConnect(TestCase):
 
         assert mock_connectors_create_using_yaml.call_count == 2
 
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_list_clusters(self, mock_os):
         result = self.runner.invoke(
             connect, ["clusters", "--list", "-n", self.namespace]
@@ -436,7 +436,7 @@ class TestKfkConnect(TestCase):
             Kubectl().get().kafkaconnects().namespace(self.namespace).build()
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_list_clusters_all_namespaces(self, mock_os):
         result = self.runner.invoke(connect, ["clusters", "--list"])
         assert result.exit_code == 0
@@ -444,7 +444,7 @@ class TestKfkConnect(TestCase):
             Kubectl().get().kafkaconnects().namespace().build()
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_describe_cluster(self, mock_os):
         result = self.runner.invoke(
             connect,
@@ -459,7 +459,7 @@ class TestKfkConnect(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_describe_cluster_output_yaml(self, mock_os):
         result = self.runner.invoke(
             connect,
@@ -484,9 +484,9 @@ class TestKfkConnect(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.delete_object")
-    @mock.patch("kfk.commands.connect.clusters.delete_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.delete_object")
+    @mock.patch("src.kfk.commands.connect.clusters.delete_using_yaml")
     def test_delete_cluster(
         self, mock_delete_using_yaml, mock_delete_object, mock_click_confirm
     ):
@@ -501,9 +501,9 @@ class TestKfkConnect(TestCase):
             f"{self.cluster}-push-secret", "secret", self.namespace
         )
 
-    @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.delete_object")
-    @mock.patch("kfk.commands.connect.clusters.delete_using_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.click.confirm")
+    @mock.patch("src.kfk.commands.connect.clusters.delete_object")
+    @mock.patch("src.kfk.commands.connect.clusters.delete_using_yaml")
     def test_delete_cluster_with_yes_flag(
         self, mock_delete_using_yaml, mock_delete_object, mock_click_confirm
     ):
@@ -527,7 +527,7 @@ class TestKfkConnect(TestCase):
             f"{self.cluster}-push-secret", "secret", self.namespace
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_alter_cluster_without_parameters(self, mock_os):
         result = self.runner.invoke(
             connect,
@@ -542,9 +542,9 @@ class TestKfkConnect(TestCase):
             .build()
         )
 
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_alter_cluster_with_replica_param(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -575,9 +575,9 @@ class TestKfkConnect(TestCase):
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
 
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_alter_cluster_with_different_config_file(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):
@@ -607,9 +607,9 @@ class TestKfkConnect(TestCase):
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
 
-    @mock.patch("kfk.commands.connect.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("src.kfk.commands.connect.clusters.create_temp_file")
+    @mock.patch("src.kfk.commons.get_resource_yaml")
+    @mock.patch("src.kfk.commands.connect.clusters.os")
     def test_alter_cluster_with_only_image_config_file(
         self, mock_os, mock_get_resource_yaml, mock_create_temp_file
     ):

@@ -2,11 +2,11 @@ import os
 
 import click
 
-from kfk.commands.main import kfk
-from kfk.commons import create_temp_file, raise_exception_for_missing_options
-from kfk.config import STRIMZI_PATH
-from kfk.constants import SpecialTexts
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from src.kfk.commands import kfk
+from src.kfk.commons import create_temp_file, raise_exception_for_missing_options
+from src.kfk.config import STRIMZI_PATH
+from src.kfk.constants import SpecialTexts
+from src.kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)

@@ -3,25 +3,22 @@ from unittest import TestCase, mock
 import pkg_resources
 from click.testing import CliRunner
 
-from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
+from src.kfk import kfk
+from src.kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
 
 
 class TestKfk(TestCase):
     def setUp(self):
         self.runner = CliRunner()
 
-    @mock.patch("kfk.setup.setup")
-    def test_kfk(self, mock_setup):
-        from kfk.main import kfk
-
+    @mock.patch("src.kfk.setup.prepare_resources")
+    def test_kfk(self, mock_prepare_resources):
         result = self.runner.invoke(kfk)
         assert result.exit_code == 0
-        mock_setup.assert_called()
+        mock_prepare_resources.assert_called()
 
-    @mock.patch("kfk.setup.setup")
-    def test_kfk_version(self, mock_setup):
-        from kfk.main import kfk
-
+    @mock.patch("src.kfk.setup.prepare_resources")
+    def test_kfk_version(self, mock_prepare_resources):
         result = self.runner.invoke(kfk, ["--version"])
         assert result.exit_code == 0
         cli_version = pkg_resources.require("strimzi-kafka-cli")[0].version

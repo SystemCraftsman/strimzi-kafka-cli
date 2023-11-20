@@ -2,7 +2,7 @@ import os
 
 import click
 
-from kfk.commands.main import kfk
+from src.kfk.commands import kfk
 
 
 @kfk.command()

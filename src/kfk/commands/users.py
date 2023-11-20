@@ -3,8 +3,8 @@ import os
 import click
 import yaml
 
-from kfk.commands.main import kfk
-from kfk.commons import (
+from src.kfk.commands import kfk
+from src.kfk.commons import (
     add_kv_config_to_resource,
     create_temp_file,
     delete_last_applied_configuration,
@@ -12,11 +12,11 @@ from kfk.commons import (
     get_resource_as_stream,
     raise_exception_for_missing_options,
 )
-from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
-from kfk.option_extensions import NotRequiredIf, RequiredIf
-from kfk.utils import snake_to_camel_case
+from src.kfk.config import STRIMZI_PATH, STRIMZI_VERSION
+from src.kfk.kubectl_command_builder import Kubectl
+from src.kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from src.kfk.option_extensions import NotRequiredIf, RequiredIf
+from src.kfk.utils import snake_to_camel_case
 
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)
