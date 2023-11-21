@@ -61,7 +61,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: SystemCraftsman/homebrew-strimzi-kafka-cli
-          ref: refs/heads/main
+          ref: refs/heads/master
           token: ${{ secrets.GH_PAT }}
 
       - name: Apply changes
