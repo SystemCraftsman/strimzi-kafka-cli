@@ -37,7 +37,7 @@ jobs:
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/build_data.zip`, Buffer.from(download.data));
 
       - name: Unzip artifact
-        run: unzip context.zip
+        run: unzip build_data.zip
       - name: Return Parsed JSON
         uses: actions/github-script@v6
         id: return-parsed-json
@@ -50,7 +50,6 @@ jobs:
       image_version: ${{ fromJSON(steps.return-parsed-json.outputs.result).image_version }}
 
   create_ops_pr:
-    name: Create Ops PR
     runs-on: ubuntu-20.04
     needs: download_build_data_artifact
 
