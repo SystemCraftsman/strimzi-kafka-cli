@@ -35,13 +35,6 @@ jobs:
       - name: Install dependencies
         run: make install-dependencies
 
-      - name: Retrieve the kubeconfig and decode it to a file
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
-        run: |
-          mkdir ~/.kube
-          echo "$KUBECONFIG" > ~/.kube/config
-
       - name: Build
         run: make build
 
@@ -56,6 +49,14 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '180s'
+
+      - name: Retrieve the kubeconfig and decode it to a file
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir ~/.kube
+          echo "$KUBECONFIG" > ~/.kube/config
+
       - name: Bake and push image
         uses: docker/build-push-action@v1.1.0
         with:
