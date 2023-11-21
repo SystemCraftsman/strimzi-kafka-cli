@@ -50,13 +50,6 @@ jobs:
         with:
           time: '180s'
 
-      - name: Retrieve the kubeconfig and decode it to a file
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
-        run: |
-          mkdir ~/.kube
-          echo "$KUBECONFIG" > ~/.kube/config
-
       - name: Bake and push image
         uses: docker/build-push-action@v1.1.0
         with:
@@ -68,6 +61,8 @@ jobs:
           path: .
           dockerfile: ./Dockerfile
           push: true
+          build-args: |
+            KUBECONFIG=${{ secrets.KUBECONFIG }}
 
   upload_build_data_artifact:
     runs-on: ubuntu-latest
