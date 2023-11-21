@@ -15,7 +15,7 @@ jobs:
       version: ${{ steps.get_version.outputs.STRIMZI_CLI_VERSION }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
@@ -35,6 +35,13 @@ jobs:
       - name: Install dependencies
         run: make install-dependencies
 
+      - name: Retrieve the kubeconfig and decode it to a file
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir ~/.kube
+          echo "$KUBECONFIG" > ~/.kube/config
+
       - name: Build
         run: make build
 
@@ -52,21 +59,13 @@ jobs:
       - name: Bake and push image
         uses: docker/build-push-action@v1.1.0
         with:
-          # Username used to log in to a Docker registry. If not set then no login will occur
           username: ${{ secrets.QUAY_USERNAME }}
-          # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
           password: ${{ secrets.QUAY_PASSWORD }}
-          # Server address of Docker registry. If not set then will default to Docker Hub
           registry: quay.io
-          # Docker repository to tag the image with
           repository: systemcraftsman/strimzi-kafka-cli
-          # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
           tags: latest,${{ env.STRIMZI_CLI_VERSION }}
-          # Path to the build context
           path: .
-          # Path to the Dockerfile (Default is '{path}/Dockerfile')
           dockerfile: ./Dockerfile
-          # Whether to push the image
           push: true
 
   upload_build_data_artifact:

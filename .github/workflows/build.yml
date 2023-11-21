@@ -32,7 +32,6 @@ jobs:
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
 
-    - uses: actions/checkout@v4
     - name: Retrieve the kubeconfig and decode it to a file
       env:
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
