@@ -1,8 +1,8 @@
-name: Create Ops PR
+name: Post-Deploy
 on:
   workflow_run:
     workflows:
-      - Build
+      - Deploy
     branches:
       - main
     types:
@@ -49,7 +49,7 @@ jobs:
     outputs:
       image_version: ${{ fromJSON(steps.return-parsed-json.outputs.result).image_version }}
 
-  create_pr:
+  create_pr_on_brew_repo:
     runs-on: ubuntu-20.04
     needs: download_build_data_artifact
 
@@ -57,24 +57,26 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout Ops repo
+      - name: Checkout Homebrew repo
         uses: actions/checkout@v4
         with:
           repository: SystemCraftsman/homebrew-strimzi-kafka-cli
           ref: refs/heads/master
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Apply changes
         run: |
-          echo "${{ needs.download_build_data_artifact.outputs.image_version }}" > test.txt
+          version="$(sed -n 's/version \"\(.*\)\"/\1/p' strimzi-kafka-cli.rb | sed -e 's/^[[:space:]]*//')"
+          sed -i -e  "s/$version/${{ needs.download_build_data_artifact.outputs.image_version }}/g" strimzi-kafka-cli.rb
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GH_PAT }}
-          commit-message: Update image tag and revision for prod upgrade
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update to version ${{ needs.download_build_data_artifact.outputs.image_version }}
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          branch: prod-upgrade-${{ needs.download_build_data_artifact.outputs.image_version }}
+          branch: version-update-${{ needs.download_build_data_artifact.outputs.image_version }}
           assignees: mabulgu
+          reviewers: mabulgu
           title: '[Automated PR] Update image tag and revision for prod upgrade'

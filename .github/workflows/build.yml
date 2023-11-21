@@ -47,17 +47,3 @@ jobs:
 
     - name: Build
       run: make build
-
-  upload_build_data_artifact:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Write image version
-        run: |
-          printf '{
-              "image_version": "19.0.0"
-            }' >> build_data.json
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build_data.json
-          path: ./

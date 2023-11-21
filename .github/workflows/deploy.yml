@@ -5,64 +5,80 @@ name: Deploy
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.get_version.outputs.STRIMZI_CLI_VERSION }}
+
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Get release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-    - name: Get release version
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Get code version
+        id: get_version
+        run: echo "STRIMZI_CLI_VERSION=$(grep -m 1 'version' pyproject.toml | cut -d '=' -f 2 | xargs)" >> $GITHUB_ENV
 
-    - name: Get code version
-      run: echo "STRIMZI_CLI_VERSION=$(grep -m 1 'version' pyproject.toml | cut -d '=' -f 2 | xargs)" >> $GITHUB_ENV
+      - name: Compare release and code version
+        if: ${{ env.RELEASE_VERSION != env.STRIMZI_CLI_VERSION }}
+        run: exit 1
 
-    - name: Compare release and code version
-      if: ${{ env.RELEASE_VERSION != env.STRIMZI_CLI_VERSION }}
-      run: exit 1
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
+      - name: Install dependencies
+        run: make install-dependencies
 
-    - name: Install dependencies
-      run: make install-dependencies
+      - name: Build
+        run: make build
 
-    - name: Build
-      run: make build
+      - name: Publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload dist/*
+        continue-on-error: true
+      - name: Sleep for 3 mins
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '180s'
+      - name: Bake and push image
+        uses: docker/build-push-action@v1.1.0
+        with:
+          # Username used to log in to a Docker registry. If not set then no login will occur
+          username: ${{ secrets.QUAY_USERNAME }}
+          # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
+          password: ${{ secrets.QUAY_PASSWORD }}
+          # Server address of Docker registry. If not set then will default to Docker Hub
+          registry: quay.io
+          # Docker repository to tag the image with
+          repository: systemcraftsman/strimzi-kafka-cli
+          # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
+          tags: latest,${{ env.STRIMZI_CLI_VERSION }}
+          # Path to the build context
+          path: .
+          # Path to the Dockerfile (Default is '{path}/Dockerfile')
+          dockerfile: ./Dockerfile
+          # Whether to push the image
+          push: true
 
-    - name: Publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine upload dist/*
-      continue-on-error: true
-    - name: Sleep for 3 mins
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '180s'
-    - name: Bake and push image
-      uses: docker/build-push-action@v1.1.0
-      with:
-        # Username used to log in to a Docker registry. If not set then no login will occur
-        username: ${{ secrets.QUAY_USERNAME }}
-        # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
-        password: ${{ secrets.QUAY_PASSWORD }}
-        # Server address of Docker registry. If not set then will default to Docker Hub
-        registry: quay.io
-        # Docker repository to tag the image with
-        repository: systemcraftsman/strimzi-kafka-cli
-        # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
-        tags: latest,${{ env.STRIMZI_CLI_VERSION }}
-        # Path to the build context
-        path: .
-        # Path to the Dockerfile (Default is '{path}/Dockerfile')
-        dockerfile: ./Dockerfile
-        # Whether to push the image
-        push: true
+  upload_build_data_artifact:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Write version
+        run: |
+          printf '{
+              "version": ${{ needs.deploy.outputs.version }}
+            }' >> build_data.json
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build_data.json
+          path: ./
