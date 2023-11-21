@@ -49,7 +49,7 @@ jobs:
     outputs:
       image_version: ${{ fromJSON(steps.return-parsed-json.outputs.result).image_version }}
 
-  create_ops_pr:
+  create_pr:
     runs-on: ubuntu-20.04
     needs: download_build_data_artifact
 
@@ -71,11 +71,10 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           commit-message: Update image tag and revision for prod upgrade
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           branch: prod-upgrade-${{ needs.download_build_data_artifact.outputs.image_version }}
           assignees: mabulgu
-          reviewers: mabulgu
           title: '[Automated PR] Update image tag and revision for prod upgrade'
