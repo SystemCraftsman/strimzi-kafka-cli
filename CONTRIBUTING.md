@@ -85,7 +85,7 @@ We want your work to be readable by others; therefore, we encourage you to note 
 
 - We encourage the use of Python [f-strings](https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python) where they make the code easier to read.
 
-## Conventional Commits
+### Conventional Commits
 
 To maintain a consistent commit message format and enable automated release management, we follow the Conventional Commits specification. Please adhere to the following guidelines when making commits:
 
