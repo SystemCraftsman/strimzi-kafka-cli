@@ -1,7 +1,5 @@
 # Contributing Guidelines
 
-## Before Contributing
-
 Welcome to [strimzi-kafka-cli](https://github.com/systemcraftsman/strimzi-kafka-cli)! Before sending your pull requests, make sure that you __read the whole guidelines__. If you have any doubt about the contributing guide, please feel free to [state it clearly in an issue](https://github.com/systemcraftsman/strimzi-kafka-cli/issues/new).
 
 ## Contributing
