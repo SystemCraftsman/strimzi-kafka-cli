@@ -73,7 +73,7 @@ To run the pre-commit tool, follow these steps:
 
 4. You can also install pre-commit as a git hook by execute `pre-commit install`. Every time you made `git commit` pre-commit run automatically for you.
 
-#### Coding Style
+### Coding Style
 
 We want your work to be readable by others; therefore, we encourage you to note the following:
 
