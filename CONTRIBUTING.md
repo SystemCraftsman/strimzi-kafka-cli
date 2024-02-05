@@ -58,50 +58,6 @@ cd strimzi-kafka-cli
 Congratulations! You have successfully cloned the repository and are ready to start development. In the next sections, we will cover the setup and configuration steps required for your development environment.
 
 
-# Setting Up Poetry
-
-To streamline package management and dependency resolution for your project, we will be using Poetry. Poetry is a powerful Python dependency management tool that simplifies the process of managing project dependencies and virtual environments.
-
-Follow these steps to set up Poetry within your project:
-
-1. Ensure that you have Python installed on your local machine. Poetry requires Python 3.6 or higher. You can check your Python version by running the following command in your terminal:
-
-```bash
-python --version
-```
-
-If Python is not installed or the version is below 3.6, please install or update Python before proceeding.
-
-2. Open your terminal or command prompt and navigate to the root directory of the cloned repository.
-
-3. In the repository's root directory, run the following command to install Poetry: (I assume your are using Linux based system for windows and mac please poetry website for installation)
-
-```bash
-curl -sSL https://install.python-poetry.org | python -
-```
-
-You should see the installed Poetry version printed in the terminal.
-
-4. Now, let us set up Poetry for your project. Run the following command to initialize `strimzi-kafka-cli` project:
-
-#### Tip
-
-If you have multiple Python versions on your system, you can set your Python version by using `poetry env` . Here's an example of how to use it:
-
-```bash
-poetry env use python3.10
-```
-More details at
-[poetry-switching-between-environments](https://python-poetry.org/docs/managing-environments/#switching-between-environments)
-
-```bash
-poetry install
-poetry shell
-```
-
-You should now see your command prompt prefixed with (project-name), indicating that you are working within the virtual environment.
-
-Congratulations! You have successfully set up Poetry for your project. You can now manage dependencies, install packages, and run your code within the Poetry environment.
 
 #### Pre-commit Tool
 
