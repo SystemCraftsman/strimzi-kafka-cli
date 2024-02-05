@@ -25,7 +25,7 @@ Your contribution will be tested by our [automated testing on Github CI/CD](http
 
 Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the commit message of pull requests that resolve open issues. GitLab will use this tag to auto-close the issue when the PR is merged.
 
-# Getting Started with Development
+## Getting Started with Development
 
 ### Cloning the Repository
 
