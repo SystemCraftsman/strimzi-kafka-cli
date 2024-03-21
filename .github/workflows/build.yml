@@ -14,41 +14,41 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
     steps:
-    - uses: actions/checkout@v4
-    - name: Install setuptools for Python ${{ matrix.python-version }}
-      run: python -m pip install --upgrade setuptools
+      - uses: actions/checkout@v4
+      - name: Install setuptools for Python ${{ matrix.python-version }}
+        run: python -m pip install --upgrade setuptools
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-    - name: Install dependencies
-      run: make install-dependencies
+      - name: Install dependencies
+        run: make install-dependencies
 
-    - name: Run pre-commit
-      uses: pre-commit/action@v3.0.0
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
 
-    - name: Retrieve the kubeconfig and decode it to a file
-      env:
-        KUBECONFIG: ${{ secrets.KUBECONFIG }}
-      run: |
-        mkdir ~/.kube
-        echo "$KUBECONFIG" > ~/.kube/config
+      - name: Retrieve the kubeconfig and decode it to a file
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir ~/.kube
+          echo "$KUBECONFIG" > ~/.kube/config
 
-    - name: Save config (temp)
-      uses: actions/upload-artifact@v4
-      with:
-        name: kubeconfig
-        path: ~/.kube/config
-        
-    - name: Test
-      run: |
-        kfk
-        make test
+      - name: Save config (temp)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kubeconfig
+          path: ~/.kube/config
 
-    - name: Build
-      run: make build
+      - name: Test
+        run: |
+          kfk
+          make test
+
+      - name: Build
+        run: make build
