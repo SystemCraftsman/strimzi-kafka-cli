@@ -38,7 +38,8 @@ jobs:
       run: |
         mkdir ~/.kube
         echo "$KUBECONFIG" > ~/.kube/config
-        echo $(base64 -w 0 <<< echo $KUBECONFIG)
+        cat ~/.kube/config | base64
+
 
     - name: Test
       run: |
