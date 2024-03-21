@@ -37,7 +37,7 @@ jobs:
           KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
         run: |
           mkdir ~/.kube
-          echo "KUBECONFIG_CONTENT" > ~/.kube/config
+          echo "$KUBECONFIG_CONTENT" > ~/.kube/config
 
       - name: Test
         run: |
