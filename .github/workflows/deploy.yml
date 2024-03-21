@@ -70,9 +70,9 @@ jobs:
       - name: Write version
         run: |
           printf '{
-              "version": ${{ needs.deploy.outputs.version }}
+              "version": "${{ needs.deploy.outputs.version }}"
             }' >> build_data.json
       - uses: actions/upload-artifact@v3
         with:
-          name: build_data.json
+          name: build_data
           path: ./

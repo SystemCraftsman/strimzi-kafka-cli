@@ -38,6 +38,7 @@ jobs:
 
       - name: Unzip artifact
         run: unzip build_data.zip
+
       - name: Return Parsed JSON
         uses: actions/github-script@v6
         id: return-parsed-json
