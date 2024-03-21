@@ -3,7 +3,7 @@ import platform
 import sys
 from pathlib import Path
 
-STRIMZI_VERSION = "0.37.0"
+STRIMZI_VERSION = "0.38.0"
 KUBECTL_VERSION = "v1.28.3"
 
 

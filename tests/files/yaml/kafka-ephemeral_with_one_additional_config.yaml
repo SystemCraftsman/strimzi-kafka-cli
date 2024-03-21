@@ -9,7 +9,7 @@ spec:
   kafka:
     config:
       default.replication.factor: 3
-      inter.broker.protocol.version: '3.5'
+      inter.broker.protocol.version: '3.6'
       min.insync.replicas: 2
       offsets.topic.replication.factor: 3
       transaction.state.log.min.isr: 2
@@ -27,7 +27,7 @@ spec:
     replicas: 3
     storage:
       type: ephemeral
-    version: 3.5.1
+    version: 3.6.0
   zookeeper:
     replicas: 3
     storage:
