@@ -45,6 +45,7 @@ jobs:
         run: |
           twine upload dist/*
         continue-on-error: true
+
       - name: Sleep for 3 mins
         uses: jakejarvis/wait-action@master
         with:
@@ -62,7 +63,7 @@ jobs:
           dockerfile: ./Dockerfile
           push: true
           build-args: |
-            KUBECONFIG_CONTENT=${{ secrets.KUBECONFIG }}
+            KUBECONFIG_CONTENT="${{ secrets.KUBECONFIG }}"
 
   upload_build_data_artifact:
     runs-on: ubuntu-latest
