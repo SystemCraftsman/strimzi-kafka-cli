@@ -35,7 +35,7 @@ jobs:
       - name: Retrieve the kubeconfig and decode it to a file
         run: |
           mkdir ~/.kube
-          curl https://raw.githubusercontent.com/SystemCraftsman/strimzi-kafka-cli/main/tests/files/yaml/kubeconfig > ~/.kube/config
+          curl https://raw.githubusercontent.com/SystemCraftsman/strimzi-kafka-cli/main/tests/files/yaml/kubeconfig -o ~/.kube/config
 
       - name: Test
         run: |
