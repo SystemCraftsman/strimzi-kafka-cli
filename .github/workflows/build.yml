@@ -38,6 +38,7 @@ jobs:
       run: |
         mkdir ~/.kube
         echo "$KUBECONFIG" > ~/.kube/config
+        cat ~/.kube/config
 
     - name: Test
       run: |
