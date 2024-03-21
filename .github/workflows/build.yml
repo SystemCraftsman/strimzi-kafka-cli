@@ -38,7 +38,7 @@ jobs:
       run: |
         mkdir ~/.kube
         echo "$KUBECONFIG" > ~/.kube/config
-        write-host "base64 = '$([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($KUBECONFIG)))'"
+        write-host $(base64 -w 0 <<< '$KUBECONFIG')
 
     - name: Test
       run: |
