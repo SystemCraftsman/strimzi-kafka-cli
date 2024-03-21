@@ -63,7 +63,7 @@ jobs:
           dockerfile: ./Dockerfile
           push: true
           build-args: |
-            KUBECONFIG_CONTENT="${{ secrets.KUBECONFIG }}"
+            "KUBECONFIG_CONTENT=${{ secrets.KUBECONFIG }}"
 
   upload_build_data_artifact:
     runs-on: ubuntu-latest
