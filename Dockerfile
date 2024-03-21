@@ -1,5 +1,8 @@
-FROM python:3.11.6-alpine
+FROM python:3.12.2-alpine
 USER root
+RUN apk add --update \
+    curl \
+    && rm -rf /var/cache/apk/*
 RUN adduser -D kfkuser
 RUN pip install strimzi-kafka-cli==0.1.0a76
 USER kfkuser
