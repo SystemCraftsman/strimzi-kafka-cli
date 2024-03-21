@@ -39,12 +39,6 @@ jobs:
           mkdir ~/.kube
           echo "$KUBECONFIG" > ~/.kube/config
 
-      - name: Save config (temp)
-        uses: actions/upload-artifact@v4
-        with:
-          name: kubeconfig
-          path: ~/.kube/config
-
       - name: Test
         run: |
           kfk
