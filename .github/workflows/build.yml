@@ -35,10 +35,10 @@ jobs:
     - name: Retrieve the kubeconfig and decode it to a file
       env:
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
-      shell: pwsh
       run: |
-        write-host "base64 = '$([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($env:KUBECONFIG)))'"
-
+        mkdir ~/.kube
+        echo "$KUBECONFIG" > ~/.kube/config
+        
     - name: Test
       run: |
         kfk
