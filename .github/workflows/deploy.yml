@@ -53,8 +53,6 @@ jobs:
 
       - name: Bake and push image
         uses: docker/build-push-action@v1.1.0
-        env:
-          KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
         with:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
@@ -65,7 +63,7 @@ jobs:
           dockerfile: ./Dockerfile
           push: true
           build-args: |
-            "KUBECONFIG_CONTENT=$KUBECONFIG_CONTENT"
+            "KUBECONFIG_CONTENT=${{ secrets.KUBECONFIG }}"
 
   upload_build_data_artifact:
     runs-on: ubuntu-latest
