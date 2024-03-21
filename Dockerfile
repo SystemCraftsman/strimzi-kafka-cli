@@ -4,6 +4,6 @@ USER root
 RUN adduser -D kfkuser
 RUN pip install strimzi-kafka-cli==0.1.0a75
 USER kfkuser
-RUN mkdir ~/.kube
-RUN echo "$KUBECONFIG" > ~/.kube/config
+RUN mkdir /home/kfkuser/.kube
+RUN echo "$KUBECONFIG" > /home/kfkuser/.kube/config
 RUN kfk --version
