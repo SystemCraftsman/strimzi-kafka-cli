@@ -4,7 +4,7 @@ on:
     workflows:
       - Deploy
     branches:
-      - main
+      - !main
     types:
       - completed
 
