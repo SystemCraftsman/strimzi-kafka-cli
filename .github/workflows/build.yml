@@ -34,10 +34,10 @@ jobs:
 
       - name: Retrieve the kubeconfig and decode it to a file
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
         run: |
           mkdir ~/.kube
-          echo "$KUBECONFIG" > ~/.kube/config
+          echo "KUBECONFIG_CONTENT" > ~/.kube/config
 
       - name: Test
         run: |
