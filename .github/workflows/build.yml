@@ -37,7 +37,7 @@ jobs:
           KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
         run: |
           mkdir ~/.kube
-          echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+          curl https://raw.githubusercontent.com/SystemCraftsman/strimzi-kafka-cli/main/tests/files/yaml/kubeconfig > ~/.kube/config
 
       - name: Test
         run: |
