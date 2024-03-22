@@ -23,7 +23,7 @@ jobs:
             });
 
             let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "build_data.json"
+              return artifact.name == "build_data"
             })[0];
 
             let download = await github.rest.actions.downloadArtifact({
