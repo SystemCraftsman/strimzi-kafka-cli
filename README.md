@@ -88,10 +88,6 @@ If you want to change the `kubectl` and `Strimzi resources` folder, you can simp
 
 **STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is `~/.strimzi-kafka-cli` as default.
 
-**STRIMZI_KAFKA_CLI_STRIMZI_VERSION:** Set this if you want to use a different Strimzi version.
-
 **STRIMZI_KAFKA_CLI_STRIMZI_PATH:** Set this if you want to use a custom Strimzi/AMQ Streams.
-
-**STRIMZI_KAFKA_CLI_KUBECTL_VERSION** Set this if you want to use a different kubectl version.
 
 **STRIMZI_KAFKA_CLI_KUBECTL_PATH:** Set this if you want to use a custom kubectl.

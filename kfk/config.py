@@ -30,11 +30,6 @@ BASE_PATH = (
     if os.environ.get("STRIMZI_KAFKA_CLI_BASE_PATH") is None
     else os.environ.get("STRIMZI_KAFKA_CLI_BASE_PATH")
 )
-STRIMZI_VERSION = (
-    STRIMZI_VERSION
-    if os.environ.get("STRIMZI_KAFKA_CLI_STRIMZI_VERSION") is None
-    else os.environ.get("STRIMZI_KAFKA_CLI_STRIMZI_VERSION")
-)
 STRIMZI_PATH = (
     (BASE_PATH + f"/strimzi-{STRIMZI_VERSION}")
     if os.environ.get("STRIMZI_KAFKA_CLI_STRIMZI_PATH") is None
@@ -44,11 +39,7 @@ STRIMZI_RELEASE_URL = (
     f"https://github.com/strimzi/strimzi-kafka-operator/releases/"
     f"download/{STRIMZI_VERSION}/strimzi-{STRIMZI_VERSION}.tar.gz"
 )
-KUBECTL_VERSION = (
-    KUBECTL_VERSION
-    if os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_VERSION") is None
-    else os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_VERSION")
-)
+
 KUBECTL = "kubectl" if platform.system().lower() != "windows" else "kubectl.exe"
 KUBECTL_PATH = (
     (BASE_PATH + "/" + KUBECTL)
