@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 STRIMZI_VERSION = "0.40.0"
-KUBECTL_VERSION = "v1.28.3"
+KUBECTL_VERSION = "v1.29.3"
 
 
 def _get_processor_type():
