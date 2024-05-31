@@ -16,14 +16,6 @@ class Kubectl:
         self.cmd_str = self.cmd_str + SPACE + "get"
         return self
 
-    def apply(self):
-        self.cmd_str = self.cmd_str + SPACE + "apply"
-        return self
-
-    def replace(self):
-        self.cmd_str = self.cmd_str + SPACE + "replace"
-        return self
-
     def describe(self):
         self.cmd_str = self.cmd_str + SPACE + "describe"
         return self

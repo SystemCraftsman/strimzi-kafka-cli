@@ -89,6 +89,17 @@ def delete_using_yaml(file_path, namespace):
     )
 
 
+def replace_using_yaml(file_path, namespace):
+    _operate_using_yaml(
+        api_client,
+        file_path,
+        "replace",
+        yaml_objects=None,
+        verbose=True,
+        namespace=namespace,
+    )
+
+
 def _operate_using_yaml(
     k8s_client,
     yaml_file=None,
@@ -240,6 +251,21 @@ def _delete_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
         kwargs["namespace"] = namespace
     name = yml_object["metadata"]["name"]
     _delete_object(k8s_api, name, object_type, **kwargs)
+
+
+@yaml_object_argument_filter
+def _replace_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
+    if hasattr(k8s_api, f"replace_namespaced_{object_type}"):
+        if "namespace" in yml_object["metadata"]:
+            namespace = yml_object["metadata"]["namespace"]
+            kwargs["namespace"] = namespace
+        resp = getattr(k8s_api, f"replace_namespaced_{object_type}")(
+            body=yml_object, **kwargs
+        )
+    else:
+        kwargs.pop("namespace", None)
+        resp = getattr(k8s_api, f"replace_{object_type}")(body=yml_object, **kwargs)
+    return resp
 
 
 def _delete_object(k8s_api, name, object_type, delete_options_version="V1", **kwargs):

@@ -14,7 +14,11 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from kfk.kubernetes_commons import (
+    create_using_yaml,
+    delete_using_yaml,
+    replace_using_yaml,
+)
 from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.utils import snake_to_camel_case
 
@@ -306,14 +310,7 @@ def alter(
     user_yaml = yaml.dump(user_dict)
     user_temp_file = create_temp_file(user_yaml)
 
-    os.system(
-        Kubectl()
-        .apply()
-        .from_file("{user_temp_file_path}")
-        .namespace(namespace)
-        .build()
-        .format(user_temp_file_path=user_temp_file.name)
-    )
+    replace_using_yaml(user_temp_file.name, namespace)
 
     user_temp_file.close()
 

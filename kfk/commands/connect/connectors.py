@@ -16,7 +16,11 @@ from kfk.commons import (
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import SpecialTexts
 from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from kfk.kubernetes_commons import (
+    create_using_yaml,
+    delete_using_yaml,
+    replace_using_yaml,
+)
 
 CONNECTOR_SKIPPED_PROPERTIES = (
     SpecialTexts.CONNECTOR_NAME,
@@ -199,14 +203,7 @@ def alter(config_file, cluster, namespace):
     connector_yaml = yaml.dump(connector_dict)
     connector_temp_file = create_temp_file(connector_yaml)
 
-    os.system(
-        Kubectl()
-        .replace()
-        .from_file("{topic_temp_file_path}")
-        .namespace(namespace)
-        .build()
-        .format(topic_temp_file_path=connector_temp_file.name)
-    )
+    replace_using_yaml(connector_temp_file.name, namespace)
 
     connector_temp_file.close()
 

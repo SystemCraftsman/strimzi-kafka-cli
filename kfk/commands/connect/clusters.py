@@ -31,6 +31,7 @@ from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_object,
     delete_using_yaml,
+    replace_using_yaml,
 )
 from kfk.messages import Errors, Messages
 from kfk.utils import is_valid_url
@@ -362,14 +363,9 @@ def alter(cluster, replicas, config_file, namespace):
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
-        os.system(
-            Kubectl()
-            .replace()
-            .from_file("{cluster_temp_file_path}")
-            .namespace(namespace)
-            .build()
-            .format(cluster_temp_file_path=cluster_temp_file.name)
-        )
+
+        replace_using_yaml(cluster_temp_file.name, namespace)
+
         cluster_temp_file.close()
     else:
         os.system(Kubectl().edit().kafkaconnects(cluster).namespace(namespace).build())

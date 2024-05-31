@@ -15,7 +15,11 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
+from kfk.kubernetes_commons import (
+    create_using_yaml,
+    delete_using_yaml,
+    replace_using_yaml,
+)
 from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
 
@@ -202,14 +206,9 @@ def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
-        os.system(
-            Kubectl()
-            .apply()
-            .from_file("{cluster_temp_file_path}")
-            .namespace(namespace)
-            .build()
-            .format(cluster_temp_file_path=cluster_temp_file.name)
-        )
+
+        replace_using_yaml(cluster_temp_file.name, namespace)
+
         cluster_temp_file.close()
     else:
         os.system(Kubectl().edit().kafkas(cluster).namespace(namespace).build())

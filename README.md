@@ -84,10 +84,10 @@ Please see [pyproject.toml](https://github.com/SystemCraftsman/strimzi-kafka-cli
 kfk --version
 ```
 
-If you want to change the `kubectl` and `Strimzi resources` folder, you can simply change their version with the help of some environment variables in order to let Strimzi Kafka CLI download the version you want, or change the PATH of any if you want to use a custom kubectl or Strimzi binary folder. Current versions are recommended, so use these environment variables at your own risk.
+You can change where you want to locate the `kubectl`, `Strimzi resources`, or `Strimzi CLI` files/folders. You can use the following environment variables:
 
 **STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is `~/.strimzi-kafka-cli` as default.
 
-**STRIMZI_KAFKA_CLI_STRIMZI_PATH:** Set this if you want to use a custom Strimzi/AMQ Streams.
+**STRIMZI_KAFKA_CLI_STRIMZI_PATH:** Set this if you want to use a custom Strimzi/AMQ Streams. We only recommend this when using AMQ Streams instead of Strimzi.
 
 **STRIMZI_KAFKA_CLI_KUBECTL_PATH:** Set this if you want to use a custom kubectl.

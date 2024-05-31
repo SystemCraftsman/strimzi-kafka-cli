@@ -184,6 +184,8 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
+        mock_create_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commands.topics.create_using_yaml")
     def test_create_topic_with_config(
@@ -256,9 +258,9 @@ class TestKfkTopics(TestCase):
 
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_with_no_params(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic.yaml") as file:
             expected_topic_yaml = file.read()
@@ -283,11 +285,13 @@ class TestKfkTopics(TestCase):
             result_topic_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_without_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
@@ -318,11 +322,13 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_with_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
@@ -355,11 +361,13 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_with_two_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic.yaml") as file:
             topic_yaml = file.read()
@@ -394,11 +402,13 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_with_two_configs_delete_one_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
@@ -427,11 +437,13 @@ class TestKfkTopics(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_alter_topic_with_two_configs_delete_two_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
@@ -461,3 +473,5 @@ class TestKfkTopics(TestCase):
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
+
+        mock_replace_using_yaml.assert_called_once()
