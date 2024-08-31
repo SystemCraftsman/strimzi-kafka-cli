@@ -158,9 +158,9 @@ class TestKfkConnectors(TestCase):
 
     @mock.patch("kfk.commands.connect.connectors.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.connectors.os")
+    @mock.patch("kfk.commands.connect.connectors.replace_using_yaml")
     def test_alter_connector(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-connect-connector-twitter.yaml") as file:
             connector_yaml = file.read()
@@ -188,3 +188,5 @@ class TestKfkConnectors(TestCase):
                 expected_connector_yaml = file.read()
                 result_connector_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connector_yaml == result_connector_yaml
+
+        mock_replace_using_yaml.assert_called_once()

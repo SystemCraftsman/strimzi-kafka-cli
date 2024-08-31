@@ -83,9 +83,9 @@ class TestKfkClusters(TestCase):
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_one_additional_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             kafka_yaml = file.read()
@@ -112,11 +112,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_two_additional_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             kafka_yaml = file.read()
@@ -145,11 +147,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_two_additional_configs_delete_one_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
             "tests/files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
@@ -178,11 +182,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_two_additional_configs_delete_two_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
             "tests/files/yaml/kafka-ephemeral_with_two_additional_configs.yaml"
@@ -213,11 +219,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_one_replica(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
@@ -242,11 +250,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_two_replicas(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
@@ -273,11 +283,13 @@ class TestKfkClusters(TestCase):
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_alter_cluster_with_one_replica_one_zk_replica(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
             kafka_yaml = file.read()
@@ -305,6 +317,8 @@ class TestKfkClusters(TestCase):
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.clusters.click.confirm")
     @mock.patch("kfk.commands.clusters.delete_using_yaml")
