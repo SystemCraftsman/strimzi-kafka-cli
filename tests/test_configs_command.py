@@ -52,9 +52,9 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_add_one_topic_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic_without_config.yaml") as file:
             topic_yaml = file.read()
@@ -83,6 +83,8 @@ class TestKfkConfigs(TestCase):
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
+
+        mock_replace_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
@@ -372,9 +374,9 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_add_one_broker_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
             cluster_yaml = file.read()
@@ -405,11 +407,13 @@ class TestKfkConfigs(TestCase):
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.os")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
     def test_delete_one_broker_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open(
             "tests/files/yaml/kafka-ephemeral_with_one_additional_config.yaml"
@@ -441,6 +445,8 @@ class TestKfkConfigs(TestCase):
                 expected_cluster_yaml = file.read()
                 result_cluster_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_cluster_yaml == result_cluster_yaml
+
+        mock_replace_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.clusters.os")
     def test_describe_broker_config(self, mock_os):

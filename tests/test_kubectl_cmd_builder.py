@@ -10,11 +10,6 @@ class TestKubectl(TestCase):
             Kubectl().get().build(), "{kubectl} get".format(kubectl=KUBECTL_PATH)
         )
 
-    def test_apply(self):
-        self.assertEqual(
-            Kubectl().apply().build(), "{kubectl} apply".format(kubectl=KUBECTL_PATH)
-        )
-
     def test_describe(self):
         self.assertEqual(
             Kubectl().describe().build(),
