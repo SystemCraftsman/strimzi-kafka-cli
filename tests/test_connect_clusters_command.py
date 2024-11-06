@@ -544,9 +544,9 @@ class TestKfkConnect(TestCase):
 
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.replace_using_yaml")
     def test_alter_cluster_with_replica_param(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
@@ -575,11 +575,13 @@ class TestKfkConnect(TestCase):
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.replace_using_yaml")
     def test_alter_cluster_with_different_config_file(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
@@ -607,11 +609,13 @@ class TestKfkConnect(TestCase):
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.connect.clusters.os")
+    @mock.patch("kfk.commands.connect.clusters.replace_using_yaml")
     def test_alter_cluster_with_only_image_config_file(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-connect.yaml") as file:
             connect_yaml = file.read()
@@ -636,3 +640,5 @@ class TestKfkConnect(TestCase):
                 expected_connect_yaml = file.read()
                 result_connect_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_connect_yaml == result_connect_yaml
+
+        mock_replace_using_yaml.assert_called_once()

@@ -1,9 +1,10 @@
+from importlib.metadata import version
+
 import click
-import pkg_resources
 
 from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
 
-version = f"""CLI Version: {pkg_resources.require("strimzi-kafka-cli")[0].version}
+version = f"""CLI Version: {version("strimzi-kafka-cli")}
 Strimzi Version: {STRIMZI_VERSION}
 Kubectl Version: {KUBECTL_VERSION}"""
 

@@ -1,6 +1,6 @@
+from importlib.metadata import version
 from unittest import TestCase, mock
 
-import pkg_resources
 from click.testing import CliRunner
 
 from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
@@ -24,7 +24,7 @@ class TestKfk(TestCase):
 
         result = self.runner.invoke(kfk, ["--version"])
         assert result.exit_code == 0
-        cli_version = pkg_resources.require("strimzi-kafka-cli")[0].version
+        cli_version = version("strimzi-kafka-cli")
         expected_version = f"""CLI Version: {cli_version}
 Strimzi Version: {STRIMZI_VERSION}
 Kubectl Version: {KUBECTL_VERSION}

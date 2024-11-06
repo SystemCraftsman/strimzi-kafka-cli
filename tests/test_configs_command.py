@@ -88,9 +88,9 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_add_two_topic_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic_without_config.yaml") as file:
             topic_yaml = file.read()
@@ -120,11 +120,13 @@ class TestKfkConfigs(TestCase):
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.topics.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.replace_using_yaml")
     def test_delete_one_topic_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/topic_with_two_configs.yaml") as file:
             topic_yaml = file.read()
@@ -153,6 +155,8 @@ class TestKfkConfigs(TestCase):
                 expected_topic_yaml = file.read()
                 result_topic_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_topic_yaml == result_topic_yaml
+
+        mock_replace_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.topics.os")
     def test_describe_topic_config(self, mock_os):
@@ -216,9 +220,9 @@ class TestKfkConfigs(TestCase):
 
     @mock.patch("kfk.commands.users.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("kfk.commands.users.replace_using_yaml")
     def test_add_one_user_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/user_with_authentication_scram.yaml") as file:
             user_yaml = file.read()
@@ -248,11 +252,13 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.users.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("kfk.commands.users.replace_using_yaml")
     def test_add_two_user_configs(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/user_with_authentication_scram.yaml") as file:
             user_yaml = file.read()
@@ -282,11 +288,13 @@ class TestKfkConfigs(TestCase):
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
 
+        mock_replace_using_yaml.assert_called_once()
+
     @mock.patch("kfk.commands.users.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.users.os")
+    @mock.patch("kfk.commands.users.replace_using_yaml")
     def test_delete_one_user_config(
-        self, mock_os, mock_get_resource_yaml, mock_create_temp_file
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/user_with_two_quotas.yaml") as file:
             user_yaml = file.read()
@@ -315,6 +323,8 @@ class TestKfkConfigs(TestCase):
                 expected_user_yaml = file.read()
                 result_user_yaml = mock_create_temp_file.call_args[0][0]
                 assert expected_user_yaml == result_user_yaml
+
+        mock_replace_using_yaml.assert_called_once()
 
     @mock.patch("kfk.commands.users.os")
     def test_describe_user_config(self, mock_os):
