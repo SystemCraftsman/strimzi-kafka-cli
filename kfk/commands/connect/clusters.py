@@ -326,9 +326,9 @@ def alter(cluster, replicas, config_file, namespace):
                 ).data
             else:
                 cluster_dict["spec"].pop("image", None)
-                cluster_dict["spec"]["build"]["output"][
-                    "image"
-                ] = connect_properties.get(SpecialTexts.CONNECT_IMAGE).data
+                cluster_dict["spec"]["build"]["output"]["image"] = (
+                    connect_properties.get(SpecialTexts.CONNECT_IMAGE).data
+                )
 
                 cluster_dict["spec"]["build"]["plugins"] = []
 

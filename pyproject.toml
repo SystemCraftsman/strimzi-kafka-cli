@@ -45,7 +45,7 @@ dev = [
     "isort",
     "black",
     "mypy",
-    "pre-commit",
+    "pre-commit<4",
     "bandit",
     "autoflake"
 ]
