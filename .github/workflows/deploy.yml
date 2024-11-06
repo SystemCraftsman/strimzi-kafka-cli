@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
 
       - name: Sleep for 3 mins
-        uses: jakejarvis/wait-action@0.1.1
+        uses: jakejarvis/wait-action@v0.1.1
         with:
           time: '180s'
 
