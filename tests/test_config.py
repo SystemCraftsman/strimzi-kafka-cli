@@ -32,14 +32,14 @@ class TestKfkConfig(TestCase):
         assert _get_processor_type() == "arm64"
 
     @mock.patch("kfk.config._is_64_bit")
-    @mock.patch("kfk.config.os.uname")
+    @mock.patch("kfk.config.platform.uname")
     def test_processor_type_x86_64_64bit(self, mock_os_uname, mock_is_64_bit):
         mock_os_uname.return_value = os_uname_mock("x86_64")
         mock_is_64_bit.return_value = True
         assert _get_processor_type() == "amd64"
 
     @mock.patch("kfk.config._is_64_bit")
-    @mock.patch("kfk.config.os.uname")
+    @mock.patch("kfk.config.platform.uname")
     def test_processor_type_x86_32bit(self, mock_os_uname, mock_is_64_bit):
         mock_os_uname.return_value = os_uname_mock("x86")
         mock_is_64_bit.return_value = False

@@ -1,6 +1,6 @@
 [project]
 name = "strimzi-kafka-cli"
-version = "0.1.0-alpha79"
+version = "0.1.0-alpha80"
 description = "Command Line Interface for Strimzi Kafka Operator"
 authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
 readme = "README.md"
@@ -31,7 +31,7 @@ dependencies = [
     "pyyaml == 6.0.1",
     "wget == 3.2",
     "jproperties == 2.1.1",
-    "kubernetes == 28.1.0",
+    "kubernetes == 35.0.0",
 ]
 
 [project.optional-dependencies]

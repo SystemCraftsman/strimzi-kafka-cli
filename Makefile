@@ -21,4 +21,4 @@ build: clean
 	python -m build; twine check --strict dist/*
 
 install-dependencies:
-	pip install ".[dev]"
+	pip install uv; uv venv; uv pip install ".[dev]"
