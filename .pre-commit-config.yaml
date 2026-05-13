@@ -22,7 +22,7 @@ repos:
 
 
   - repo: https://github.com/PyCQA/isort
-    rev: 9.0.0a3
+    rev: 5.13.2
     hooks:
       - id: isort
 
