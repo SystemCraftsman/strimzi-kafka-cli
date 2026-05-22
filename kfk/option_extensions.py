@@ -17,8 +17,8 @@ class NotRequiredIf(click.Option):
         control_options_exist = False
 
         for options in self.options:
-            control_options_exist = options in opts
-            if control_options_exist is True:
+            if opts.get(options):
+                control_options_exist = True
                 break
 
         if control_options_exist:
@@ -43,8 +43,8 @@ class RequiredIf(click.Option):
         control_options_exist = False
 
         for options in self.options:
-            control_options_exist = options in opts
-            if control_options_exist is True:
+            if opts.get(options):
+                control_options_exist = True
                 break
 
         if control_options_exist:
