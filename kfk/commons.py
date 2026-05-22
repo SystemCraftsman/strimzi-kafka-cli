@@ -5,6 +5,7 @@ import tempfile
 from subprocess import call
 
 import click
+import yaml
 from jproperties import Properties
 
 from kfk.constants import (
@@ -18,6 +19,7 @@ from kfk.constants import (
     SPACE,
 )
 from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import get_resource
 from kfk.utils import convert_string_to_type, get_list_by_split_string
 
 # TODO: Message string to messages.py
@@ -93,29 +95,18 @@ def delete_resource_config(config, dict_part, *converters):
 def resource_exists(
     resource_type=None, resource_name=None, cluster=None, namespace=None
 ):
-    command = Kubectl().get().resource(resource_type).namespace(namespace)
-
-    if cluster is not None:
-        command = command.label(f"strimzi.io/cluster={cluster}")
-
-    return resource_name in os.popen(command.build()).read()
+    try:
+        get_resource(resource_type, resource_name, namespace)
+        return True
+    except Exception:
+        return False
 
 
 def get_resource_yaml(
     resource_type=None, resource_name=None, cluster=None, namespace=None
 ):
-    command = (
-        Kubectl()
-        .get()
-        .resource(resource_type, resource_name)
-        .namespace(namespace)
-        .output("yaml")
-    )
-
-    if cluster is not None:
-        command = command.label(f"strimzi.io/cluster={cluster}")
-
-    return os.popen(command.build()).read()
+    resource = get_resource(resource_type, resource_name, namespace)
+    return yaml.dump(resource)
 
 
 def get_resource_as_stream(

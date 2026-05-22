@@ -1,4 +1,4 @@
-import os
+import json
 
 import click
 import yaml
@@ -15,10 +15,12 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import SpecialTexts
-from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
+    describe_resource,
+    get_resource,
+    list_resource,
     replace_using_yaml,
 )
 
@@ -91,15 +93,7 @@ def connectors(
 
 
 def list(cluster, namespace):
-    os.system(
-        Kubectl()
-        .get()
-        .kafkaconnectors()
-        .label("strimzi.io/cluster={cluster}")
-        .namespace(namespace)
-        .build()
-        .format(cluster=cluster)
-    )
+    list_resource("kafkaconnectors", namespace, label=f"strimzi.io/cluster={cluster}")
 
 
 def create(config_file, cluster, namespace):
@@ -141,18 +135,13 @@ def create(config_file, cluster, namespace):
 
 def describe(connector, output, namespace):
     if output is not None:
-        os.system(
-            Kubectl()
-            .get()
-            .kafkaconnectors(connector)
-            .namespace(namespace)
-            .output(output)
-            .build()
-        )
+        resource = get_resource("kafkaconnectors", connector, namespace)
+        if output == "yaml":
+            click.echo(yaml.dump(resource, default_flow_style=False))
+        elif output == "json":
+            click.echo(json.dumps(resource, indent=2))
     else:
-        os.system(
-            Kubectl().describe().kafkaconnectors(connector).namespace(namespace).build()
-        )
+        describe_resource("kafkaconnectors", connector, namespace)
 
 
 def delete(connector, cluster, namespace):

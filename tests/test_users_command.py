@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.users import kfk
-from kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkUsers(TestCase):
@@ -21,24 +20,20 @@ class TestKfkUsers(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk users" in result.output
 
-    @mock.patch("kfk.commands.users.os")
-    def test_list_users(self, mock_os):
+    @mock.patch("kfk.commands.users.list_resource")
+    def test_list_users(self, mock_list_resource):
         result = self.runner.invoke(
             kfk, ["users", "--list", "-c", self.cluster, "-n", self.namespace]
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkausers()
-            .label("strimzi.io/cluster={cluster}")
-            .namespace(self.namespace)
-            .build()
-            .format(cluster=self.cluster)
+        mock_list_resource.assert_called_with(
+            "kafkausers",
+            self.namespace,
+            label=f"strimzi.io/cluster={self.cluster}",
         )
 
-    @mock.patch("kfk.commands.users.os")
-    def test_describe_user(self, mock_os):
+    @mock.patch("kfk.commands.users.describe_resource")
+    def test_describe_user(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             [
@@ -53,12 +48,13 @@ class TestKfkUsers(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build()
+        mock_describe_resource.assert_called_with(
+            "kafkausers", self.user, self.namespace
         )
 
-    @mock.patch("kfk.commands.users.os")
-    def test_describe_user_output_yaml(self, mock_os):
+    @mock.patch("kfk.commands.users.get_resource")
+    def test_describe_user_output_yaml(self, mock_get_resource):
+        mock_get_resource.return_value = {"metadata": {"name": self.user}}
         result = self.runner.invoke(
             kfk,
             [
@@ -75,14 +71,7 @@ class TestKfkUsers(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkausers(self.user)
-            .namespace(self.namespace)
-            .output("yaml")
-            .build()
-        )
+        mock_get_resource.assert_called_with("kafkausers", self.user, self.namespace)
 
     @mock.patch("kfk.commands.users.STRIMZI_PATH", "tests/files/strimzi")
     @mock.patch("kfk.commands.users.create_temp_file")

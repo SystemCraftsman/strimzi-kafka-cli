@@ -158,8 +158,8 @@ class TestKfkConfigs(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_describe_topic_config(self, mock_os):
+    @mock.patch("kfk.commands.topics.describe_resource")
+    def test_describe_topic_config(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             [
@@ -176,12 +176,8 @@ class TestKfkConfigs(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .describe()
-            .kafkatopics(self.topic)
-            .namespace(self.namespace)
-            .build()
+        mock_describe_resource.assert_called_with(
+            "kafkatopics", self.topic, self.namespace
         )
 
     @mock.patch("kfk.commands.configs.os")
@@ -326,8 +322,8 @@ class TestKfkConfigs(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.users.os")
-    def test_describe_user_config(self, mock_os):
+    @mock.patch("kfk.commands.users.describe_resource")
+    def test_describe_user_config(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             [
@@ -344,8 +340,8 @@ class TestKfkConfigs(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().describe().kafkausers(self.user).namespace(self.namespace).build()
+        mock_describe_resource.assert_called_with(
+            "kafkausers", self.user, self.namespace
         )
 
     @mock.patch("kfk.commands.configs.os")
@@ -458,8 +454,8 @@ class TestKfkConfigs(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_describe_broker_config(self, mock_os):
+    @mock.patch("kfk.commands.clusters.describe_resource")
+    def test_describe_broker_config(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             [
@@ -476,8 +472,8 @@ class TestKfkConfigs(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build()
+        mock_describe_resource.assert_called_with(
+            "kafkas", self.cluster, self.namespace
         )
 
     @mock.patch("kfk.commons.get_resource_yaml")

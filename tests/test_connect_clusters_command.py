@@ -430,41 +430,34 @@ class TestKfkConnect(TestCase):
 
         assert mock_connectors_create_using_yaml.call_count == 2
 
-    @mock.patch("kfk.commands.connect.clusters.os")
-    def test_list_clusters(self, mock_os):
+    @mock.patch("kfk.commands.connect.clusters.list_resource")
+    def test_list_clusters(self, mock_list_resource):
         result = self.runner.invoke(
             connect, ["clusters", "--list", "-n", self.namespace]
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().get().kafkaconnects().namespace(self.namespace).build()
-        )
+        mock_list_resource.assert_called_with("kafkaconnects", self.namespace)
 
-    @mock.patch("kfk.commands.connect.clusters.os")
-    def test_list_clusters_all_namespaces(self, mock_os):
+    @mock.patch("kfk.commands.connect.clusters.list_resource")
+    def test_list_clusters_all_namespaces(self, mock_list_resource):
         result = self.runner.invoke(connect, ["clusters", "--list"])
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().get().kafkaconnects().namespace().build()
-        )
+        mock_list_resource.assert_called_with("kafkaconnects", None)
 
-    @mock.patch("kfk.commands.connect.clusters.os")
-    def test_describe_cluster(self, mock_os):
+    @mock.patch("kfk.commands.connect.clusters.describe_resource")
+    def test_describe_cluster(self, mock_describe_resource):
         result = self.runner.invoke(
             connect,
             ["clusters", "--describe", "--cluster", self.cluster, "-n", self.namespace],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .describe()
-            .kafkaconnects(self.cluster)
-            .namespace(self.namespace)
-            .build()
+        mock_describe_resource.assert_called_with(
+            "kafkaconnects", self.cluster, self.namespace
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
-    def test_describe_cluster_output_yaml(self, mock_os):
+    @mock.patch("kfk.commands.connect.clusters.get_resource")
+    def test_describe_cluster_output_yaml(self, mock_get_resource):
+        mock_get_resource.return_value = {"metadata": {"name": self.cluster}}
         result = self.runner.invoke(
             connect,
             [
@@ -479,13 +472,8 @@ class TestKfkConnect(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkaconnects(self.cluster)
-            .namespace(self.namespace)
-            .output("yaml")
-            .build()
+        mock_get_resource.assert_called_with(
+            "kafkaconnects", self.cluster, self.namespace
         )
 
     @mock.patch("kfk.commands.connect.clusters.click.confirm")

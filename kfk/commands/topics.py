@@ -1,3 +1,4 @@
+import json
 import os
 
 import click
@@ -19,6 +20,9 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
+    describe_resource,
+    get_resource,
+    list_resource,
     replace_using_yaml,
 )
 from kfk.option_extensions import NotRequiredIf, RequiredIf
@@ -135,15 +139,7 @@ def topics(
 
 
 def list(cluster, namespace):
-    os.system(
-        Kubectl()
-        .get()
-        .kafkatopics()
-        .label("strimzi.io/cluster={cluster}")
-        .namespace(namespace)
-        .build()
-        .format(cluster=cluster)
-    )
+    list_resource("kafkatopics", namespace, label=f"strimzi.io/cluster={cluster}")
 
 
 def create(topic, partitions, replication_factor, config, cluster, namespace):
@@ -173,14 +169,11 @@ def describe(
     topic, output, native, command_config, cluster, namespace, broker_pod=None
 ):
     if output is not None:
-        os.system(
-            Kubectl()
-            .get()
-            .kafkatopics(topic)
-            .namespace(namespace)
-            .output(output)
-            .build()
-        )
+        resource = get_resource("kafkatopics", topic, namespace)
+        if output == "yaml":
+            click.echo(yaml.dump(resource, default_flow_style=False))
+        elif output == "json":
+            click.echo(json.dumps(resource, indent=2))
     else:
         if native:
             native_command = (
@@ -208,9 +201,7 @@ def describe(
                 .format(port=KAFKA_PORT, topic=topic, cluster=cluster)
             )
         else:
-            os.system(
-                Kubectl().describe().kafkatopics(topic).namespace(namespace).build()
-            )
+            describe_resource("kafkatopics", topic, namespace)
 
 
 def delete(topic, cluster, namespace):

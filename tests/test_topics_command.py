@@ -24,24 +24,20 @@ class TestKfkTopics(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk topics" in result.output
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_list_topics(self, mock_os):
+    @mock.patch("kfk.commands.topics.list_resource")
+    def test_list_topics(self, mock_list_resource):
         result = self.runner.invoke(
             kfk, ["topics", "--list", "-c", self.cluster, "-n", self.namespace]
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkatopics()
-            .label("strimzi.io/cluster={cluster}")
-            .namespace(self.namespace)
-            .build()
-            .format(cluster=self.cluster)
+        mock_list_resource.assert_called_with(
+            "kafkatopics",
+            self.namespace,
+            label=f"strimzi.io/cluster={self.cluster}",
         )
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_describe_topic(self, mock_os):
+    @mock.patch("kfk.commands.topics.describe_resource")
+    def test_describe_topic(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             [
@@ -56,16 +52,13 @@ class TestKfkTopics(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .describe()
-            .kafkatopics(self.topic)
-            .namespace(self.namespace)
-            .build()
+        mock_describe_resource.assert_called_with(
+            "kafkatopics", self.topic, self.namespace
         )
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_describe_topic_output_yaml(self, mock_os):
+    @mock.patch("kfk.commands.topics.get_resource")
+    def test_describe_topic_output_yaml(self, mock_get_resource):
+        mock_get_resource.return_value = {"metadata": {"name": self.topic}}
         result = self.runner.invoke(
             kfk,
             [
@@ -82,14 +75,7 @@ class TestKfkTopics(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkatopics(self.topic)
-            .namespace(self.namespace)
-            .output("yaml")
-            .build()
-        )
+        mock_get_resource.assert_called_with("kafkatopics", self.topic, self.namespace)
 
     @mock.patch("kfk.commands.topics.os")
     def test_describe_topic_native(self, mock_os):

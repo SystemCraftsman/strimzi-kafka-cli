@@ -1,4 +1,4 @@
-import os
+import json
 
 import click
 import yaml
@@ -13,10 +13,12 @@ from kfk.commons import (
     raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
+    describe_resource,
+    get_resource,
+    list_resource,
     replace_using_yaml,
 )
 from kfk.option_extensions import NotRequiredIf, RequiredIf
@@ -169,15 +171,7 @@ def users(
 
 
 def list(cluster, namespace):
-    os.system(
-        Kubectl()
-        .get()
-        .kafkausers()
-        .label("strimzi.io/cluster={cluster}")
-        .namespace(namespace)
-        .build()
-        .format(cluster=cluster)
-    )
+    list_resource("kafkausers", namespace, label=f"strimzi.io/cluster={cluster}")
 
 
 def create(user, authentication_type, quota_tuple, cluster, namespace):
@@ -209,11 +203,13 @@ def create(user, authentication_type, quota_tuple, cluster, namespace):
 
 def describe(user, output, cluster, namespace):
     if output is not None:
-        os.system(
-            Kubectl().get().kafkausers(user).namespace(namespace).output(output).build()
-        )
+        resource = get_resource("kafkausers", user, namespace)
+        if output == "yaml":
+            click.echo(yaml.dump(resource, default_flow_style=False))
+        elif output == "json":
+            click.echo(json.dumps(resource, indent=2))
     else:
-        os.system(Kubectl().describe().kafkausers(user).namespace(namespace).build())
+        describe_resource("kafkausers", user, namespace)
 
 
 def delete(user, cluster, namespace):
