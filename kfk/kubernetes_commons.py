@@ -9,11 +9,25 @@ import yaml
 from kubernetes import client, config
 
 STRIMZI_GROUP = "kafka.strimzi.io"
-STRIMZI_VERSION = "v1"
 
 config.load_kube_config()
 api_client = client.ApiClient()
 custom_objects_api = client.CustomObjectsApi(api_client)
+
+
+def _detect_strimzi_api_version():
+    try:
+        api_ext = client.ApiextensionsV1Api(api_client)
+        crd = api_ext.read_custom_resource_definition("kafkas.kafka.strimzi.io")
+        for v in crd.spec.versions:
+            if v.served:
+                return v.name
+    except Exception:
+        pass
+    return "v1"
+
+
+STRIMZI_API_VERSION = _detect_strimzi_api_version()
 
 
 def yaml_object_argument_filter(func):
@@ -108,7 +122,7 @@ def replace_using_yaml(file_path, namespace):
 def list_resource(resource_type, namespace, label=None):
     result = custom_objects_api.list_namespaced_custom_object(
         group=STRIMZI_GROUP,
-        version=STRIMZI_VERSION,
+        version=STRIMZI_API_VERSION,
         namespace=namespace,
         plural=resource_type,
         label_selector=label or "",
@@ -134,7 +148,7 @@ def list_resource(resource_type, namespace, label=None):
 def get_resource(resource_type, resource_name, namespace):
     return custom_objects_api.get_namespaced_custom_object(
         group=STRIMZI_GROUP,
-        version=STRIMZI_VERSION,
+        version=STRIMZI_API_VERSION,
         namespace=namespace,
         plural=resource_type,
         name=resource_name,
