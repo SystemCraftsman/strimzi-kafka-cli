@@ -22,8 +22,7 @@ class TestKfkAcls(TestCase):
         )
         assert result.exit_code == 0
         native_command = (
-            "bin/kafka-acls.sh --bootstrap-server"
-            " localhost:9092 --list  "
+            "bin/kafka-acls.sh --bootstrap-server" " localhost:9092 --list  "
         )
         mock_os.system.assert_called_with(
             Kubectl()
@@ -53,9 +52,7 @@ class TestKfkAcls(TestCase):
         assert result.exit_code == 0
         native_command = (
             "bin/kafka-acls.sh --bootstrap-server"
-            " localhost:9092 --list --topic {topic} ".format(
-                topic=self.topic
-            )
+            " localhost:9092 --list --topic {topic} ".format(topic=self.topic)
         )
         mock_os.system.assert_called_with(
             Kubectl()
@@ -85,9 +82,7 @@ class TestKfkAcls(TestCase):
         assert result.exit_code == 0
         native_command = (
             "bin/kafka-acls.sh --bootstrap-server"
-            " localhost:9092 --list  --group {group}".format(
-                group=self.group
-            )
+            " localhost:9092 --list  --group {group}".format(group=self.group)
         )
         mock_os.system.assert_called_with(
             Kubectl()

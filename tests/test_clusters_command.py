@@ -435,9 +435,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(
-            "tests/files/yaml/kafka-cluster_create_one_replica.yaml"
-        ) as file:
+        with open("tests/files/yaml/kafka-cluster_create_one_replica.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
@@ -473,9 +471,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open(
-            "tests/files/yaml/kafka-cluster_create_two_replicas.yaml"
-        ) as file:
+        with open("tests/files/yaml/kafka-cluster_create_two_replicas.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml

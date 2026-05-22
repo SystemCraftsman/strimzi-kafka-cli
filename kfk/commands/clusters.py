@@ -238,8 +238,8 @@ def _update_replicas(replicas, kafka_dict, broker_dict=None):
         min_insync_replicas = 1
         if replicas > 1:
             min_insync_replicas = replicas - 1
-        kafka_dict["spec"]["kafka"]["config"]["offsets.topic.replication.factor"] = (
-            int(replicas)
+        kafka_dict["spec"]["kafka"]["config"]["offsets.topic.replication.factor"] = int(
+            replicas
         )
         kafka_dict["spec"]["kafka"]["config"][
             "transaction.state.log.replication.factor"
