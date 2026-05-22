@@ -57,3 +57,23 @@ def is_valid_url(url):
     )
 
     return re.match(regex, url) is not None
+
+
+def format_dict_as_text(d, indent=0):
+    lines = []
+    prefix = " " * indent
+    for key, value in d.items():
+        if isinstance(value, dict):
+            lines.append(f"{prefix}{key}:")
+            lines.append(format_dict_as_text(value, indent + 2))
+        elif isinstance(value, list):
+            lines.append(f"{prefix}{key}:")
+            for item in value:
+                if isinstance(item, dict):
+                    lines.append(f"{prefix}  -")
+                    lines.append(format_dict_as_text(item, indent + 4))
+                else:
+                    lines.append(f"{prefix}  - {item}")
+        else:
+            lines.append(f"{prefix}{key}: {value}")
+    return "\n".join(lines)
