@@ -22,33 +22,32 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk clusters" in result.output
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_list_clusters(self, mock_os):
+    @mock.patch("kfk.commands.clusters.list_resource")
+    def test_list_clusters(self, mock_list_resource):
         result = self.runner.invoke(kfk, ["clusters", "--list", "-n", self.namespace])
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().get().kafkas().namespace(self.namespace).build()
-        )
+        mock_list_resource.assert_called_with("kafkas", self.namespace)
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_list_clusters_all_namespaces(self, mock_os):
+    @mock.patch("kfk.commands.clusters.list_resource")
+    def test_list_clusters_all_namespaces(self, mock_list_resource):
         result = self.runner.invoke(kfk, ["clusters", "--list"])
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(Kubectl().get().kafkas().namespace().build())
+        mock_list_resource.assert_called_with("kafkas", None)
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_describe_cluster(self, mock_os):
+    @mock.patch("kfk.commands.clusters.describe_resource")
+    def test_describe_cluster(self, mock_describe_resource):
         result = self.runner.invoke(
             kfk,
             ["clusters", "--describe", "--cluster", self.cluster, "-n", self.namespace],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().describe().kafkas(self.cluster).namespace(self.namespace).build()
+        mock_describe_resource.assert_called_with(
+            "kafkas", self.cluster, self.namespace
         )
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_describe_cluster_output_yaml(self, mock_os):
+    @mock.patch("kfk.commands.clusters.get_resource")
+    def test_describe_cluster_output_yaml(self, mock_get_resource):
+        mock_get_resource.return_value = {"metadata": {"name": self.cluster}}
         result = self.runner.invoke(
             kfk,
             [
@@ -63,14 +62,7 @@ class TestKfkClusters(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkas(self.cluster)
-            .namespace(self.namespace)
-            .output("yaml")
-            .build()
-        )
+        mock_get_resource.assert_called_with("kafkas", self.cluster, self.namespace)
 
     @mock.patch("kfk.commands.clusters.os")
     def test_alter_cluster_without_parameters(self, mock_os):

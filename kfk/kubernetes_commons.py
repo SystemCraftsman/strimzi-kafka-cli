@@ -4,11 +4,16 @@ import re
 import sys
 from os import path
 
+import click
 import yaml
 from kubernetes import client, config
 
+STRIMZI_GROUP = "kafka.strimzi.io"
+STRIMZI_VERSION = "v1"
+
 config.load_kube_config()
 api_client = client.ApiClient()
+custom_objects_api = client.CustomObjectsApi(api_client)
 
 
 def yaml_object_argument_filter(func):
@@ -98,6 +103,97 @@ def replace_using_yaml(file_path, namespace):
         verbose=True,
         namespace=namespace,
     )
+
+
+def list_resource(resource_type, namespace, label=None):
+    result = custom_objects_api.list_namespaced_custom_object(
+        group=STRIMZI_GROUP,
+        version=STRIMZI_VERSION,
+        namespace=namespace,
+        plural=resource_type,
+        label_selector=label or "",
+    )
+    items = result.get("items", [])
+    if not items:
+        click.echo(f"No resources found in {namespace} namespace.")
+        return
+
+    header = f"{'NAME':<40} {'READY':<10}"
+    click.echo(header)
+    for item in items:
+        name = item["metadata"]["name"]
+        conditions = item.get("status", {}).get("conditions", [])
+        ready = "Unknown"
+        for condition in conditions:
+            if condition.get("type") == "Ready":
+                ready = condition.get("status", "Unknown")
+                break
+        click.echo(f"{name:<40} {ready:<10}")
+
+
+def get_resource(resource_type, resource_name, namespace):
+    return custom_objects_api.get_namespaced_custom_object(
+        group=STRIMZI_GROUP,
+        version=STRIMZI_VERSION,
+        namespace=namespace,
+        plural=resource_type,
+        name=resource_name,
+    )
+
+
+def describe_resource(resource_type, resource_name, namespace):
+    resource = get_resource(resource_type, resource_name, namespace)
+    metadata = resource.get("metadata", {})
+    spec = resource.get("spec", {})
+    status = resource.get("status", {})
+
+    click.echo(f"Name:         {metadata.get('name', '')}")
+    click.echo(f"Namespace:    {metadata.get('namespace', '')}")
+    click.echo(f"Kind:         {resource.get('kind', '')}")
+    click.echo(f"API Version:  {resource.get('apiVersion', '')}")
+
+    labels = metadata.get("labels", {})
+    if labels:
+        click.echo("Labels:")
+        for k, v in labels.items():
+            click.echo(f"              {k}={v}")
+
+    annotations = metadata.get("annotations", {})
+    if annotations:
+        click.echo("Annotations:")
+        for k, v in annotations.items():
+            click.echo(f"              {k}={v}")
+
+    click.echo(f"Creation Timestamp:  {metadata.get('creationTimestamp', '')}")
+    click.echo(f"Generation:          {metadata.get('generation', '')}")
+
+    if spec:
+        click.echo("Spec:")
+        click.echo(_format_dict(spec, indent=2))
+
+    if status:
+        click.echo("Status:")
+        click.echo(_format_dict(status, indent=2))
+
+
+def _format_dict(d, indent=0):
+    lines = []
+    prefix = " " * indent
+    for key, value in d.items():
+        if isinstance(value, dict):
+            lines.append(f"{prefix}{key}:")
+            lines.append(_format_dict(value, indent + 2))
+        elif isinstance(value, list):
+            lines.append(f"{prefix}{key}:")
+            for item in value:
+                if isinstance(item, dict):
+                    lines.append(f"{prefix}  -")
+                    lines.append(_format_dict(item, indent + 4))
+                else:
+                    lines.append(f"{prefix}  - {item}")
+        else:
+            lines.append(f"{prefix}{key}: {value}")
+    return "\n".join(lines)
 
 
 def _operate_using_yaml(

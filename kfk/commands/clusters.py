@@ -1,3 +1,4 @@
+import json
 import os
 
 import click
@@ -18,6 +19,9 @@ from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
+    describe_resource,
+    get_resource,
+    list_resource,
     replace_using_yaml,
 )
 from kfk.messages import Messages
@@ -109,7 +113,7 @@ def clusters(
 
 
 def list(namespace):
-    os.system(Kubectl().get().kafkas().namespace(namespace).build())
+    list_resource("kafkas", namespace)
 
 
 def create(cluster, replicas, config, namespace, is_yes):
@@ -150,11 +154,13 @@ def create(cluster, replicas, config, namespace, is_yes):
 
 def describe(cluster, output, namespace):
     if output is not None:
-        os.system(
-            Kubectl().get().kafkas(cluster).namespace(namespace).output(output).build()
-        )
+        resource = get_resource("kafkas", cluster, namespace)
+        if output == "yaml":
+            click.echo(yaml.dump(resource, default_flow_style=False))
+        elif output == "json":
+            click.echo(json.dumps(resource, indent=2))
     else:
-        os.system(Kubectl().describe().kafkas(cluster).namespace(namespace).build())
+        describe_resource("kafkas", cluster, namespace)
 
 
 def delete(cluster, namespace, is_yes):

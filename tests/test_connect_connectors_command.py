@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.connect.connectors import connect
-from kfk.kubectl_command_builder import Kubectl
 
 STRIMZI_PATH = "tests/files/strimzi"
 
@@ -32,24 +31,20 @@ class TestKfkConnectors(TestCase):
         assert result.exit_code == 1
         assert "Missing options: kfk connectors" in result.output
 
-    @mock.patch("kfk.commands.connect.connectors.os")
-    def test_list_connectors(self, mock_os):
+    @mock.patch("kfk.commands.connect.connectors.list_resource")
+    def test_list_connectors(self, mock_list_resource):
         result = self.runner.invoke(
             connect, ["connectors", "--list", "-c", self.cluster, "-n", self.namespace]
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkaconnectors()
-            .label("strimzi.io/cluster={cluster}")
-            .namespace(self.namespace)
-            .build()
-            .format(cluster=self.cluster)
+        mock_list_resource.assert_called_with(
+            "kafkaconnectors",
+            self.namespace,
+            label=f"strimzi.io/cluster={self.cluster}",
         )
 
-    @mock.patch("kfk.commands.connect.connectors.os")
-    def test_describe_connector(self, mock_os):
+    @mock.patch("kfk.commands.connect.connectors.describe_resource")
+    def test_describe_connector(self, mock_describe_resource):
         result = self.runner.invoke(
             connect,
             [
@@ -64,16 +59,13 @@ class TestKfkConnectors(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .describe()
-            .kafkaconnectors(self.connector)
-            .namespace(self.namespace)
-            .build()
+        mock_describe_resource.assert_called_with(
+            "kafkaconnectors", self.connector, self.namespace
         )
 
-    @mock.patch("kfk.commands.connect.connectors.os")
-    def test_describe_connector_output_yaml(self, mock_os):
+    @mock.patch("kfk.commands.connect.connectors.get_resource")
+    def test_describe_connector_output_yaml(self, mock_get_resource):
+        mock_get_resource.return_value = {"metadata": {"name": self.connector}}
         result = self.runner.invoke(
             connect,
             [
@@ -90,13 +82,8 @@ class TestKfkConnectors(TestCase):
             ],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .get()
-            .kafkaconnectors(self.connector)
-            .namespace(self.namespace)
-            .output("yaml")
-            .build()
+        mock_get_resource.assert_called_with(
+            "kafkaconnectors", self.connector, self.namespace
         )
 
     @mock.patch("kfk.commands.connect.connectors.delete_using_yaml")
