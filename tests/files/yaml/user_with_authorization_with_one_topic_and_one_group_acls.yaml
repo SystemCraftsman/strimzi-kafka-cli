@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1beta2
+apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
   labels:
@@ -10,14 +10,16 @@ spec:
   authorization:
     acls:
     - host: '*'
-      operation: Read
+      operations:
+      - Read
       resource:
         name: my-topic
         patternType: literal
         type: topic
       type: allow
     - host: '*'
-      operation: Read
+      operations:
+      - Read
       resource:
         name: my-group
         patternType: literal

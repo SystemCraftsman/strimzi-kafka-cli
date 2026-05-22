@@ -12,6 +12,7 @@ class TestSetup(TestCase):
     def setUp(self):
         self.runner = CliRunner()
 
+    @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp())
     @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_PATH", tempfile.mkdtemp() + "/" + KUBECTL)
     @mock.patch("kfk.setup._download_kubectl")
@@ -19,6 +20,7 @@ class TestSetup(TestCase):
         setup()
         assert mock_download_kubectl.call_count == 1
 
+    @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp())
     @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_PATH", tempfile.mkdtemp() + "/" + KUBECTL)
     @mock.patch("kfk.setup._download_kubectl")
@@ -26,6 +28,7 @@ class TestSetup(TestCase):
         setup()
         assert mock_download_kubectl.call_count == 1
 
+    @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp())
     @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_VERSION", "x.x.x")
     @mock.patch("kfk.setup._download_kubectl")
@@ -35,6 +38,7 @@ class TestSetup(TestCase):
         setup()
         assert mock_download_kubectl.call_count == 1
 
+    @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp())
     @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_VERSION", "x.x.x")
     @mock.patch("kfk.setup._download_kubectl")
@@ -45,6 +49,7 @@ class TestSetup(TestCase):
         setup()
         assert mock_download_kubectl.call_count == 0
 
+    @mock.patch("kfk.setup.STRIMZI_PATH", tempfile.mkdtemp())
     @mock.patch("kfk.setup.os.rename")
     @mock.patch("kfk.setup.KUBECTL_VERSION", "x.x.x")
     @mock.patch("kfk.setup._download_kubectl")

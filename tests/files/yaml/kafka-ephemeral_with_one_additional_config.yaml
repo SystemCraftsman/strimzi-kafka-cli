@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1beta2
+apiVersion: kafka.strimzi.io/v1
 kind: Kafka
 metadata:
   name: my-cluster
@@ -9,7 +9,6 @@ spec:
   kafka:
     config:
       default.replication.factor: 3
-      inter.broker.protocol.version: '3.7'
       min.insync.replicas: 2
       offsets.topic.replication.factor: 3
       transaction.state.log.min.isr: 2
@@ -24,11 +23,5 @@ spec:
       port: 9093
       tls: true
       type: internal
-    replicas: 3
-    storage:
-      type: ephemeral
-    version: 3.7.0
-  zookeeper:
-    replicas: 3
-    storage:
-      type: ephemeral
+    metadataVersion: 4.2-IV1
+    version: 4.2.0

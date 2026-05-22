@@ -90,13 +90,13 @@ def acls(
     """Manages ACLs on Kafka."""
     if list:
         native_command = (
-            "bin/kafka-acls.sh --authorizer-properties"
-            " zookeeper.connect=localhost:12181 --list {topic}{cluster} {group}"
+            "bin/kafka-acls.sh --bootstrap-server"
+            " localhost:9092 --list {topic}{cluster} {group}"
         )
         os.system(
             Kubectl()
-            .exec("-it", "{kafka_cluster}-zookeeper-0")
-            .container("zookeeper")
+            .exec("-it", "{kafka_cluster}-broker-0")
+            .container("kafka")
             .namespace(namespace)
             .exec_command(native_command)
             .build()

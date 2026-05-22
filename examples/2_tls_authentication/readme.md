@@ -159,13 +159,13 @@ Name:         my-user
 Namespace:    kafka
 Labels:       strimzi.io/cluster=my-cluster
 Annotations:  <none>
-API Version:  kafka.strimzi.io/v1beta1
+API Version:  kafka.strimzi.io/v1
 Kind:         KafkaUser
 Metadata:
   Creation Timestamp:  2020-09-21T12:54:52Z
   Generation:          3
   Resource Version:    53996010
-  Self Link:           /apis/kafka.strimzi.io/v1beta1/namespaces/kafka/kafkausers/my-user
+  Self Link:           /apis/kafka.strimzi.io/v1/namespaces/kafka/kafkausers/my-user
   UID:                 1c1dad0c-4e7a-4e63-933c-a785e6941021
 Spec:
   Authentication:

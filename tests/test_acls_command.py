@@ -22,13 +22,12 @@ class TestKfkAcls(TestCase):
         )
         assert result.exit_code == 0
         native_command = (
-            "bin/kafka-acls.sh --authorizer-properties"
-            " zookeeper.connect=localhost:12181 --list  "
+            "bin/kafka-acls.sh --bootstrap-server" " localhost:9092 --list  "
         )
         mock_os.system.assert_called_with(
             Kubectl()
-            .exec("-it", "{kafka_cluster}-zookeeper-0")
-            .container("zookeeper")
+            .exec("-it", "{kafka_cluster}-broker-0")
+            .container("kafka")
             .namespace(self.namespace)
             .exec_command(native_command)
             .build()
@@ -52,15 +51,13 @@ class TestKfkAcls(TestCase):
         )
         assert result.exit_code == 0
         native_command = (
-            "bin/kafka-acls.sh --authorizer-properties"
-            " zookeeper.connect=localhost:12181 --list --topic {topic} ".format(
-                topic=self.topic
-            )
+            "bin/kafka-acls.sh --bootstrap-server"
+            " localhost:9092 --list --topic {topic} ".format(topic=self.topic)
         )
         mock_os.system.assert_called_with(
             Kubectl()
-            .exec("-it", "{kafka_cluster}-zookeeper-0")
-            .container("zookeeper")
+            .exec("-it", "{kafka_cluster}-broker-0")
+            .container("kafka")
             .namespace(self.namespace)
             .exec_command(native_command)
             .build()
@@ -84,15 +81,13 @@ class TestKfkAcls(TestCase):
         )
         assert result.exit_code == 0
         native_command = (
-            "bin/kafka-acls.sh --authorizer-properties"
-            " zookeeper.connect=localhost:12181 --list  --group {group}".format(
-                group=self.group
-            )
+            "bin/kafka-acls.sh --bootstrap-server"
+            " localhost:9092 --list  --group {group}".format(group=self.group)
         )
         mock_os.system.assert_called_with(
             Kubectl()
-            .exec("-it", "{kafka_cluster}-zookeeper-0")
-            .container("zookeeper")
+            .exec("-it", "{kafka_cluster}-broker-0")
+            .container("kafka")
             .namespace(self.namespace)
             .exec_command(native_command)
             .build()

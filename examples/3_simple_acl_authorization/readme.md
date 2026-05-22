@@ -129,7 +129,7 @@ kfk users --describe --user my-user -n kafka -c my-cluster -o yaml
 ```
 
 ```
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
 ...

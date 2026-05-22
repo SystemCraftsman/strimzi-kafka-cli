@@ -7,7 +7,11 @@ from click.testing import CliRunner
 from kfk.commands.connect.clusters import connect
 from kfk.kubectl_command_builder import Kubectl
 
+STRIMZI_PATH = "tests/files/strimzi"
 
+
+@mock.patch("kfk.commands.connect.connectors.STRIMZI_PATH", STRIMZI_PATH)
+@mock.patch("kfk.commands.connect.clusters.STRIMZI_PATH", STRIMZI_PATH)
 class TestKfkConnect(TestCase):
     def setUp(self):
         self.runner = CliRunner()

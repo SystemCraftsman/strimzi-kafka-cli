@@ -5,7 +5,10 @@ from click.testing import CliRunner
 from kfk.commands.topics import kfk
 from kfk.kubectl_command_builder import Kubectl
 
+STRIMZI_PATH = "tests/files/strimzi"
 
+
+@mock.patch("kfk.commands.topics.STRIMZI_PATH", STRIMZI_PATH)
 class TestKfkTopics(TestCase):
     def setUp(self):
         self.runner = CliRunner()

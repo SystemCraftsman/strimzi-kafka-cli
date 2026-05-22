@@ -4,13 +4,16 @@ from click.testing import CliRunner
 
 from kfk.commands.operator import kfk
 
+STRIMZI_PATH = "tests/files/strimzi"
 
+
+@mock.patch("kfk.commands.operator.STRIMZI_PATH", STRIMZI_PATH)
 class TestKfkOperator(TestCase):
     def setUp(self):
         self.runner = CliRunner()
         self.cluster = "my-cluster"
         self.namespace = "kafka"
-        self.installation_file_count = 28
+        self.installation_file_count = 27
 
     @mock.patch("kfk.commands.operator.create_using_yaml")
     def test_install_strimzi(self, mock_create_using_yaml):
