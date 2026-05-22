@@ -8,6 +8,8 @@ import click
 import yaml
 from kubernetes import client, config
 
+from kfk.utils import format_dict_as_text
+
 STRIMZI_GROUP = "kafka.strimzi.io"
 
 config.load_kube_config()
@@ -183,31 +185,11 @@ def describe_resource(resource_type, resource_name, namespace):
 
     if spec:
         click.echo("Spec:")
-        click.echo(_format_dict(spec, indent=2))
+        click.echo(format_dict_as_text(spec, indent=2))
 
     if status:
         click.echo("Status:")
-        click.echo(_format_dict(status, indent=2))
-
-
-def _format_dict(d, indent=0):
-    lines = []
-    prefix = " " * indent
-    for key, value in d.items():
-        if isinstance(value, dict):
-            lines.append(f"{prefix}{key}:")
-            lines.append(_format_dict(value, indent + 2))
-        elif isinstance(value, list):
-            lines.append(f"{prefix}{key}:")
-            for item in value:
-                if isinstance(item, dict):
-                    lines.append(f"{prefix}  -")
-                    lines.append(_format_dict(item, indent + 4))
-                else:
-                    lines.append(f"{prefix}  - {item}")
-        else:
-            lines.append(f"{prefix}{key}: {value}")
-    return "\n".join(lines)
+        click.echo(format_dict_as_text(status, indent=2))
 
 
 def _operate_using_yaml(
