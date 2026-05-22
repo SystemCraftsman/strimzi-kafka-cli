@@ -26,6 +26,7 @@ from kfk.option_extensions import NotRequiredIf, RequiredIf
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)
 @click.option("-c", "--cluster", help="Cluster to use", required=True)
+@click.option("--broker-pod", help="Broker pod name to exec into.")
 @click.option(
     "--delete-config",
     help="A topic configuration override to be removed for an existing topic",
@@ -106,6 +107,7 @@ def topics(
     is_alter,
     config,
     delete_config,
+    broker_pod,
     cluster,
     namespace,
 ):
@@ -115,7 +117,7 @@ def topics(
     elif is_create:
         create(topic, partitions, replication_factor, config, cluster, namespace)
     elif is_describe:
-        describe(topic, output, native, command_config, cluster, namespace)
+        describe(topic, output, native, command_config, cluster, namespace, broker_pod)
     elif is_delete:
         delete(topic, cluster, namespace)
     elif is_alter:
@@ -167,7 +169,9 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_temp_file.close()
 
 
-def describe(topic, output, native, command_config, cluster, namespace):
+def describe(
+    topic, output, native, command_config, cluster, namespace, broker_pod=None
+):
     if output is not None:
         os.system(
             Kubectl()
@@ -183,7 +187,7 @@ def describe(topic, output, native, command_config, cluster, namespace):
                 "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:{port}"
                 " --describe --topic {topic}"
             )
-            pod = cluster + "-kafka-0"
+            pod = broker_pod or cluster + "-broker-0"
             container = "kafka"
             if command_config is not None:
                 native_command = apply_client_config_from_file(
