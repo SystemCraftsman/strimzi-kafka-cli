@@ -326,18 +326,28 @@ def _add_acl_option(
 ):
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
-    for operation_str in operation:
-        acl_dict = {
-            "operation": operation_str,
-            "host": host,
-            "type": type,
-            "resource": {
-                "type": resource_type,
-                "name": resource_name,
-                "patternType": resource_pattern_type,
-            },
-        }
-        user_dict["spec"]["authorization"]["acls"].append(acl_dict)
+    resource = {
+        "type": resource_type,
+        "name": resource_name,
+        "patternType": resource_pattern_type,
+    }
+    for acl_dict in user_dict["spec"]["authorization"]["acls"]:
+        if (
+            acl_dict.get("host") == host
+            and acl_dict.get("type") == type
+            and acl_dict.get("resource") == resource
+        ):
+            for op in operation:
+                if op not in acl_dict["operations"]:
+                    acl_dict["operations"].append(op)
+            return
+    acl_dict = {
+        "operations": [*operation],
+        "host": host,
+        "type": type,
+        "resource": resource,
+    }
+    user_dict["spec"]["authorization"]["acls"].append(acl_dict)
 
 
 def _delete_acl_option(
@@ -351,20 +361,21 @@ def _delete_acl_option(
 ):
     if user_dict["spec"]["authorization"].get("acls") is None:
         user_dict["spec"]["authorization"]["acls"] = []
-    for operation_str in operation:
-        for acl_dict in user_dict["spec"]["authorization"]["acls"]:
-            acl_dict_to_be_deleted = {
-                "operation": operation_str,
-                "host": host,
-                "type": type,
-                "resource": {
-                    "type": resource_type,
-                    "name": resource_name,
-                    "patternType": resource_pattern_type,
-                },
-            }
-            if acl_dict == acl_dict_to_be_deleted:
-                if len(user_dict["spec"]["authorization"]["acls"]) == 1:
-                    user_dict["spec"].pop("authorization")
-                else:
-                    user_dict["spec"]["authorization"]["acls"].remove(acl_dict)
+    resource_to_match = {
+        "type": resource_type,
+        "name": resource_name,
+        "patternType": resource_pattern_type,
+    }
+    for acl_dict in user_dict["spec"]["authorization"]["acls"][:]:
+        if (
+            acl_dict.get("host") == host
+            and acl_dict.get("type") == type
+            and acl_dict.get("resource") == resource_to_match
+        ):
+            for operation_str in operation:
+                if operation_str in acl_dict.get("operations", []):
+                    acl_dict["operations"].remove(operation_str)
+            if not acl_dict.get("operations"):
+                user_dict["spec"]["authorization"]["acls"].remove(acl_dict)
+    if not user_dict["spec"]["authorization"].get("acls"):
+        user_dict["spec"].pop("authorization")

@@ -84,6 +84,7 @@ class TestKfkUsers(TestCase):
             .build()
         )
 
+    @mock.patch("kfk.commands.users.STRIMZI_PATH", "tests/files/strimzi")
     @mock.patch("kfk.commands.users.create_temp_file")
     @mock.patch("kfk.commands.users.create_using_yaml")
     def test_create_user(self, mock_create_using_yaml, mock_create_temp_file):
@@ -168,6 +169,7 @@ class TestKfkUsers(TestCase):
         )
         assert result.exit_code == 2
 
+    @mock.patch("kfk.commands.users.STRIMZI_PATH", "tests/files/strimzi")
     @mock.patch("kfk.commands.users.delete_using_yaml")
     def test_delete_user(self, mock_delete_using_yaml):
         result = self.runner.invoke(

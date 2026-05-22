@@ -4,7 +4,7 @@ metadata:
   name: my-cluster-kafka-config
   namespace: kafka
   ownerReferences:
-    - apiVersion: kafka.strimzi.io/v1beta1
+    - apiVersion: kafka.strimzi.io/v1
       kind: Kafka
       name: my-cluster
       uid: 54436ba3-51c7-44aa-a117-c495e4e5e334

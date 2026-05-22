@@ -1,0 +1,16 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  labels:
+    strimzi.io/cluster: my-cluster-with-new-name
+  name: broker
+spec:
+  replicas: 1
+  roles:
+  - broker
+  storage:
+    type: jbod
+    volumes:
+    - id: 0
+      kraftMetadata: shared
+      type: ephemeral

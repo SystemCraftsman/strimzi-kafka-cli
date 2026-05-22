@@ -5,6 +5,8 @@ from click.testing import CliRunner
 from kfk.commands.clusters import kfk
 from kfk.kubectl_command_builder import Kubectl
 
+STRIMZI_PATH_PATCH = "tests/files/strimzi"
+
 
 class TestKfkClusters(TestCase):
     def setUp(self):
@@ -227,30 +229,38 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_one_replica(
         self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
-            kafka_yaml = file.read()
-            mock_get_resource_yaml.return_value = kafka_yaml
-            result = self.runner.invoke(
-                kfk,
-                [
-                    "clusters",
-                    "--alter",
-                    "--replicas",
-                    1,
-                    "--cluster",
-                    self.cluster,
-                    "-n",
-                    self.namespace,
-                ],
-            )
-            assert result.exit_code == 0
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as f:
+            kafka_yaml = f.read()
+        with open("tests/files/yaml/broker-nodepool.yaml") as f:
+            broker_yaml = f.read()
 
-            with open("tests/files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
-                expected_kafka_yaml = file.read()
-                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_kafka_yaml == result_kafka_yaml
+        mock_get_resource_yaml.side_effect = [kafka_yaml, broker_yaml]
+        result = self.runner.invoke(
+            kfk,
+            [
+                "clusters",
+                "--alter",
+                "--replicas",
+                1,
+                "--cluster",
+                self.cluster,
+                "-n",
+                self.namespace,
+            ],
+        )
+        assert result.exit_code == 0
 
-        mock_replace_using_yaml.assert_called_once()
+        with open("tests/files/yaml/kafka-ephemeral_with_one_replica.yaml") as f:
+            expected_kafka_yaml = f.read()
+            result_kafka_yaml = mock_create_temp_file.call_args_list[0][0][0]
+            assert expected_kafka_yaml == result_kafka_yaml
+
+        with open("tests/files/yaml/broker-nodepool_with_one_replica.yaml") as f:
+            expected_broker_yaml = f.read()
+            result_broker_yaml = mock_create_temp_file.call_args_list[1][0][0]
+            assert expected_broker_yaml == result_broker_yaml
+
+        assert mock_replace_using_yaml.call_count == 2
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
@@ -258,68 +268,40 @@ class TestKfkClusters(TestCase):
     def test_alter_cluster_with_two_replicas(
         self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
-            kafka_yaml = file.read()
-            mock_get_resource_yaml.return_value = kafka_yaml
-            result = self.runner.invoke(
-                kfk,
-                [
-                    "clusters",
-                    "--alter",
-                    "--replicas",
-                    2,
-                    "--cluster",
-                    self.cluster,
-                    "-n",
-                    self.namespace,
-                ],
-            )
-            assert result.exit_code == 0
+        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as f:
+            kafka_yaml = f.read()
+        with open("tests/files/yaml/broker-nodepool.yaml") as f:
+            broker_yaml = f.read()
 
-            with open(
-                "tests/files/yaml/kafka-ephemeral_with_two_replicas.yaml"
-            ) as file:
-                expected_kafka_yaml = file.read()
-                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_kafka_yaml == result_kafka_yaml
+        mock_get_resource_yaml.side_effect = [kafka_yaml, broker_yaml]
+        result = self.runner.invoke(
+            kfk,
+            [
+                "clusters",
+                "--alter",
+                "--replicas",
+                2,
+                "--cluster",
+                self.cluster,
+                "-n",
+                self.namespace,
+            ],
+        )
+        assert result.exit_code == 0
 
-        mock_replace_using_yaml.assert_called_once()
+        with open("tests/files/yaml/kafka-ephemeral_with_two_replicas.yaml") as f:
+            expected_kafka_yaml = f.read()
+            result_kafka_yaml = mock_create_temp_file.call_args_list[0][0][0]
+            assert expected_kafka_yaml == result_kafka_yaml
 
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.clusters.replace_using_yaml")
-    def test_alter_cluster_with_one_replica_one_zk_replica(
-        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
-    ):
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
-            kafka_yaml = file.read()
-            mock_get_resource_yaml.return_value = kafka_yaml
-            result = self.runner.invoke(
-                kfk,
-                [
-                    "clusters",
-                    "--alter",
-                    "--replicas",
-                    1,
-                    "--zk-replicas",
-                    1,
-                    "--cluster",
-                    self.cluster,
-                    "-n",
-                    self.namespace,
-                ],
-            )
-            assert result.exit_code == 0
+        with open("tests/files/yaml/broker-nodepool_with_two_replicas.yaml") as f:
+            expected_broker_yaml = f.read()
+            result_broker_yaml = mock_create_temp_file.call_args_list[1][0][0]
+            assert expected_broker_yaml == result_broker_yaml
 
-            with open(
-                "tests/files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
-            ) as file:
-                expected_kafka_yaml = file.read()
-                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
-                assert expected_kafka_yaml == result_kafka_yaml
+        assert mock_replace_using_yaml.call_count == 2
 
-        mock_replace_using_yaml.assert_called_once()
-
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.click.confirm")
     @mock.patch("kfk.commands.clusters.delete_using_yaml")
     def test_delete_cluster(self, mock_delete_using_yaml, mock_click_confirm):
@@ -331,6 +313,7 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         mock_delete_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.click.confirm")
     @mock.patch("kfk.commands.clusters.delete_using_yaml")
     def test_delete_cluster_with_yes_flag(
@@ -353,6 +336,7 @@ class TestKfkClusters(TestCase):
 
         mock_delete_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
@@ -379,13 +363,14 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-cluster_create.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
@@ -414,13 +399,14 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
 
         mock_open_file_in_system_editor.assert_not_called()
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
+        with open("tests/files/yaml/kafka-cluster_create.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
@@ -449,13 +435,16 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open("tests/files/yaml/kafka-ephemeral_with_one_replica.yaml") as file:
+        with open(
+            "tests/files/yaml/kafka-cluster_create_one_replica.yaml"
+        ) as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
@@ -484,13 +473,16 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open("tests/files/yaml/kafka-ephemeral_with_two_replicas.yaml") as file:
+        with open(
+            "tests/files/yaml/kafka-cluster_create_two_replicas.yaml"
+        ) as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.STRIMZI_PATH", STRIMZI_PATH_PATCH)
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.clusters.click.confirm")
@@ -519,46 +511,7 @@ class TestKfkClusters(TestCase):
         )
         assert result.exit_code == 0
 
-        with open("tests/files/yaml/kafka-ephemeral_name_updated.yaml") as file:
-            expected_kafka_yaml = file.read()
-            result_kafka_yaml = mock_create_temp_file.call_args[0][0]
-            assert expected_kafka_yaml == result_kafka_yaml
-
-        mock_create_using_yaml.assert_called_once()
-
-    @mock.patch("kfk.commands.clusters.create_temp_file")
-    @mock.patch("kfk.commands.clusters.open_file_in_system_editor")
-    @mock.patch("kfk.commands.clusters.click.confirm")
-    @mock.patch("kfk.commands.clusters.create_using_yaml")
-    def test_create_cluster_with_one_replica_one_zk_replica(
-        self,
-        mock_create_using_yaml,
-        mock_click_confirm,
-        mock_open_file_in_system_editor,
-        mock_create_temp_file,
-    ):
-        mock_click_confirm.return_value = True
-
-        result = self.runner.invoke(
-            kfk,
-            [
-                "clusters",
-                "--create",
-                "--cluster",
-                self.new_cluster_name,
-                "--replicas",
-                1,
-                "--zk-replicas",
-                1,
-                "-n",
-                self.namespace,
-            ],
-        )
-        assert result.exit_code == 0
-
-        with open(
-            "tests/files/yaml/kafka-ephemeral_with_one_replica_one_zk_replica.yaml"
-        ) as file:
+        with open("tests/files/yaml/kafka-cluster_create.yaml") as file:
             expected_kafka_yaml = file.read()
             result_kafka_yaml = mock_create_temp_file.call_args[0][0]
             assert expected_kafka_yaml == result_kafka_yaml

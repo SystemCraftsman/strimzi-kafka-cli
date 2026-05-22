@@ -63,6 +63,9 @@ class Kubectl:
     def kafkausers(self, *vals):
         return self.resource("kafkausers", *vals)
 
+    def kafkanodepools(self, *vals):
+        return self.resource("kafkanodepools", *vals)
+
     def configmap(self, *vals):
         return self.resource("configmap", *vals)
 

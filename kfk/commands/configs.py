@@ -118,7 +118,7 @@ def configs(
             )
         elif entity_type == "brokers":
             clusters.alter(
-                entity_name, None, None, add_config_list, delete_config_list, namespace
+                entity_name, None, add_config_list, delete_config_list, namespace
             )
     else:
         raise_exception_for_missing_options("configs")

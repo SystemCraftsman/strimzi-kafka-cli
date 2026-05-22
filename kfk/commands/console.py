@@ -22,7 +22,7 @@ def console_consumer(topic, consumer_config, from_beginning, cluster, namespace)
         "bin/kafka-console-consumer.sh --bootstrap-server"
         " {cluster}-kafka-brokers:{port} --topic {topic} {from_beginning}"
     )
-    pod = cluster + "-kafka-0"
+    pod = cluster + "-broker-0"
     container = "kafka"
     if consumer_config is not None:
         native_command = apply_client_config_from_file(
@@ -62,7 +62,7 @@ def console_producer(topic, producer_config, cluster, namespace):
         "bin/kafka-console-producer.sh --broker-list {cluster}-kafka-brokers:{port}"
         " --topic {topic}"
     )
-    pod = cluster + "-kafka-0"
+    pod = cluster + "-broker-0"
     container = "kafka"
     if producer_config is not None:
         native_command = apply_client_config_from_file(

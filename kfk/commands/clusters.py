@@ -46,9 +46,6 @@ from kfk.option_extensions import NotRequiredIf
 @click.option("--alter", "is_alter", help="Alters the Kafka cluster.", is_flag=True)
 @click.option("--delete", "is_delete", help="Deletes the Kafka cluster.", is_flag=True)
 @click.option(
-    "--zk-replicas", help="The number of zookeeper replicas for the cluster.", type=int
-)
-@click.option(
     "--replicas", help="The number of broker replicas for the cluster.", type=int
 )
 @click.option("--create", "is_create", help="Creates a Kafka cluster.", is_flag=True)
@@ -87,7 +84,6 @@ def clusters(
     is_list,
     is_create,
     replicas,
-    zk_replicas,
     is_describe,
     is_delete,
     is_alter,
@@ -101,13 +97,13 @@ def clusters(
     if is_list:
         list(namespace)
     elif is_create:
-        create(cluster, replicas, zk_replicas, config, namespace, is_yes)
+        create(cluster, replicas, config, namespace, is_yes)
     elif is_describe:
         describe(cluster, output, namespace)
     elif is_delete:
         delete(cluster, namespace, is_yes)
     elif is_alter:
-        alter(cluster, replicas, zk_replicas, config, delete_config, namespace)
+        alter(cluster, replicas, config, delete_config, namespace)
     else:
         raise_exception_for_missing_options("clusters")
 
@@ -116,7 +112,7 @@ def list(namespace):
     os.system(Kubectl().get().kafkas().namespace(namespace).build())
 
 
-def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
+def create(cluster, replicas, config, namespace, is_yes):
     with open(
         "{strimzi_path}/examples/kafka/kafka-ephemeral.yaml".format(
             strimzi_path=STRIMZI_PATH
@@ -124,15 +120,21 @@ def create(cluster, replicas, zk_replicas, config, namespace, is_yes):
     ) as file:
         stream = file.read()
 
-        cluster_dict = yaml.full_load(stream)
+        docs = [doc for doc in yaml.full_load_all(stream)]
 
-        cluster_dict["metadata"]["name"] = cluster
+        kafka_dict, broker_dict = _get_kafka_and_broker_dicts(docs)
 
-        _update_replicas(replicas, zk_replicas, cluster_dict)
+        kafka_dict["metadata"]["name"] = cluster
 
-        _add_config_if_provided(config, cluster_dict)
+        for doc in docs:
+            if doc["kind"] == "KafkaNodePool":
+                doc["metadata"]["labels"]["strimzi.io/cluster"] = cluster
 
-        cluster_yaml = yaml.dump(cluster_dict)
+        _update_replicas(replicas, kafka_dict, broker_dict)
+
+        _add_config_if_provided(config, kafka_dict)
+
+        cluster_yaml = yaml.dump_all(docs)
         cluster_temp_file = create_temp_file(cluster_yaml)
 
         if is_yes:
@@ -168,11 +170,17 @@ def delete(cluster, namespace, is_yes):
         ) as file:
             stream = file.read()
 
-            cluster_dict = yaml.full_load(stream)
+            docs = [doc for doc in yaml.full_load_all(stream)]
 
-            cluster_dict["metadata"]["name"] = cluster
+            kafka_dict, _ = _get_kafka_and_broker_dicts(docs)
 
-            cluster_yaml = yaml.dump(cluster_dict)
+            kafka_dict["metadata"]["name"] = cluster
+
+            for doc in docs:
+                if doc["kind"] == "KafkaNodePool":
+                    doc["metadata"]["labels"]["strimzi.io/cluster"] = cluster
+
+            cluster_yaml = yaml.dump_all(docs)
             cluster_temp_file = create_temp_file(cluster_yaml)
 
             delete_using_yaml(cluster_temp_file.name, namespace)
@@ -180,13 +188,8 @@ def delete(cluster, namespace, is_yes):
             cluster_temp_file.close()
 
 
-def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
-    if (
-        len(config) > 0
-        or len(delete_config) > 0
-        or replicas is not None
-        or zk_replicas is not None
-    ):
+def alter(cluster, replicas, config, delete_config, namespace):
+    if len(config) > 0 or len(delete_config) > 0 or replicas is not None:
         stream = get_resource_as_stream(
             "kafkas", resource_name=cluster, namespace=namespace
         )
@@ -194,7 +197,7 @@ def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
 
         delete_last_applied_configuration(cluster_dict)
 
-        _update_replicas(replicas, zk_replicas, cluster_dict)
+        _update_replicas(replicas, cluster_dict)
 
         _add_config_if_provided(config, cluster_dict)
 
@@ -210,34 +213,67 @@ def alter(cluster, replicas, zk_replicas, config, delete_config, namespace):
         replace_using_yaml(cluster_temp_file.name, namespace)
 
         cluster_temp_file.close()
+
+        if replicas is not None:
+            _update_broker_replicas(replicas, namespace)
     else:
         os.system(Kubectl().edit().kafkas(cluster).namespace(namespace).build())
 
 
-def _update_replicas(replicas, zk_replicas, cluster_dict):
+def _get_kafka_and_broker_dicts(docs):
+    kafka_dict = None
+    broker_dict = None
+    for doc in docs:
+        if doc["kind"] == "Kafka":
+            kafka_dict = doc
+        elif doc["kind"] == "KafkaNodePool" and "broker" in doc["spec"].get(
+            "roles", []
+        ):
+            broker_dict = doc
+    return kafka_dict, broker_dict
+
+
+def _update_replicas(replicas, kafka_dict, broker_dict=None):
     if replicas is not None:
-        cluster_dict["spec"]["kafka"]["replicas"] = int(replicas)
         min_insync_replicas = 1
         if replicas > 1:
             min_insync_replicas = replicas - 1
-        cluster_dict["spec"]["kafka"]["config"]["offsets.topic.replication.factor"] = (
+        kafka_dict["spec"]["kafka"]["config"]["offsets.topic.replication.factor"] = (
             int(replicas)
         )
-        cluster_dict["spec"]["kafka"]["config"][
+        kafka_dict["spec"]["kafka"]["config"][
             "transaction.state.log.replication.factor"
         ] = int(replicas)
-        cluster_dict["spec"]["kafka"]["config"]["default.replication.factor"] = int(
+        kafka_dict["spec"]["kafka"]["config"]["default.replication.factor"] = int(
             replicas
         )
-        cluster_dict["spec"]["kafka"]["config"][
+        kafka_dict["spec"]["kafka"]["config"][
             "transaction.state.log.min.isr"
         ] = min_insync_replicas
-        cluster_dict["spec"]["kafka"]["config"][
+        kafka_dict["spec"]["kafka"]["config"][
             "min.insync.replicas"
         ] = min_insync_replicas
 
-    if zk_replicas is not None:
-        cluster_dict["spec"]["zookeeper"]["replicas"] = int(zk_replicas)
+        if broker_dict is not None:
+            broker_dict["spec"]["replicas"] = int(replicas)
+
+
+def _update_broker_replicas(replicas, namespace):
+    stream = get_resource_as_stream(
+        "kafkanodepools", resource_name="broker", namespace=namespace
+    )
+    broker_dict = yaml.full_load(stream)
+
+    delete_last_applied_configuration(broker_dict)
+
+    broker_dict["spec"]["replicas"] = int(replicas)
+
+    broker_yaml = yaml.dump(broker_dict)
+    broker_temp_file = create_temp_file(broker_yaml)
+
+    replace_using_yaml(broker_temp_file.name, namespace)
+
+    broker_temp_file.close()
 
 
 def _add_config_if_provided(config, cluster_dict):
