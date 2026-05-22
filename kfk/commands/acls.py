@@ -12,6 +12,7 @@ from kfk.option_extensions import NotRequiredIf
 
 @click.option("-n", "--namespace", help="Namespace to use.", required=True)
 @click.option("-c", "--kafka-cluster", help="Cluster to use.", required=True)
+@click.option("--broker-pod", help="Broker pod name to exec into.")
 @click.option("--remove", help="Indicates you are trying to remove ACLs.", is_flag=True)
 @click.option(
     "--resource-pattern-type",
@@ -84,6 +85,7 @@ def acls(
     deny_host,
     resource_pattern_type,
     remove,
+    broker_pod,
     kafka_cluster,
     namespace,
 ):
@@ -93,9 +95,10 @@ def acls(
             "bin/kafka-acls.sh --bootstrap-server"
             " localhost:9092 --list {topic}{cluster} {group}"
         )
+        pod = broker_pod or "{kafka_cluster}-broker-0"
         os.system(
             Kubectl()
-            .exec("-it", "{kafka_cluster}-broker-0")
+            .exec("-it", pod)
             .container("kafka")
             .namespace(namespace)
             .exec_command(native_command)

@@ -19,6 +19,7 @@ from kfk.option_extensions import NotRequiredIf
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)
 @click.option("-c", "--cluster", help="Cluster to use", required=True)
+@click.option("--broker-pod", help="Broker pod name to exec into.")
 @click.option("--delete-config", help="Config keys to remove")
 @click.option("--add-config", help="Key Value pairs of configs to add.")
 @click.option("--alter", help="Alter the configuration for the entity.", is_flag=True)
@@ -47,6 +48,7 @@ def configs(
     alter,
     add_config,
     delete_config,
+    broker_pod,
     cluster,
     namespace,
 ):
@@ -54,17 +56,23 @@ def configs(
     if describe:
         if entity_type == "topics":
             if native:
-                _describe_natively(entity_type, entity_name, cluster, namespace)
+                _describe_natively(
+                    entity_type, entity_name, cluster, namespace, broker_pod
+                )
             else:
                 topics.describe(entity_name, None, False, None, cluster, namespace)
         elif entity_type == "users":
             if native:
-                _describe_natively(entity_type, entity_name, cluster, namespace)
+                _describe_natively(
+                    entity_type, entity_name, cluster, namespace, broker_pod
+                )
             else:
                 users.describe(entity_name, None, cluster, namespace)
         elif entity_type == "brokers":
             if native:
-                _describe_natively(entity_type, entity_name, cluster, namespace)
+                _describe_natively(
+                    entity_type, entity_name, cluster, namespace, broker_pod
+                )
                 stream = get_resource_as_stream(
                     "configmap",
                     resource_name=cluster + "-kafka-config",
@@ -124,7 +132,7 @@ def configs(
         raise_exception_for_missing_options("configs")
 
 
-def _describe_natively(entity_type, entity_name, cluster, namespace):
+def _describe_natively(entity_type, entity_name, cluster, namespace, broker_pod=None):
     native_command = (
         "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:{port} "
         "--entity-type {entity_type} --describe"
@@ -136,9 +144,10 @@ def _describe_natively(entity_type, entity_name, cluster, namespace):
         if entity_type == "users":
             entity_name = COMMON_NAME_PREFIX + entity_name
 
+    pod = broker_pod or cluster + "-broker-0"
     os.system(
         Kubectl()
-        .exec("-it", cluster + "-kafka-0")
+        .exec("-it", pod)
         .container("kafka")
         .namespace(namespace)
         .exec_command(native_command)

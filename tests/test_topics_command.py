@@ -114,7 +114,7 @@ class TestKfkTopics(TestCase):
         )
         mock_os.system.assert_called_with(
             Kubectl()
-            .exec("-it", "{cluster}-kafka-0")
+            .exec("-it", "{cluster}-broker-0")
             .container("kafka")
             .namespace(self.namespace)
             .exec_command(native_command)
@@ -151,7 +151,7 @@ class TestKfkTopics(TestCase):
         )
         mock_os.system.assert_called_with(
             Kubectl()
-            .exec("-it", "{cluster}-kafka-0")
+            .exec("-it", "{cluster}-broker-0")
             .container("kafka")
             .namespace(self.namespace)
             .exec_command(native_command)
