@@ -5,7 +5,7 @@ description = "Command Line Interface for Strimzi Kafka Operator"
 authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
 readme = "README.md"
 license = {text = "Apache-2.0"}
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.11,<3.15"
 keywords = ["kafka", "strimzi", "cli", "operator", "kubernetes", "k8s", "openshift", "apache-kafka"]
 
 classifiers=[
@@ -13,11 +13,10 @@ classifiers=[
     'Topic :: Software Development',
     'License :: OSI Approved :: Apache Software License',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Programming Language :: Python :: 3 :: Only',
     'Operating System :: Microsoft :: Windows',
     'Operating System :: POSIX :: Linux',
@@ -92,7 +91,7 @@ imports = ["kfk"]
 
 
 [tool.black]
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py311", "py312", "py313"]
 line-length = 88
 include = '\.pyi?$'
 exclude = '''
