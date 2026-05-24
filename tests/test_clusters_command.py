@@ -502,3 +502,69 @@ class TestKfkClusters(TestCase):
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_add_listener(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--add-listener",
+                    "name=external,port=9094,type=loadbalancer,tls=true",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_added_listener.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_delete_listener(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--delete-listener",
+                    "plain",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_deleted_listener.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
