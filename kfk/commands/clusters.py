@@ -9,6 +9,8 @@ from kfk.commons import (
     create_temp_file,
     delete_last_applied_configuration,
     delete_resource_config,
+    get_config_list,
+    get_kv_config_list,
     get_resource_as_stream,
     open_file_in_system_editor,
     raise_exception_for_missing_options,
@@ -25,6 +27,7 @@ from kfk.kubernetes_commons import (
 )
 from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
+from kfk.utils import convert_string_to_type
 
 
 @click.option("-y", "--yes", "is_yes", help='"Yes" confirmation', is_flag=True)
@@ -35,6 +38,19 @@ from kfk.option_extensions import NotRequiredIf
     required=True,
     cls=NotRequiredIf,
     options=["is_list"],
+)
+@click.option(
+    "--delete-listener",
+    help="A listener to be removed from the cluster (by name).",
+    multiple=True,
+)
+@click.option(
+    "--add-listener",
+    help=(
+        "A listener to be added to the cluster."
+        " Format: name=X,port=N,type=T,tls=BOOL"
+    ),
+    multiple=True,
 )
 @click.option(
     "--delete-config",
@@ -92,6 +108,8 @@ def clusters(
     is_alter,
     config,
     delete_config,
+    add_listener,
+    delete_listener,
     output,
     namespace,
     is_yes,
@@ -100,13 +118,21 @@ def clusters(
     if is_list:
         list(namespace)
     elif is_create:
-        create(cluster, replicas, config, namespace, is_yes)
+        create(cluster, replicas, config, add_listener, namespace, is_yes)
     elif is_describe:
         describe(cluster, output, namespace)
     elif is_delete:
         delete(cluster, namespace, is_yes)
     elif is_alter:
-        alter(cluster, replicas, config, delete_config, namespace)
+        alter(
+            cluster,
+            replicas,
+            config,
+            delete_config,
+            add_listener,
+            delete_listener,
+            namespace,
+        )
     else:
         raise_exception_for_missing_options("clusters")
 
@@ -115,7 +141,7 @@ def list(namespace):
     list_resource("kafkas", namespace)
 
 
-def create(cluster, replicas, config, namespace, is_yes):
+def create(cluster, replicas, config, add_listener, namespace, is_yes):
     with open(
         "{strimzi_path}/examples/kafka/kafka-ephemeral.yaml".format(
             strimzi_path=STRIMZI_PATH
@@ -136,6 +162,8 @@ def create(cluster, replicas, config, namespace, is_yes):
         _update_replicas(replicas, kafka_dict, broker_dict)
 
         _add_config_if_provided(config, kafka_dict)
+
+        _add_listeners_if_provided(add_listener, kafka_dict)
 
         cluster_yaml = yaml.dump_all(docs)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -193,8 +221,23 @@ def delete(cluster, namespace, is_yes):
             cluster_temp_file.close()
 
 
-def alter(cluster, replicas, config, delete_config, namespace):
-    if len(config) > 0 or len(delete_config) > 0 or replicas is not None:
+def alter(
+    cluster,
+    replicas,
+    config,
+    delete_config,
+    add_listener,
+    delete_listener,
+    namespace,
+):
+    has_changes = (
+        len(config) > 0
+        or len(delete_config) > 0
+        or len(add_listener) > 0
+        or len(delete_listener) > 0
+        or replicas is not None
+    )
+    if has_changes:
         stream = get_resource_as_stream(
             "kafkas", resource_name=cluster, namespace=namespace
         )
@@ -211,6 +254,9 @@ def alter(cluster, replicas, config, delete_config, namespace):
                 delete_resource_config(
                     delete_config, cluster_dict["spec"]["kafka"]["config"]
                 )
+
+        _add_listeners_if_provided(add_listener, cluster_dict)
+        _delete_listeners_if_provided(delete_listener, cluster_dict)
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -286,3 +332,34 @@ def _add_config_if_provided(config, cluster_dict):
         if cluster_dict["spec"]["kafka"].get("config") is None:
             cluster_dict["spec"]["kafka"]["config"] = {}
         add_kv_config_to_resource(config, cluster_dict["spec"]["kafka"]["config"])
+
+
+def _parse_listener(listener_str):
+    listener = {}
+    for kv in get_config_list(listener_str):
+        kv_pair = get_kv_config_list(kv)
+        listener[kv_pair[0]] = convert_string_to_type(kv_pair[1])
+    return listener
+
+
+def _add_listeners_if_provided(add_listener, cluster_dict):
+    if len(add_listener) > 0:
+        listeners = cluster_dict["spec"]["kafka"].setdefault("listeners", [])
+        for listener_str in add_listener:
+            new_listener = _parse_listener(listener_str)
+            for existing in listeners:
+                if existing["name"] == new_listener["name"]:
+                    existing.update(new_listener)
+                    break
+            else:
+                listeners.append(new_listener)
+
+
+def _delete_listeners_if_provided(delete_listener, cluster_dict):
+    if len(delete_listener) > 0:
+        listeners = cluster_dict["spec"]["kafka"].get("listeners", [])
+        cluster_dict["spec"]["kafka"]["listeners"] = [
+            listener
+            for listener in listeners
+            if listener["name"] not in delete_listener
+        ]

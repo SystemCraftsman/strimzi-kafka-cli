@@ -451,16 +451,19 @@ def _delete_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
 
 @yaml_object_argument_filter
 def _replace_using_yaml_object(k8s_api, yml_object, object_type, **kwargs):
+    name = yml_object["metadata"]["name"]
     if hasattr(k8s_api, f"replace_namespaced_{object_type}"):
         if "namespace" in yml_object["metadata"]:
             namespace = yml_object["metadata"]["namespace"]
             kwargs["namespace"] = namespace
         resp = getattr(k8s_api, f"replace_namespaced_{object_type}")(
-            body=yml_object, **kwargs
+            name=name, body=yml_object, **kwargs
         )
     else:
         kwargs.pop("namespace", None)
-        resp = getattr(k8s_api, f"replace_{object_type}")(body=yml_object, **kwargs)
+        resp = getattr(k8s_api, f"replace_{object_type}")(
+            name=name, body=yml_object, **kwargs
+        )
     return resp
 
 
