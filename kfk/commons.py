@@ -18,8 +18,7 @@ from kfk.constants import (
     SEMICOLON,
     SPACE,
 )
-from kfk.kubectl_command_builder import Kubectl
-from kfk.kubernetes_commons import get_resource
+from kfk.kubernetes_commons import copy_to_pod, get_resource
 from kfk.utils import convert_string_to_type, get_list_by_split_string
 
 # TODO: Message string to messages.py
@@ -134,12 +133,7 @@ def open_file_in_system_editor(file):
 def transfer_file_to_container(
     source_file_path, dest_file_path, container, pod, namespace
 ):
-    os.system(
-        Kubectl()
-        .cp(source_file_path, f"{namespace}/{pod}:" + dest_file_path)
-        .container(container)
-        .build()
-    )
+    copy_to_pod(source_file_path, dest_file_path, container, pod, namespace)
 
 
 def apply_client_config_from_file(

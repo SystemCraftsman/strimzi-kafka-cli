@@ -5,7 +5,6 @@ from click import ClickException
 from click.testing import CliRunner
 
 from kfk.commands.connect.clusters import connect
-from kfk.kubectl_command_builder import Kubectl
 
 STRIMZI_PATH = "tests/files/strimzi"
 
@@ -205,10 +204,8 @@ class TestKfkConnect(TestCase):
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")
     @mock.patch("kfk.commands.connect.clusters.open_file_in_system_editor")
     @mock.patch("kfk.commands.connect.clusters.click.confirm")
-    @mock.patch("kfk.commands.connect.clusters.os")
     def test_create_cluster_with_invalid_url(
         self,
-        mock_os,
         mock_click_confirm,
         mock_open_file_in_system_editor,
         mock_create_temp_file,
@@ -519,19 +516,15 @@ class TestKfkConnect(TestCase):
             f"{self.cluster}-push-secret", "secret", self.namespace
         )
 
-    @mock.patch("kfk.commands.connect.clusters.os")
-    def test_alter_cluster_without_parameters(self, mock_os):
+    @mock.patch("kfk.commands.connect.clusters.edit_resource")
+    def test_alter_cluster_without_parameters(self, mock_edit_resource):
         result = self.runner.invoke(
             connect,
             ["clusters", "--alter", "--cluster", self.cluster, "-n", self.namespace],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .edit()
-            .kafkaconnects(self.cluster)
-            .namespace(self.namespace)
-            .build()
+        mock_edit_resource.assert_called_with(
+            "kafkaconnects", self.cluster, self.namespace
         )
 
     @mock.patch("kfk.commands.connect.clusters.create_temp_file")

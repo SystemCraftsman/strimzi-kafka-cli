@@ -1,11 +1,9 @@
-import os
-
 import click
 
 from kfk.commands.main import kfk
 from kfk.commons import apply_client_config_from_file
 from kfk.constants import KAFKA_PORT
-from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import exec_on_pod_interactive
 
 
 @click.option("-n", "--namespace", help="Namespace to use", required=True)
@@ -36,19 +34,16 @@ def console_consumer(
             pod,
             namespace,
         )
-    os.system(
-        Kubectl()
-        .exec("-it", pod)
-        .container(container)
-        .namespace(namespace)
-        .exec_command(native_command)
-        .build()
-        .format(
+    exec_on_pod_interactive(
+        pod,
+        container,
+        namespace,
+        native_command.format(
             port=KAFKA_PORT,
             topic=topic,
             cluster=cluster,
             from_beginning=(from_beginning and "--from-beginning" or ""),
-        )
+        ),
     )
 
 
@@ -77,12 +72,9 @@ def console_producer(topic, broker_pod, producer_config, cluster, namespace):
             pod,
             namespace,
         )
-    os.system(
-        Kubectl()
-        .exec("-it", pod)
-        .container(container)
-        .namespace(namespace)
-        .exec_command(native_command)
-        .build()
-        .format(port=KAFKA_PORT, topic=topic, cluster=cluster)
+    exec_on_pod_interactive(
+        pod,
+        container,
+        namespace,
+        native_command.format(port=KAFKA_PORT, topic=topic, cluster=cluster),
     )

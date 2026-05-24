@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 
 from click.testing import CliRunner
 
-from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
+from kfk.config import STRIMZI_VERSION
 
 
 class TestKfk(TestCase):
@@ -27,7 +27,6 @@ class TestKfk(TestCase):
         cli_version = version("strimzi-kafka-cli")
         expected_version = f"""CLI Version: {cli_version}
 Strimzi Version: {STRIMZI_VERSION}
-Kubectl Version: {KUBECTL_VERSION}
 """
 
         assert result.output == expected_version

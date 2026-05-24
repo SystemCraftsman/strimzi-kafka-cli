@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.acls import kfk
-from kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkAcls(TestCase):
@@ -15,27 +14,21 @@ class TestKfkAcls(TestCase):
         self.group = "my-group"
         self.user = "my-user"
 
-    @mock.patch("kfk.commands.acls.os")
-    def test_list_all_acls(self, mock_os):
+    @mock.patch("kfk.commands.acls.exec_on_pod")
+    def test_list_all_acls(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk, ["acls", "--list", "-n", self.namespace, "-c", self.kafka_cluster]
         )
         assert result.exit_code == 0
-        native_command = (
-            "bin/kafka-acls.sh --bootstrap-server" " localhost:9092 --list  "
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{kafka_cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(kafka_cluster=self.kafka_cluster)
+        mock_exec_on_pod.assert_called_with(
+            self.kafka_cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            "bin/kafka-acls.sh --bootstrap-server localhost:9092 --list  ",
         )
 
-    @mock.patch("kfk.commands.acls.os")
-    def test_list_topic_acls(self, mock_os):
+    @mock.patch("kfk.commands.acls.exec_on_pod")
+    def test_list_topic_acls(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk,
             [
@@ -50,22 +43,16 @@ class TestKfkAcls(TestCase):
             ],
         )
         assert result.exit_code == 0
-        native_command = (
-            "bin/kafka-acls.sh --bootstrap-server"
-            " localhost:9092 --list --topic {topic} ".format(topic=self.topic)
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{kafka_cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(kafka_cluster=self.kafka_cluster)
+        mock_exec_on_pod.assert_called_with(
+            self.kafka_cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            "bin/kafka-acls.sh --bootstrap-server localhost:9092"
+            f" --list --topic {self.topic} ",
         )
 
-    @mock.patch("kfk.commands.acls.os")
-    def test_list_group_acls(self, mock_os):
+    @mock.patch("kfk.commands.acls.exec_on_pod")
+    def test_list_group_acls(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk,
             [
@@ -80,22 +67,15 @@ class TestKfkAcls(TestCase):
             ],
         )
         assert result.exit_code == 0
-        native_command = (
-            "bin/kafka-acls.sh --bootstrap-server"
-            " localhost:9092 --list  --group {group}".format(group=self.group)
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{kafka_cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(kafka_cluster=self.kafka_cluster)
+        mock_exec_on_pod.assert_called_with(
+            self.kafka_cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            "bin/kafka-acls.sh --bootstrap-server localhost:9092"
+            f" --list  --group {self.group}",
         )
 
-    @mock.patch("kfk.commands.acls.os")
-    def test_add_acls_without_principal(self, mock_os):
+    def test_add_acls_without_principal(self):
         result = self.runner.invoke(
             kfk,
             [

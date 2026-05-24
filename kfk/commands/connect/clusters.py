@@ -1,5 +1,4 @@
 import json
-import os
 
 import click
 import yaml
@@ -26,13 +25,13 @@ from kfk.constants import (
     TRUE,
     SpecialTexts,
 )
-from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_registry_secret,
     create_using_yaml,
     delete_object,
     delete_using_yaml,
     describe_resource,
+    edit_resource,
     get_resource,
     list_resource,
     replace_using_yaml,
@@ -367,7 +366,7 @@ def alter(cluster, replicas, config_file, namespace):
 
         cluster_temp_file.close()
     else:
-        os.system(Kubectl().edit().kafkaconnects(cluster).namespace(namespace).build())
+        edit_resource("kafkaconnects", cluster, namespace)
 
 
 def _return_if_not_skipped(property_item):

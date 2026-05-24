@@ -1,12 +1,19 @@
 import base64
+import io
 import json
+import os
 import re
+import select
 import sys
+import tarfile
+import termios
+import tty
 from os import path
 
 import click
 import yaml
 from kubernetes import client, config
+from kubernetes.stream import stream as k8s_stream
 
 from kfk.utils import format_dict_as_text
 
@@ -190,6 +197,97 @@ def describe_resource(resource_type, resource_name, namespace):
     if status:
         click.echo("Status:")
         click.echo(format_dict_as_text(status, indent=2))
+
+
+def edit_resource(resource_type, resource_name, namespace):
+    from kfk.commons import create_temp_file, open_file_in_system_editor
+
+    resource = get_resource(resource_type, resource_name, namespace)
+    resource.get("metadata", {}).pop("managedFields", None)
+    resource_yaml = yaml.dump(resource, default_flow_style=False)
+    temp_file = create_temp_file(resource_yaml)
+    open_file_in_system_editor(temp_file.name)
+    replace_using_yaml(temp_file.name, namespace)
+    temp_file.close()
+
+
+def exec_on_pod(pod, container, namespace, command):
+    core_v1 = client.CoreV1Api(api_client)
+    resp = k8s_stream(
+        core_v1.connect_get_namespaced_pod_exec,
+        name=pod,
+        namespace=namespace,
+        container=container,
+        command=["/bin/bash", "-c", command],
+        stderr=True,
+        stdin=False,
+        stdout=True,
+        tty=False,
+    )
+    print(resp, end="")
+
+
+def exec_on_pod_interactive(pod, container, namespace, command):
+    core_v1 = client.CoreV1Api(api_client)
+    resp = k8s_stream(
+        core_v1.connect_get_namespaced_pod_exec,
+        name=pod,
+        namespace=namespace,
+        container=container,
+        command=["/bin/bash", "-c", command],
+        stderr=True,
+        stdin=True,
+        stdout=True,
+        tty=True,
+        _preload_content=False,
+    )
+    old_settings = termios.tcgetattr(sys.stdin)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        while resp.is_open():
+            resp.update(timeout=1)
+            if resp.peek_stdout():
+                sys.stdout.write(resp.read_stdout())
+                sys.stdout.flush()
+            if resp.peek_stderr():
+                sys.stderr.write(resp.read_stderr())
+                sys.stderr.flush()
+            if select.select([sys.stdin], [], [], 0)[0]:
+                data = sys.stdin.read(1)
+                if data:
+                    resp.write_stdin(data)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+        resp.close()
+
+
+def copy_to_pod(source_path, dest_path, container, pod, namespace):
+    core_v1 = client.CoreV1Api(api_client)
+    dest_dir = os.path.dirname(dest_path)
+    dest_name = os.path.basename(dest_path)
+
+    tar_buffer = io.BytesIO()
+    with tarfile.open(fileobj=tar_buffer, mode="w") as tar:
+        tar.add(source_path, arcname=dest_name)
+    tar_buffer.seek(0)
+    tar_data = tar_buffer.getvalue()
+
+    resp = k8s_stream(
+        core_v1.connect_get_namespaced_pod_exec,
+        name=pod,
+        namespace=namespace,
+        container=container,
+        command=["tar", "xf", "-", "-C", dest_dir],
+        stderr=True,
+        stdin=True,
+        stdout=True,
+        tty=False,
+        _preload_content=False,
+    )
+    resp.write_stdin(tar_data)
+    resp.close()
 
 
 def _operate_using_yaml(

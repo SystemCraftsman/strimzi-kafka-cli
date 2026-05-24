@@ -1,5 +1,4 @@
 import json
-import os
 
 import click
 import yaml
@@ -15,11 +14,11 @@ from kfk.commons import (
     raise_exception_for_missing_options,
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
-from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
     describe_resource,
+    edit_resource,
     get_resource,
     list_resource,
     replace_using_yaml,
@@ -223,7 +222,7 @@ def alter(cluster, replicas, config, delete_config, namespace):
         if replicas is not None:
             _update_broker_replicas(replicas, namespace)
     else:
-        os.system(Kubectl().edit().kafkas(cluster).namespace(namespace).build())
+        edit_resource("kafkas", cluster, namespace)
 
 
 def _get_kafka_and_broker_dicts(docs):

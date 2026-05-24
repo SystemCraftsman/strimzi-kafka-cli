@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.clusters import kfk
-from kfk.kubectl_command_builder import Kubectl
 
 STRIMZI_PATH_PATCH = "tests/files/strimzi"
 
@@ -64,16 +63,14 @@ class TestKfkClusters(TestCase):
         assert result.exit_code == 0
         mock_get_resource.assert_called_with("kafkas", self.cluster, self.namespace)
 
-    @mock.patch("kfk.commands.clusters.os")
-    def test_alter_cluster_without_parameters(self, mock_os):
+    @mock.patch("kfk.commands.clusters.edit_resource")
+    def test_alter_cluster_without_parameters(self, mock_edit_resource):
         result = self.runner.invoke(
             kfk,
             ["clusters", "--alter", "--cluster", self.cluster, "-n", self.namespace],
         )
         assert result.exit_code == 0
-        mock_os.system.assert_called_with(
-            Kubectl().edit().kafkas(self.cluster).namespace(self.namespace).build()
-        )
+        mock_edit_resource.assert_called_with("kafkas", self.cluster, self.namespace)
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
