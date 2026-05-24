@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.topics import kfk
-from kfk.kubectl_command_builder import Kubectl
 
 STRIMZI_PATH = "tests/files/strimzi"
 
@@ -77,8 +76,8 @@ class TestKfkTopics(TestCase):
         assert result.exit_code == 0
         mock_get_resource.assert_called_with("kafkatopics", self.topic, self.namespace)
 
-    @mock.patch("kfk.commands.topics.os")
-    def test_describe_topic_native(self, mock_os):
+    @mock.patch("kfk.commands.topics.exec_on_pod")
+    def test_describe_topic_native(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk,
             [
@@ -94,24 +93,21 @@ class TestKfkTopics(TestCase):
             ],
         )
         assert result.exit_code == 0
-        native_command = (
-            "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:9092"
-            " --describe --topic {topic}"
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(topic=self.topic, cluster=self.cluster)
+        mock_exec_on_pod.assert_called_with(
+            self.cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            (
+                "bin/kafka-topics.sh --bootstrap-server"
+                f" {self.cluster}-kafka-brokers:9092"
+                f" --describe --topic {self.topic}"
+            ),
         )
 
     @mock.patch("kfk.commons.transfer_file_to_container")
-    @mock.patch("kfk.commands.topics.os")
+    @mock.patch("kfk.commands.topics.exec_on_pod")
     def test_describe_topic_native_with_command_config(
-        self, mock_os, mock_transfer_file_to_container
+        self, mock_exec_on_pod, mock_transfer_file_to_container
     ):
         result = self.runner.invoke(
             kfk,
@@ -130,19 +126,18 @@ class TestKfkTopics(TestCase):
             ],
         )
         assert result.exit_code == 0
-        native_command = (
-            "bin/kafka-topics.sh --bootstrap-server {cluster}-kafka-brokers:9093"
-            " --describe --topic {topic} --command-config /tmp/client.properties;rm -rf"
-            " /tmp/truststore.jks;rm -rf /tmp/user.p12;rm -rf /tmp/client.properties;"
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(topic=self.topic, cluster=self.cluster)
+        mock_exec_on_pod.assert_called_with(
+            self.cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            (
+                "bin/kafka-topics.sh --bootstrap-server"
+                f" {self.cluster}-kafka-brokers:9093"
+                f" --describe --topic {self.topic}"
+                " --command-config /tmp/client.properties;rm -rf"
+                " /tmp/truststore.jks;rm -rf /tmp/user.p12;rm -rf"
+                " /tmp/client.properties;"
+            ),
         )
 
     @mock.patch("kfk.commands.topics.create_temp_file")

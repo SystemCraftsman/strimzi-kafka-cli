@@ -1,5 +1,4 @@
 import json
-import os
 
 import click
 import yaml
@@ -16,11 +15,11 @@ from kfk.commons import (
 )
 from kfk.config import STRIMZI_PATH, STRIMZI_VERSION
 from kfk.constants import KAFKA_PORT
-from kfk.kubectl_command_builder import Kubectl
 from kfk.kubernetes_commons import (
     create_using_yaml,
     delete_using_yaml,
     describe_resource,
+    exec_on_pod,
     get_resource,
     list_resource,
     replace_using_yaml,
@@ -191,14 +190,11 @@ def describe(
                     pod,
                     namespace,
                 )
-            os.system(
-                Kubectl()
-                .exec("-it", pod)
-                .container(container)
-                .namespace(namespace)
-                .exec_command(native_command)
-                .build()
-                .format(port=KAFKA_PORT, topic=topic, cluster=cluster)
+            exec_on_pod(
+                pod,
+                container,
+                namespace,
+                native_command.format(port=KAFKA_PORT, topic=topic, cluster=cluster),
             )
         else:
             describe_resource("kafkatopics", topic, namespace)

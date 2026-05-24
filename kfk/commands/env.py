@@ -24,13 +24,3 @@ def env():
             os.environ.get("STRIMZI_KAFKA_CLI_STRIMZI_PATH")
         )
     )
-    click.echo(
-        "STRIMZI_KAFKA_CLI_KUBECTL_VERSION: {}".format(
-            os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_VERSION")
-        )
-    )
-    click.echo(
-        "STRIMZI_KAFKA_CLI_KUBECTL_PATH: {}".format(
-            os.environ.get("STRIMZI_KAFKA_CLI_KUBECTL_PATH")
-        )
-    )

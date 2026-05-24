@@ -1,12 +1,10 @@
-import os
-
 import click
 
 from kfk.commands import users
 from kfk.commands.main import kfk
 from kfk.commons import raise_exception_for_missing_options
 from kfk.constants import COLON
-from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import exec_on_pod
 from kfk.option_extensions import NotRequiredIf
 
 
@@ -95,20 +93,17 @@ def acls(
             "bin/kafka-acls.sh --bootstrap-server"
             " localhost:9092 --list {topic}{cluster} {group}"
         )
-        pod = broker_pod or "{kafka_cluster}-broker-0"
-        os.system(
-            Kubectl()
-            .exec("-it", pod)
-            .container("kafka")
-            .namespace(namespace)
-            .exec_command(native_command)
-            .build()
-            .format(
+        pod = broker_pod or f"{kafka_cluster}-broker-0"
+        exec_on_pod(
+            pod,
+            "kafka",
+            namespace,
+            native_command.format(
                 kafka_cluster=kafka_cluster,
                 topic=(topic and "--topic " + topic or ""),
                 cluster=(cluster and "--cluster " + cluster or ""),
                 group=(group and "--group " + group or ""),
-            )
+            ),
         )
     elif add or remove:
         add_or_remove(

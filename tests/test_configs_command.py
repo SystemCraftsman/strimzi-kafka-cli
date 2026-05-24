@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 from click.testing import CliRunner
 
 from kfk.commands.configs import kfk
-from kfk.kubectl_command_builder import Kubectl
 
 
 class TestKfkConfigs(TestCase):
@@ -180,8 +179,8 @@ class TestKfkConfigs(TestCase):
             "kafkatopics", self.topic, self.namespace
         )
 
-    @mock.patch("kfk.commands.configs.os")
-    def test_describe_topic_config_native(self, mock_os):
+    @mock.patch("kfk.commands.configs.exec_on_pod")
+    def test_describe_topic_config_native(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk,
             [
@@ -200,18 +199,15 @@ class TestKfkConfigs(TestCase):
         )
         assert result.exit_code == 0
 
-        native_command = (
-            "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092"
-            " --entity-type topics --describe --entity-name {entity_name}"
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(cluster=self.cluster, entity_name=self.topic)
+        mock_exec_on_pod.assert_called_with(
+            self.cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            (
+                "bin/kafka-configs.sh --bootstrap-server"
+                f" {self.cluster}-kafka-brokers:9092"
+                f" --entity-type topics --describe --entity-name {self.topic}"
+            ),
         )
 
     @mock.patch("kfk.commands.users.create_temp_file")
@@ -344,8 +340,8 @@ class TestKfkConfigs(TestCase):
             "kafkausers", self.user, self.namespace
         )
 
-    @mock.patch("kfk.commands.configs.os")
-    def test_describe_user_config_native(self, mock_os):
+    @mock.patch("kfk.commands.configs.exec_on_pod")
+    def test_describe_user_config_native(self, mock_exec_on_pod):
         result = self.runner.invoke(
             kfk,
             [
@@ -364,18 +360,15 @@ class TestKfkConfigs(TestCase):
         )
         assert result.exit_code == 0
 
-        native_command = (
-            "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092"
-            " --entity-type users --describe --entity-name CN={entity_name}"
-        )
-        mock_os.system.assert_called_with(
-            Kubectl()
-            .exec("-it", "{cluster}-broker-0")
-            .container("kafka")
-            .namespace(self.namespace)
-            .exec_command(native_command)
-            .build()
-            .format(cluster=self.cluster, entity_name=self.user)
+        mock_exec_on_pod.assert_called_with(
+            self.cluster + "-broker-0",
+            "kafka",
+            self.namespace,
+            (
+                "bin/kafka-configs.sh --bootstrap-server"
+                f" {self.cluster}-kafka-brokers:9092"
+                f" --entity-type users --describe --entity-name CN={self.user}"
+            ),
         )
 
     @mock.patch("kfk.commands.clusters.create_temp_file")
@@ -477,9 +470,9 @@ class TestKfkConfigs(TestCase):
         )
 
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("kfk.commands.configs.exec_on_pod")
     def test_describe_broker_config_native(
-        self, mock_os, mock_get_config_resource_yaml
+        self, mock_exec_on_pod, mock_get_config_resource_yaml
     ):
         with open("tests/files/yaml/kafka-config.yaml") as file:
             config_yaml = file.read()
@@ -508,25 +501,21 @@ class TestKfkConfigs(TestCase):
             assert "transaction.state.log.min.isr=2" in result.output
             assert "transaction.state.log.replication.factor=3" in result.output
 
-            native_command = (
-                "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092"
-                " --entity-type brokers --describe"
-            )
-
-            mock_os.system.assert_called_with(
-                Kubectl()
-                .exec("-it", "{cluster}-broker-0")
-                .container("kafka")
-                .namespace(self.namespace)
-                .exec_command(native_command)
-                .build()
-                .format(cluster=self.cluster, entity_name=self.broker_count - 1)
+            mock_exec_on_pod.assert_called_with(
+                self.cluster + "-broker-0",
+                "kafka",
+                self.namespace,
+                (
+                    "bin/kafka-configs.sh --bootstrap-server"
+                    f" {self.cluster}-kafka-brokers:9092"
+                    " --entity-type brokers --describe"
+                ),
             )
 
     @mock.patch("kfk.commons.get_resource_yaml")
-    @mock.patch("kfk.commands.configs.os")
+    @mock.patch("kfk.commands.configs.exec_on_pod")
     def test_describe_broker_config_native_with_id(
-        self, mock_os, mock_get_config_resource_yaml
+        self, mock_exec_on_pod, mock_get_config_resource_yaml
     ):
         with open("tests/files/yaml/kafka-config.yaml") as file:
             config_yaml = file.read()
@@ -557,17 +546,13 @@ class TestKfkConfigs(TestCase):
             assert "transaction.state.log.min.isr=2" in result.output
             assert "transaction.state.log.replication.factor=3" in result.output
 
-            native_command = (
-                "bin/kafka-configs.sh --bootstrap-server {cluster}-kafka-brokers:9092"
-                " --entity-type brokers --describe --entity-name 0"
-            )
-
-            mock_os.system.assert_called_with(
-                Kubectl()
-                .exec("-it", "{cluster}-broker-0")
-                .container("kafka")
-                .namespace(self.namespace)
-                .exec_command(native_command)
-                .build()
-                .format(cluster=self.cluster, entity_name=self.broker_count - 1)
+            mock_exec_on_pod.assert_called_with(
+                self.cluster + "-broker-0",
+                "kafka",
+                self.namespace,
+                (
+                    "bin/kafka-configs.sh --bootstrap-server"
+                    f" {self.cluster}-kafka-brokers:9092"
+                    " --entity-type brokers --describe --entity-name 0"
+                ),
             )

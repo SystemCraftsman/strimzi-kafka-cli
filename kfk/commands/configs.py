@@ -1,5 +1,3 @@
-import os
-
 import click
 import yaml
 
@@ -12,7 +10,7 @@ from kfk.commons import (
     raise_exception_for_missing_options,
 )
 from kfk.constants import COMMON_NAME_PREFIX, KAFKA_PORT, NEW_LINE, SPACE, SpecialTexts
-from kfk.kubectl_command_builder import Kubectl
+from kfk.kubernetes_commons import exec_on_pod
 from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
 
@@ -145,17 +143,14 @@ def _describe_natively(entity_type, entity_name, cluster, namespace, broker_pod=
             entity_name = COMMON_NAME_PREFIX + entity_name
 
     pod = broker_pod or cluster + "-broker-0"
-    os.system(
-        Kubectl()
-        .exec("-it", pod)
-        .container("kafka")
-        .namespace(namespace)
-        .exec_command(native_command)
-        .build()
-        .format(
+    exec_on_pod(
+        pod,
+        "kafka",
+        namespace,
+        native_command.format(
             cluster=cluster,
             port=KAFKA_PORT,
             entity_type=entity_type,
             entity_name=entity_name,
-        )
+        ),
     )

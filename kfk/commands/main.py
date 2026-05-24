@@ -2,11 +2,10 @@ from importlib.metadata import version
 
 import click
 
-from kfk.config import KUBECTL_VERSION, STRIMZI_VERSION
+from kfk.config import STRIMZI_VERSION
 
 version = f"""CLI Version: {version("strimzi-kafka-cli")}
-Strimzi Version: {STRIMZI_VERSION}
-Kubectl Version: {KUBECTL_VERSION}"""
+Strimzi Version: {STRIMZI_VERSION}"""
 
 
 # @click.option('-v', '--version', help='Prints the version', is_flag=True)
