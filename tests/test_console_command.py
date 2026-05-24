@@ -122,7 +122,7 @@ class TestKfkConsole(TestCase):
             "kafka",
             self.namespace,
             (
-                "bin/kafka-console-producer.sh --broker-list"
+                "bin/kafka-console-producer.sh --bootstrap-server"
                 f" {self.cluster}-kafka-brokers:9092"
                 f" --topic {self.topic}"
             ),
@@ -153,7 +153,7 @@ class TestKfkConsole(TestCase):
             "kafka",
             self.namespace,
             (
-                "bin/kafka-console-producer.sh --broker-list"
+                "bin/kafka-console-producer.sh --bootstrap-server"
                 f" {self.cluster}-kafka-brokers:9093"
                 f" --topic {self.topic}"
                 " --producer.config /tmp/client.properties;rm -rf"

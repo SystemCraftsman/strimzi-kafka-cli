@@ -228,6 +228,9 @@ def exec_on_pod(pod, container, namespace, command):
 
 
 def exec_on_pod_interactive(pod, container, namespace, command):
+    if not sys.stdin.isatty():
+        click.echo("Error: interactive exec requires a TTY.", err=True)
+        sys.exit(1)
     core_v1 = client.CoreV1Api(api_client)
     resp = k8s_stream(
         core_v1.connect_get_namespaced_pod_exec,
@@ -260,7 +263,10 @@ def exec_on_pod_interactive(pod, container, namespace, command):
         pass
     finally:
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-        resp.close()
+        try:
+            resp.close()
+        except Exception:
+            pass
 
 
 def copy_to_pod(source_path, dest_path, container, pod, namespace):

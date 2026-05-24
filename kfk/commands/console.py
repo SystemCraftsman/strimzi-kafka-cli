@@ -58,8 +58,8 @@ def console_consumer(
 def console_producer(topic, broker_pod, producer_config, cluster, namespace):
     """Reads data from standard input and publish it to Kafka."""
     native_command = (
-        "bin/kafka-console-producer.sh --broker-list {cluster}-kafka-brokers:{port}"
-        " --topic {topic}"
+        "bin/kafka-console-producer.sh --bootstrap-server"
+        " {cluster}-kafka-brokers:{port} --topic {topic}"
     )
     pod = broker_pod or cluster + "-broker-0"
     container = "kafka"
