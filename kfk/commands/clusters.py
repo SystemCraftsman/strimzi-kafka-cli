@@ -43,6 +43,10 @@ from kfk.utils import parse_kv_string
     multiple=True,
 )
 @click.option(
+    "--authorizer-class",
+    help="Fully qualified authorizer class name for custom authorization.",
+)
+@click.option(
     "--super-user",
     help="A super user for cluster authorization.",
     multiple=True,
@@ -52,7 +56,7 @@ from kfk.utils import parse_kv_string
     help="Authorization type for the cluster.",
     type=click.Choice(["simple", "custom", "none"], case_sensitive=True),
     cls=RequiredIf,
-    options=["super_user"],
+    options=["super_user", "authorizer_class"],
 )
 @click.option(
     "--listener-auth",
@@ -132,6 +136,7 @@ def clusters(
     delete_listener,
     authorization_type,
     super_user,
+    authorizer_class,
     output,
     namespace,
     is_yes,
@@ -158,6 +163,7 @@ def clusters(
             delete_listener,
             authorization_type,
             super_user,
+            authorizer_class,
             namespace,
         )
     else:
@@ -258,6 +264,7 @@ def alter(
     delete_listener,
     authorization_type,
     super_user,
+    authorizer_class,
     namespace,
 ):
     has_changes = (
@@ -288,7 +295,9 @@ def alter(
 
         _add_listeners_if_provided(add_listener, cluster_dict, listener_auth)
         _delete_listeners_if_provided(delete_listener, cluster_dict)
-        _set_authorization_if_provided(authorization_type, super_user, cluster_dict)
+        _set_authorization_if_provided(
+            authorization_type, super_user, authorizer_class, cluster_dict
+        )
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -391,7 +400,9 @@ def _delete_listeners_if_provided(delete_listener, cluster_dict):
         ]
 
 
-def _set_authorization_if_provided(authorization_type, super_user, cluster_dict):
+def _set_authorization_if_provided(
+    authorization_type, super_user, authorizer_class, cluster_dict
+):
     if authorization_type is not None:
         if authorization_type == "none":
             cluster_dict["spec"]["kafka"].pop("authorization", None)
@@ -399,4 +410,6 @@ def _set_authorization_if_provided(authorization_type, super_user, cluster_dict)
             auth = {"type": authorization_type}
             if len(super_user) > 0:
                 auth["superUsers"] = [*super_user]
+            if authorizer_class is not None:
+                auth["authorizerClass"] = authorizer_class
             cluster_dict["spec"]["kafka"]["authorization"] = auth
