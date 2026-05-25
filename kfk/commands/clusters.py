@@ -24,7 +24,7 @@ from kfk.kubernetes_commons import (
     replace_using_yaml,
 )
 from kfk.messages import Messages
-from kfk.option_extensions import NotRequiredIf, RequiredIf
+from kfk.option_extensions import NotRequiredIf, RequiredIf, RequiredIfValue
 from kfk.utils import parse_kv_string
 
 
@@ -45,6 +45,8 @@ from kfk.utils import parse_kv_string
 @click.option(
     "--authorizer-class",
     help="Fully qualified authorizer class name for custom authorization.",
+    cls=RequiredIfValue,
+    option_value_pairs={"authorization_type": "custom"},
 )
 @click.option(
     "--super-user",
@@ -56,7 +58,7 @@ from kfk.utils import parse_kv_string
     help="Authorization type for the cluster.",
     type=click.Choice(["simple", "custom", "none"], case_sensitive=True),
     cls=RequiredIf,
-    options=["super_user", "authorizer_class"],
+    options=["super_user"],
 )
 @click.option(
     "--listener-auth",
