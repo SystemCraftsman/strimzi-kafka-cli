@@ -24,7 +24,7 @@ from kfk.kubernetes_commons import (
     replace_using_yaml,
 )
 from kfk.messages import Messages
-from kfk.option_extensions import NotRequiredIf
+from kfk.option_extensions import NotRequiredIf, RequiredIf
 from kfk.utils import parse_kv_string
 
 
@@ -51,6 +51,8 @@ from kfk.utils import parse_kv_string
     "--authorization-type",
     help="Authorization type for the cluster.",
     type=click.Choice(["simple", "custom", "none"], case_sensitive=True),
+    cls=RequiredIf,
+    options=["super_user"],
 )
 @click.option(
     "--listener-auth",
@@ -66,6 +68,8 @@ from kfk.utils import parse_kv_string
         " Format: name=X,port=N,type=T,tls=BOOL"
     ),
     multiple=True,
+    cls=RequiredIf,
+    options=["listener_auth"],
 )
 @click.option(
     "--delete-config",
@@ -133,10 +137,6 @@ def clusters(
     is_yes,
 ):
     """Creates, alters, deletes, describes Kafka cluster(s)."""
-    if listener_auth and len(add_listener) == 0:
-        raise click.UsageError("--listener-auth requires --add-listener.")
-    if len(super_user) > 0 and authorization_type is None:
-        raise click.UsageError("--super-user requires --authorization-type.")
     if is_list:
         list(namespace)
     elif is_create:

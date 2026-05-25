@@ -865,7 +865,7 @@ class TestKfkClusters(TestCase):
             ],
         )
         assert result.exit_code != 0
-        assert "--super-user requires --authorization-type" in result.output
+        assert "Missing option '--authorization-type'" in result.output
 
     def test_listener_auth_without_add_listener_fails(self):
         result = self.runner.invoke(
@@ -882,4 +882,4 @@ class TestKfkClusters(TestCase):
             ],
         )
         assert result.exit_code != 0
-        assert "--listener-auth requires --add-listener" in result.output
+        assert "Missing option '--add-listener'" in result.output
