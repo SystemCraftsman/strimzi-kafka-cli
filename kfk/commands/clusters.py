@@ -45,6 +45,13 @@ from kfk.utils import convert_string_to_type
     multiple=True,
 )
 @click.option(
+    "--listener-auth",
+    help=(
+        "Authentication config for the listener being added."
+        " Format: type=T,validIssuerUri=U,clientId=C"
+    ),
+)
+@click.option(
     "--add-listener",
     help=(
         "A listener to be added to the cluster."
@@ -109,16 +116,21 @@ def clusters(
     config,
     delete_config,
     add_listener,
+    listener_auth,
     delete_listener,
     output,
     namespace,
     is_yes,
 ):
     """Creates, alters, deletes, describes Kafka cluster(s)."""
+    if listener_auth and len(add_listener) == 0:
+        raise click.UsageError("--listener-auth requires --add-listener.")
     if is_list:
         list(namespace)
     elif is_create:
-        create(cluster, replicas, config, add_listener, namespace, is_yes)
+        create(
+            cluster, replicas, config, add_listener, listener_auth, namespace, is_yes
+        )
     elif is_describe:
         describe(cluster, output, namespace)
     elif is_delete:
@@ -130,6 +142,7 @@ def clusters(
             config,
             delete_config,
             add_listener,
+            listener_auth,
             delete_listener,
             namespace,
         )
@@ -141,7 +154,7 @@ def list(namespace):
     list_resource("kafkas", namespace)
 
 
-def create(cluster, replicas, config, add_listener, namespace, is_yes):
+def create(cluster, replicas, config, add_listener, listener_auth, namespace, is_yes):
     with open(
         "{strimzi_path}/examples/kafka/kafka-ephemeral.yaml".format(
             strimzi_path=STRIMZI_PATH
@@ -163,7 +176,7 @@ def create(cluster, replicas, config, add_listener, namespace, is_yes):
 
         _add_config_if_provided(config, kafka_dict)
 
-        _add_listeners_if_provided(add_listener, kafka_dict)
+        _add_listeners_if_provided(add_listener, kafka_dict, listener_auth)
 
         cluster_yaml = yaml.dump_all(docs)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -227,6 +240,7 @@ def alter(
     config,
     delete_config,
     add_listener,
+    listener_auth,
     delete_listener,
     namespace,
 ):
@@ -255,7 +269,7 @@ def alter(
                     delete_config, cluster_dict["spec"]["kafka"]["config"]
                 )
 
-        _add_listeners_if_provided(add_listener, cluster_dict)
+        _add_listeners_if_provided(add_listener, cluster_dict, listener_auth)
         _delete_listeners_if_provided(delete_listener, cluster_dict)
 
         cluster_yaml = yaml.dump(cluster_dict)
@@ -342,11 +356,21 @@ def _parse_listener(listener_str):
     return listener
 
 
-def _add_listeners_if_provided(add_listener, cluster_dict):
+def _parse_listener_auth(listener_auth):
+    auth = {}
+    for part in get_config_list(listener_auth):
+        key, _, value = part.partition("=")
+        auth[key] = convert_string_to_type(value)
+    return auth
+
+
+def _add_listeners_if_provided(add_listener, cluster_dict, listener_auth=None):
     if len(add_listener) > 0:
         listeners = cluster_dict["spec"]["kafka"].setdefault("listeners", [])
         for listener_str in add_listener:
             new_listener = _parse_listener(listener_str)
+            if listener_auth:
+                new_listener["authentication"] = _parse_listener_auth(listener_auth)
             for existing in listeners:
                 if existing["name"] == new_listener["name"]:
                     existing.update(new_listener)

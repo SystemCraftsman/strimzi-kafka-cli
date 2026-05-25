@@ -129,6 +129,7 @@ def configs(
                 add_config_list,
                 delete_config_list,
                 (),
+                None,
                 (),
                 namespace,
             )
