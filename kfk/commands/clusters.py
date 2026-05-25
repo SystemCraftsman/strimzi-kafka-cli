@@ -61,11 +61,18 @@ from kfk.utils import parse_kv_string
     options=["super_user", "authorizer_class"],
 )
 @click.option(
+    "--listener-config",
+    help="Key-value config for custom listener authentication.",
+    multiple=True,
+)
+@click.option(
     "--listener-auth",
     help=(
         "Authentication config for the listener being added."
         " Format: type=T,validIssuerUri=U,clientId=C"
     ),
+    cls=RequiredIf,
+    options=["listener_config"],
 )
 @click.option(
     "--add-listener",
@@ -75,7 +82,7 @@ from kfk.utils import parse_kv_string
     ),
     multiple=True,
     cls=RequiredIf,
-    options=["listener_auth"],
+    options=["listener_auth", "listener_config"],
 )
 @click.option(
     "--delete-config",
@@ -135,6 +142,7 @@ def clusters(
     delete_config,
     add_listener,
     listener_auth,
+    listener_config,
     delete_listener,
     authorization_type,
     super_user,
@@ -162,6 +170,7 @@ def clusters(
             delete_config,
             add_listener,
             listener_auth,
+            listener_config,
             delete_listener,
             authorization_type,
             super_user,
@@ -263,6 +272,7 @@ def alter(
     delete_config,
     add_listener,
     listener_auth,
+    listener_config,
     delete_listener,
     authorization_type,
     super_user,
@@ -295,7 +305,9 @@ def alter(
                     delete_config, cluster_dict["spec"]["kafka"]["config"]
                 )
 
-        _add_listeners_if_provided(add_listener, cluster_dict, listener_auth)
+        _add_listeners_if_provided(
+            add_listener, cluster_dict, listener_auth, listener_config
+        )
         _delete_listeners_if_provided(delete_listener, cluster_dict)
         _set_authorization_if_provided(
             authorization_type, super_user, authorizer_class, cluster_dict
@@ -377,13 +389,21 @@ def _add_config_if_provided(config, cluster_dict):
         add_kv_config_to_resource(config, cluster_dict["spec"]["kafka"]["config"])
 
 
-def _add_listeners_if_provided(add_listener, cluster_dict, listener_auth=None):
+def _add_listeners_if_provided(
+    add_listener, cluster_dict, listener_auth=None, listener_config=()
+):
     if len(add_listener) > 0:
         listeners = cluster_dict["spec"]["kafka"].setdefault("listeners", [])
         for listener_str in add_listener:
             new_listener = parse_kv_string(listener_str)
             if listener_auth:
                 new_listener["authentication"] = parse_kv_string(listener_auth)
+                if len(listener_config) > 0:
+                    new_listener["authentication"]["listenerConfig"] = {}
+                    add_kv_config_to_resource(
+                        listener_config,
+                        new_listener["authentication"]["listenerConfig"],
+                    )
             for existing in listeners:
                 if existing["name"] == new_listener["name"]:
                     existing.update(new_listener)
