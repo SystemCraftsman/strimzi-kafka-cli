@@ -33,6 +33,8 @@ class TestMcpServer(TestCase):
             "get_connect",
             "list_connectors",
             "get_connector",
+            "install_operator",
+            "uninstall_operator",
             "list_node_pools",
             "get_node_pool",
             "get_version",

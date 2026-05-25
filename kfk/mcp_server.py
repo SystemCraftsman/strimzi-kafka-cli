@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from kfk.commands import clusters, topics, users
+from kfk.commands import clusters, operator, topics, users
 from kfk.commands.connect import clusters as connect_clusters
 from kfk.commands.connect import connectors
 from kfk.commands.main import version as cli_version
@@ -61,6 +61,17 @@ mcp.tool(name="list_connectors", description="List KafkaConnectors.")(connectors
 mcp.tool(name="get_connector", description="Get a KafkaConnector resource.")(
     connectors.describe
 )
+
+
+# Operator
+mcp.tool(
+    name="install_operator",
+    description="Install the Strimzi Kafka Operator.",
+)(operator.install)
+mcp.tool(
+    name="uninstall_operator",
+    description="Uninstall the Strimzi Kafka Operator.",
+)(operator.uninstall)
 
 
 # Node Pools

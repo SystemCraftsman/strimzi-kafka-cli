@@ -23,6 +23,24 @@ from kfk.kubernetes_commons import create_using_yaml, delete_using_yaml
 def operator(is_install, is_uninstall, namespace):
     """Installs/Uninstalls Strimzi Kafka Operator."""
 
+    if is_install:
+        return install(namespace)
+    elif is_uninstall:
+        return uninstall(namespace)
+    else:
+        raise_exception_for_missing_options("operator")
+
+
+def install(namespace):
+    return _apply_operator_files(namespace, create_using_yaml)
+
+
+def uninstall(namespace):
+    return _apply_operator_files(namespace, delete_using_yaml)
+
+
+def _apply_operator_files(namespace, operation):
+    results = []
     for directory_name, dirs, files in os.walk(
         "{strimzi_path}/install/cluster-operator/".format(strimzi_path=STRIMZI_PATH)
     ):
@@ -36,10 +54,5 @@ def operator(is_install, is_uninstall, namespace):
                     )
                     temp_file = create_temp_file(stream)
                     file_path = temp_file.name
-            if is_install:
-                create_using_yaml(file_path, namespace)
-            elif is_uninstall:
-                delete_using_yaml(file_path, namespace)
-            else:
-                raise_exception_for_missing_options("operator")
-                break
+            results.append(operation(file_path, namespace))
+    return results
