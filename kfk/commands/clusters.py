@@ -182,7 +182,7 @@ def clusters(
 
 
 def list(namespace):
-    list_resource("kafkas", namespace)
+    return list_resource("kafkas", namespace)
 
 
 def create(cluster, replicas, config, add_listener, listener_auth, namespace, is_yes):
@@ -217,10 +217,12 @@ def create(cluster, replicas, config, add_listener, listener_auth, namespace, is
         else:
             open_file_in_system_editor(cluster_temp_file.name)
             is_confirmed = click.confirm(Messages.CLUSTER_CREATE_CONFIRMATION)
+        result = None
         if is_confirmed:
-            create_using_yaml(cluster_temp_file.name, namespace)
+            result = create_using_yaml(cluster_temp_file.name, namespace)
 
         cluster_temp_file.close()
+        return result
 
 
 def describe(cluster, output, namespace):
@@ -230,8 +232,9 @@ def describe(cluster, output, namespace):
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
+        return resource
     else:
-        describe_resource("kafkas", cluster, namespace)
+        return describe_resource("kafkas", cluster, namespace)
 
 
 def delete(cluster, namespace, is_yes):
@@ -260,9 +263,10 @@ def delete(cluster, namespace, is_yes):
             cluster_yaml = yaml.dump_all(docs)
             cluster_temp_file = create_temp_file(cluster_yaml)
 
-            delete_using_yaml(cluster_temp_file.name, namespace)
+            result = delete_using_yaml(cluster_temp_file.name, namespace)
 
             cluster_temp_file.close()
+            return result
 
 
 def alter(
@@ -316,14 +320,15 @@ def alter(
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
 
-        replace_using_yaml(cluster_temp_file.name, namespace)
+        result = replace_using_yaml(cluster_temp_file.name, namespace)
 
         cluster_temp_file.close()
 
         if replicas is not None:
             _update_broker_replicas(replicas, namespace)
+        return result
     else:
-        edit_resource("kafkas", cluster, namespace)
+        return edit_resource("kafkas", cluster, namespace)
 
 
 def _get_kafka_and_broker_dicts(docs):

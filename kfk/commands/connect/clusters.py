@@ -143,7 +143,7 @@ def clusters(
 
 
 def list(namespace):
-    list_resource("kafkaconnects", namespace)
+    return list_resource("kafkaconnects", namespace)
 
 
 def create(
@@ -254,12 +254,13 @@ def create(
                     password,
                 )
 
-            create_using_yaml(cluster_temp_file.name, namespace)
+            result = create_using_yaml(cluster_temp_file.name, namespace)
 
             for connector_config_file in connector_config_files:
                 connectors.create(connector_config_file, cluster, namespace)
 
         cluster_temp_file.close()
+        return result
 
 
 def describe(cluster, output, namespace):
@@ -269,8 +270,9 @@ def describe(cluster, output, namespace):
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
+        return resource
     else:
-        describe_resource("kafkaconnects", cluster, namespace)
+        return describe_resource("kafkaconnects", cluster, namespace)
 
 
 def delete(cluster, namespace, is_yes):
@@ -291,11 +293,12 @@ def delete(cluster, namespace, is_yes):
             cluster_yaml = yaml.dump(cluster_dict)
             cluster_temp_file = create_temp_file(cluster_yaml)
 
-            delete_using_yaml(cluster_temp_file.name, namespace)
+            result = delete_using_yaml(cluster_temp_file.name, namespace)
 
             cluster_temp_file.close()
 
         delete_object(f"{cluster}-push-secret", "secret", namespace)
+        return result
 
 
 def alter(cluster, replicas, config_file, namespace):
@@ -362,11 +365,12 @@ def alter(cluster, replicas, config_file, namespace):
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
 
-        replace_using_yaml(cluster_temp_file.name, namespace)
+        result = replace_using_yaml(cluster_temp_file.name, namespace)
 
         cluster_temp_file.close()
+        return result
     else:
-        edit_resource("kafkaconnects", cluster, namespace)
+        return edit_resource("kafkaconnects", cluster, namespace)
 
 
 def _return_if_not_skipped(property_item):

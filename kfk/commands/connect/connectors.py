@@ -93,7 +93,9 @@ def connectors(
 
 
 def list(cluster, namespace):
-    list_resource("kafkaconnectors", namespace, label=f"strimzi.io/cluster={cluster}")
+    return list_resource(
+        "kafkaconnectors", namespace, label=f"strimzi.io/cluster={cluster}"
+    )
 
 
 def create(config_file, cluster, namespace):
@@ -128,9 +130,10 @@ def create(config_file, cluster, namespace):
         connector_yaml = yaml.dump(connector_dict)
         connector_temp_file = create_temp_file(connector_yaml)
 
-        create_using_yaml(connector_temp_file.name, namespace)
+        result = create_using_yaml(connector_temp_file.name, namespace)
 
         connector_temp_file.close()
+        return result
 
 
 def describe(connector, output, namespace):
@@ -140,8 +143,9 @@ def describe(connector, output, namespace):
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
+        return resource
     else:
-        describe_resource("kafkaconnectors", connector, namespace)
+        return describe_resource("kafkaconnectors", connector, namespace)
 
 
 def delete(connector, cluster, namespace):
@@ -158,9 +162,10 @@ def delete(connector, cluster, namespace):
         connector_yaml = yaml.dump(connector_dict)
         connector_temp_file = create_temp_file(connector_yaml)
 
-        delete_using_yaml(connector_temp_file.name, namespace)
+        result = delete_using_yaml(connector_temp_file.name, namespace)
 
         connector_temp_file.close()
+        return result
 
 
 def alter(config_file, cluster, namespace):
@@ -192,9 +197,10 @@ def alter(config_file, cluster, namespace):
     connector_yaml = yaml.dump(connector_dict)
     connector_temp_file = create_temp_file(connector_yaml)
 
-    replace_using_yaml(connector_temp_file.name, namespace)
+    result = replace_using_yaml(connector_temp_file.name, namespace)
 
     connector_temp_file.close()
+    return result
 
 
 def _return_if_not_skipped(property_item):

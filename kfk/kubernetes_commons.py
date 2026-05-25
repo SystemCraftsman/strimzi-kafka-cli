@@ -96,7 +96,7 @@ def create_registry_secret(
 
 
 def create_using_yaml(file_path, namespace):
-    _operate_using_yaml(
+    return _operate_using_yaml(
         api_client,
         file_path,
         "create",
@@ -107,7 +107,7 @@ def create_using_yaml(file_path, namespace):
 
 
 def delete_using_yaml(file_path, namespace):
-    _operate_using_yaml(
+    return _operate_using_yaml(
         api_client,
         file_path,
         "delete",
@@ -118,7 +118,7 @@ def delete_using_yaml(file_path, namespace):
 
 
 def replace_using_yaml(file_path, namespace):
-    _operate_using_yaml(
+    return _operate_using_yaml(
         api_client,
         file_path,
         "replace",
@@ -139,7 +139,7 @@ def list_resource(resource_type, namespace, label=None):
     items = result.get("items", [])
     if not items:
         click.echo(f"No resources found in {namespace} namespace.")
-        return
+        return result
 
     header = f"{'NAME':<40} {'READY':<10}"
     click.echo(header)
@@ -152,6 +152,7 @@ def list_resource(resource_type, namespace, label=None):
                 ready = condition.get("status", "Unknown")
                 break
         click.echo(f"{name:<40} {ready:<10}")
+    return result
 
 
 def get_resource(resource_type, resource_name, namespace):
@@ -197,6 +198,8 @@ def describe_resource(resource_type, resource_name, namespace):
     if status:
         click.echo("Status:")
         click.echo(format_dict_as_text(status, indent=2))
+
+    return resource
 
 
 def edit_resource(resource_type, resource_name, namespace):
