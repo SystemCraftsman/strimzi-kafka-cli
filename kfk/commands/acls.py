@@ -157,9 +157,10 @@ def add_or_remove(
         principal_name = deny_principal_arr[1]
         host = deny_host
 
+    results = []
     if principal_type == "User":
         for resource_type, resource_name in resource_type_dict.items():
-            users.alter(
+            result = users.alter(
                 principal_name,
                 None,
                 "simple",
@@ -176,6 +177,8 @@ def add_or_remove(
                 kafka_cluster,
                 namespace,
             )
+            results.append(result)
+    return results
 
 
 def _get_resource_type_dict(topic, cluster, group):

@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from kfk.commands import clusters, operator, topics, users
+from kfk.commands import acls, clusters, operator, topics, users
 from kfk.commands.connect import clusters as connect_clusters
 from kfk.commands.connect import connectors
 from kfk.commands.main import version as cli_version
@@ -50,16 +50,41 @@ mcp.tool(name="create_user", description="Create a Kafka user.")(users.create)
 mcp.tool(name="delete_user", description="Delete a Kafka user.")(users.delete)
 mcp.tool(name="alter_user", description="Alter a Kafka user.")(users.alter)
 
-# Connect
+# Connect Clusters
 mcp.tool(name="list_connects", description="List KafkaConnect clusters.")(
     connect_clusters.list
 )
 mcp.tool(name="get_connect", description="Get a KafkaConnect cluster resource.")(
     connect_clusters.describe
 )
+mcp.tool(name="create_connect", description="Create a KafkaConnect cluster.")(
+    connect_clusters.create
+)
+mcp.tool(name="delete_connect", description="Delete a KafkaConnect cluster.")(
+    connect_clusters.delete
+)
+mcp.tool(name="alter_connect", description="Alter a KafkaConnect cluster.")(
+    connect_clusters.alter
+)
+
+# Connectors
 mcp.tool(name="list_connectors", description="List KafkaConnectors.")(connectors.list)
 mcp.tool(name="get_connector", description="Get a KafkaConnector resource.")(
     connectors.describe
+)
+mcp.tool(name="create_connector", description="Create a KafkaConnector.")(
+    connectors.create
+)
+mcp.tool(name="delete_connector", description="Delete a KafkaConnector.")(
+    connectors.delete
+)
+mcp.tool(name="alter_connector", description="Alter a KafkaConnector.")(
+    connectors.alter
+)
+
+# ACLs
+mcp.tool(name="add_or_remove_acls", description="Add or remove ACLs on Kafka.")(
+    acls.add_or_remove
 )
 
 
