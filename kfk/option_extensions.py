@@ -27,6 +27,29 @@ class NotRequiredIf(click.Option):
         return super(NotRequiredIf, self).handle_parse_result(ctx, opts, args)
 
 
+class RequiredIfValue(click.Option):
+
+    def __init__(self, *args, **kwargs):
+        self.option_value_pairs = kwargs.pop("option_value_pairs")
+        assert self.option_value_pairs, "'option_value_pairs' parameter required"
+        kwargs["help"] = (
+            kwargs.get("help", "")
+            + " This argument is required when %s"
+            % ", ".join(f"{k}={v}" for k, v in self.option_value_pairs.items())
+        ).strip()
+        super(RequiredIfValue, self).__init__(*args, **kwargs)
+
+    def handle_parse_result(self, ctx, opts, args):
+        for option, value in self.option_value_pairs.items():
+            if opts.get(option) == value:
+                self.required = True
+                break
+        else:
+            self.required = None
+
+        return super(RequiredIfValue, self).handle_parse_result(ctx, opts, args)
+
+
 class RequiredIf(click.Option):
     # TODO: Refactor here
 

@@ -902,14 +902,14 @@ class TestKfkClusters(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
-    def test_authorizer_class_without_authorization_type_fails(self):
+    def test_custom_authorization_without_authorizer_class_fails(self):
         result = self.runner.invoke(
             kfk,
             [
                 "clusters",
                 "--alter",
-                "--authorizer-class",
-                "io.strimzi.SomeAuthorizer",
+                "--authorization-type",
+                "custom",
                 "--cluster",
                 self.cluster,
                 "-n",
@@ -917,7 +917,7 @@ class TestKfkClusters(TestCase):
             ],
         )
         assert result.exit_code != 0
-        assert "Missing option '--authorization-type'" in result.output
+        assert "Missing option '--authorizer-class'" in result.output
 
     def test_listener_auth_without_add_listener_fails(self):
         result = self.runner.invoke(
