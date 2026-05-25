@@ -18,7 +18,7 @@ Following are the commands of the current version of Strimzi Kafka CLI, that are
 ``` bash
 Usage: kfk [OPTIONS] COMMAND [ARGS]...
 
-  Strimzi Kafka CLI
+  Strimzi Kafka CLI.
 
 Options:
   --version  Show the version and exit.
@@ -27,12 +27,13 @@ Options:
 Commands:
   acls              Manages ACLs on Kafka.
   clusters          Creates, alters, deletes, describes Kafka cluster(s).
-  configs           Adds/Removes entity config for a topic, client, user or...
-  connect           Creates, alters, deletes, describes Kafka connect...
-  console-consumer  Reads data from Kafka topics and outputs it to standard...
+  configs           Adds/Removes entity config for a topic, client, user...
+  connect           Creates, alters, deletes, describes Kafka Connect...
+  console-consumer  Reads data from Kafka topics and outputs it to...
   console-producer  Reads data from standard input and publish it to Kafka.
-  env               Prints the environment variable values for Strimzi Kafka CLI
-  operator          Installs/Uninstalls Strimzi Kafka Operator
+  env               Prints the environment variable values for Strimzi...
+  mcp               Starts the Strimzi MCP server.
+  operator          Installs/Uninstalls Strimzi Kafka Operator.
   topics            Creates, alters, deletes, describes Kafka topic(s).
   users             Creates, alters, deletes, describes Kafka users(s).
 ```
@@ -53,6 +54,12 @@ Or to install Strimzi Kafka CLI in an isolated environment, you can simply use [
 pipx install strimzi-kafka-cli
 ```
 
+To install with MCP server support:
+
+``` bash
+pip install strimzi-kafka-cli[mcp] --user
+```
+
 ### Using Homebrew
 
 ``` bash
@@ -65,7 +72,7 @@ brew install strimzi-kafka-cli
 
 > Installing the CLI by using Homebrew already uses a virtual environment, so you don't have to worry about your main Python environment.
 
-Project requires: Python >=3.8
+Project requires: Python >=3.11
 
 ## Examples
 
@@ -74,20 +81,48 @@ Project requires: Python >=3.8
 * [Topic, User and Broker Configuration](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/4_configuration)
 * [Kafka Connect](https://github.com/systemcraftsman/strimzi-kafka-cli/tree/master/examples/5_connect)
 
+## MCP Server
+
+Strimzi Kafka CLI includes an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that allows AI assistants to manage Strimzi Kafka deployments on Kubernetes.
+
+### Starting the MCP Server
+
+``` bash
+kfk mcp
+```
+
+### Registering with Claude Code
+
+``` bash
+claude mcp add strimzi-kafka-cli -- kfk mcp
+```
+
+### Available Tools (32)
+
+| Category | Tools |
+|----------|-------|
+| Kafka Clusters | `list_kafkas`, `get_kafka`, `get_kafka_status`, `create_kafka`, `delete_kafka`, `alter_kafka_config` |
+| Topics | `list_topics`, `get_topic`, `create_topic`, `delete_topic`, `alter_topic` |
+| Users | `list_users`, `get_user`, `create_user`, `delete_user`, `alter_user` |
+| Connect Clusters | `list_connects`, `get_connect`, `create_connect`, `delete_connect`, `alter_connect` |
+| Connectors | `list_connectors`, `get_connector`, `create_connector`, `delete_connector`, `alter_connector` |
+| ACLs | `add_or_remove_acls` |
+| Operator | `install_operator`, `uninstall_operator` |
+| Node Pools | `list_node_pools`, `get_node_pool` |
+| Version | `get_version` |
+
 ## Dependencies
 ### Python Dependencies
 Please see [pyproject.toml](https://github.com/SystemCraftsman/strimzi-kafka-cli/blob/main/pyproject.toml) file.
 ### External Dependencies
-`kubectl` and `Strimzi resources` are the tools that Strimzi Kafka CLI uses. These dependencies are automatically downloaded when the first `kfk` command is run. You can always check the dependency versions of your CLI with the following command:
+`Strimzi resources` are automatically downloaded when the first `kfk` command is run. Strimzi Kafka CLI uses the Python Kubernetes client to interact with the cluster directly. You can check the dependency versions with:
 
 ``` bash
 kfk --version
 ```
 
-You can change where you want to locate the `kubectl`, `Strimzi resources`, or `Strimzi CLI` files/folders. You can use the following environment variables:
+You can use the following environment variables to customize paths:
 
 **STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is `~/.strimzi-kafka-cli` as default.
 
 **STRIMZI_KAFKA_CLI_STRIMZI_PATH:** Set this if you want to use a custom Strimzi/AMQ Streams. We only recommend this when using AMQ Streams instead of Strimzi.
-
-**STRIMZI_KAFKA_CLI_KUBECTL_PATH:** Set this if you want to use a custom kubectl.

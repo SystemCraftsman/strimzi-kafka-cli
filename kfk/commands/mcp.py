@@ -5,7 +5,7 @@ from kfk.commands.main import kfk
 
 @kfk.command()
 def mcp():
-    """Start the Strimzi MCP server."""
+    """Starts the Strimzi MCP server."""
     try:
         from kfk.mcp_server import mcp as mcp_server
     except ImportError:

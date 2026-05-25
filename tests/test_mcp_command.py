@@ -13,4 +13,4 @@ class TestKfkMcp(TestCase):
 
         result = self.runner.invoke(kfk, ["mcp", "--help"])
         assert result.exit_code == 0
-        assert "Start the Strimzi MCP server" in result.output
+        assert "Starts the Strimzi MCP server" in result.output
