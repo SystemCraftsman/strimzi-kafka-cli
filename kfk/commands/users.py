@@ -171,7 +171,7 @@ def users(
 
 
 def list(cluster, namespace):
-    list_resource("kafkausers", namespace, label=f"strimzi.io/cluster={cluster}")
+    return list_resource("kafkausers", namespace, label=f"strimzi.io/cluster={cluster}")
 
 
 def create(user, authentication_type, quota_tuple, cluster, namespace):
@@ -196,9 +196,10 @@ def create(user, authentication_type, quota_tuple, cluster, namespace):
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
 
-        create_using_yaml(user_temp_file.name, namespace)
+        result = create_using_yaml(user_temp_file.name, namespace)
 
         user_temp_file.close()
+        return result
 
 
 def describe(user, output, cluster, namespace):
@@ -208,8 +209,9 @@ def describe(user, output, cluster, namespace):
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
+        return resource
     else:
-        describe_resource("kafkausers", user, namespace)
+        return describe_resource("kafkausers", user, namespace)
 
 
 def delete(user, cluster, namespace):
@@ -226,9 +228,10 @@ def delete(user, cluster, namespace):
         user_yaml = yaml.dump(user_dict)
         user_temp_file = create_temp_file(user_yaml)
 
-        delete_using_yaml(user_temp_file.name, namespace)
+        result = delete_using_yaml(user_temp_file.name, namespace)
 
         user_temp_file.close()
+        return result
 
 
 def alter(
@@ -306,9 +309,10 @@ def alter(
     user_yaml = yaml.dump(user_dict)
     user_temp_file = create_temp_file(user_yaml)
 
-    replace_using_yaml(user_temp_file.name, namespace)
+    result = replace_using_yaml(user_temp_file.name, namespace)
 
     user_temp_file.close()
+    return result
 
 
 def _add_acl_option(

@@ -138,7 +138,9 @@ def topics(
 
 
 def list(cluster, namespace):
-    list_resource("kafkatopics", namespace, label=f"strimzi.io/cluster={cluster}")
+    return list_resource(
+        "kafkatopics", namespace, label=f"strimzi.io/cluster={cluster}"
+    )
 
 
 def create(topic, partitions, replication_factor, config, cluster, namespace):
@@ -159,9 +161,10 @@ def create(topic, partitions, replication_factor, config, cluster, namespace):
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
 
-        create_using_yaml(topic_temp_file.name, namespace)
+        result = create_using_yaml(topic_temp_file.name, namespace)
 
         topic_temp_file.close()
+        return result
 
 
 def describe(
@@ -173,6 +176,7 @@ def describe(
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
+        return resource
     else:
         if native:
             native_command = (
@@ -197,7 +201,7 @@ def describe(
                 native_command.format(port=KAFKA_PORT, topic=topic, cluster=cluster),
             )
         else:
-            describe_resource("kafkatopics", topic, namespace)
+            return describe_resource("kafkatopics", topic, namespace)
 
 
 def delete(topic, cluster, namespace):
@@ -214,9 +218,10 @@ def delete(topic, cluster, namespace):
         topic_yaml = yaml.dump(topic_dict)
         topic_temp_file = create_temp_file(topic_yaml)
 
-        delete_using_yaml(topic_temp_file.name, namespace)
+        result = delete_using_yaml(topic_temp_file.name, namespace)
 
         topic_temp_file.close()
+        return result
 
 
 def alter(
@@ -244,9 +249,10 @@ def alter(
     topic_yaml = yaml.dump(topic_dict)
     topic_temp_file = create_temp_file(topic_yaml)
 
-    replace_using_yaml(topic_temp_file.name, namespace)
+    result = replace_using_yaml(topic_temp_file.name, namespace)
 
     topic_temp_file.close()
+    return result
 
 
 def _add_config_if_provided(config, topic_dict):
