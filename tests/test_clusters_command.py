@@ -744,6 +744,129 @@ class TestKfkClusters(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_authorization_simple(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--authorization-type",
+                    "simple",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_simple_authorization.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_authorization_and_super_users(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--authorization-type",
+                    "simple",
+                    "--super-user",
+                    "CN=admin",
+                    "--super-user",
+                    "user-2",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/"
+                "kafka-ephemeral_with_simple_authorization_and_super_users.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_authorization_none(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open(
+            "tests/files/yaml/kafka-ephemeral_with_simple_authorization.yaml"
+        ) as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--authorization-type",
+                    "none",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_authorization_removed.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    def test_super_user_without_authorization_type_fails(self):
+        result = self.runner.invoke(
+            kfk,
+            [
+                "clusters",
+                "--alter",
+                "--super-user",
+                "CN=admin",
+                "--cluster",
+                self.cluster,
+                "-n",
+                self.namespace,
+            ],
+        )
+        assert result.exit_code != 0
+        assert "--super-user requires --authorization-type" in result.output
+
     def test_listener_auth_without_add_listener_fails(self):
         result = self.runner.invoke(
             kfk,

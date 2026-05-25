@@ -43,6 +43,16 @@ from kfk.utils import parse_kv_string
     multiple=True,
 )
 @click.option(
+    "--super-user",
+    help="A super user for cluster authorization.",
+    multiple=True,
+)
+@click.option(
+    "--authorization-type",
+    help="Authorization type for the cluster.",
+    type=click.Choice(["simple", "custom", "none"], case_sensitive=True),
+)
+@click.option(
     "--listener-auth",
     help=(
         "Authentication config for the listener being added."
@@ -116,6 +126,8 @@ def clusters(
     add_listener,
     listener_auth,
     delete_listener,
+    authorization_type,
+    super_user,
     output,
     namespace,
     is_yes,
@@ -123,6 +135,8 @@ def clusters(
     """Creates, alters, deletes, describes Kafka cluster(s)."""
     if listener_auth and len(add_listener) == 0:
         raise click.UsageError("--listener-auth requires --add-listener.")
+    if len(super_user) > 0 and authorization_type is None:
+        raise click.UsageError("--super-user requires --authorization-type.")
     if is_list:
         list(namespace)
     elif is_create:
@@ -142,6 +156,8 @@ def clusters(
             add_listener,
             listener_auth,
             delete_listener,
+            authorization_type,
+            super_user,
             namespace,
         )
     else:
@@ -240,6 +256,8 @@ def alter(
     add_listener,
     listener_auth,
     delete_listener,
+    authorization_type,
+    super_user,
     namespace,
 ):
     has_changes = (
@@ -248,6 +266,7 @@ def alter(
         or len(add_listener) > 0
         or len(delete_listener) > 0
         or replicas is not None
+        or authorization_type is not None
     )
     if has_changes:
         stream = get_resource_as_stream(
@@ -269,6 +288,7 @@ def alter(
 
         _add_listeners_if_provided(add_listener, cluster_dict, listener_auth)
         _delete_listeners_if_provided(delete_listener, cluster_dict)
+        _set_authorization_if_provided(authorization_type, super_user, cluster_dict)
 
         cluster_yaml = yaml.dump(cluster_dict)
         cluster_temp_file = create_temp_file(cluster_yaml)
@@ -369,3 +389,14 @@ def _delete_listeners_if_provided(delete_listener, cluster_dict):
             for listener in listeners
             if listener["name"] not in delete_listener
         ]
+
+
+def _set_authorization_if_provided(authorization_type, super_user, cluster_dict):
+    if authorization_type is not None:
+        if authorization_type == "none":
+            cluster_dict["spec"]["kafka"].pop("authorization", None)
+        else:
+            auth = {"type": authorization_type}
+            if len(super_user) > 0:
+                auth["superUsers"] = [*super_user]
+            cluster_dict["spec"]["kafka"]["authorization"] = auth
