@@ -346,6 +346,7 @@ def _get_kafka_and_broker_dicts(docs):
 
 def _update_replicas(replicas, kafka_dict, broker_dict=None):
     if replicas is not None:
+        replicas = int(replicas)
         min_insync_replicas = 1
         if replicas > 1:
             min_insync_replicas = replicas - 1
