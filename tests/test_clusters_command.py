@@ -673,3 +673,90 @@ class TestKfkClusters(TestCase):
             assert expected_kafka_yaml == result_kafka_yaml
 
         mock_create_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_add_listener_and_auth(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--add-listener",
+                    "name=oauth,port=9094,type=internal,tls=true",
+                    "--listener-auth",
+                    "type=custom,sasl=true",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_custom_auth_listener.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    @mock.patch("kfk.commands.clusters.create_temp_file")
+    @mock.patch("kfk.commons.get_resource_yaml")
+    @mock.patch("kfk.commands.clusters.replace_using_yaml")
+    def test_alter_cluster_with_update_listener_auth(
+        self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
+    ):
+        with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
+            kafka_yaml = file.read()
+            mock_get_resource_yaml.return_value = kafka_yaml
+            result = self.runner.invoke(
+                kfk,
+                [
+                    "clusters",
+                    "--alter",
+                    "--add-listener",
+                    "name=tls",
+                    "--listener-auth",
+                    "type=scram-sha-512",
+                    "--cluster",
+                    self.cluster,
+                    "-n",
+                    self.namespace,
+                ],
+            )
+            assert result.exit_code == 0
+
+            with open(
+                "tests/files/yaml/kafka-ephemeral_with_scram_listener.yaml"
+            ) as file:
+                expected_kafka_yaml = file.read()
+                result_kafka_yaml = mock_create_temp_file.call_args[0][0]
+                assert expected_kafka_yaml == result_kafka_yaml
+
+        mock_replace_using_yaml.assert_called_once()
+
+    def test_listener_auth_without_add_listener_fails(self):
+        result = self.runner.invoke(
+            kfk,
+            [
+                "clusters",
+                "--alter",
+                "--listener-auth",
+                "type=custom",
+                "--cluster",
+                self.cluster,
+                "-n",
+                self.namespace,
+            ],
+        )
+        assert result.exit_code != 0
+        assert "--listener-auth requires --add-listener" in result.output
