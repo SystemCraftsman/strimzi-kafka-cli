@@ -956,7 +956,7 @@ class TestKfkClusters(TestCase):
     @mock.patch("kfk.commands.clusters.create_temp_file")
     @mock.patch("kfk.commons.get_resource_yaml")
     @mock.patch("kfk.commands.clusters.replace_using_yaml")
-    def test_alter_cluster_with_listener_config(
+    def test_alter_cluster_with_listener_auth_config(
         self, mock_replace_using_yaml, mock_get_resource_yaml, mock_create_temp_file
     ):
         with open("tests/files/yaml/kafka-ephemeral.yaml") as file:
@@ -971,9 +971,9 @@ class TestKfkClusters(TestCase):
                     "name=oauth,port=9094,type=internal,tls=true",
                     "--listener-auth",
                     "type=custom,sasl=true",
-                    "--listener-config",
+                    "--listener-auth-config",
                     "oauthClientId=kafka-broker",
-                    "--listener-config",
+                    "--listener-auth-config",
                     "oauthValidIssuerUri=https://keycloak:8443/realms/kafka",
                     "--cluster",
                     self.cluster,
@@ -993,7 +993,7 @@ class TestKfkClusters(TestCase):
 
         mock_replace_using_yaml.assert_called_once()
 
-    def test_listener_config_without_listener_auth_fails(self):
+    def test_listener_auth_config_without_listener_auth_fails(self):
         result = self.runner.invoke(
             kfk,
             [
@@ -1001,7 +1001,7 @@ class TestKfkClusters(TestCase):
                 "--alter",
                 "--add-listener",
                 "name=oauth,port=9094,type=internal,tls=true",
-                "--listener-config",
+                "--listener-auth-config",
                 "oauthClientId=kafka-broker",
                 "--cluster",
                 self.cluster,
