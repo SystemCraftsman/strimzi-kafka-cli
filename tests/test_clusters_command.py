@@ -919,6 +919,23 @@ class TestKfkClusters(TestCase):
         assert result.exit_code != 0
         assert "Missing option '--authorizer-class'" in result.output
 
+    def test_authorizer_class_without_authorization_type_fails(self):
+        result = self.runner.invoke(
+            kfk,
+            [
+                "clusters",
+                "--alter",
+                "--authorizer-class",
+                "io.strimzi.SomeAuthorizer",
+                "--cluster",
+                self.cluster,
+                "-n",
+                self.namespace,
+            ],
+        )
+        assert result.exit_code != 0
+        assert "Missing option '--authorization-type'" in result.output
+
     def test_listener_auth_without_add_listener_fails(self):
         result = self.runner.invoke(
             kfk,

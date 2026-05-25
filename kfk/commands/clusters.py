@@ -58,7 +58,7 @@ from kfk.utils import parse_kv_string
     help="Authorization type for the cluster.",
     type=click.Choice(["simple", "custom", "none"], case_sensitive=True),
     cls=RequiredIf,
-    options=["super_user"],
+    options=["super_user", "authorizer_class"],
 )
 @click.option(
     "--listener-auth",
