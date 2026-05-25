@@ -59,6 +59,14 @@ def is_valid_url(url):
     return re.match(regex, url) is not None
 
 
+def parse_kv_string(kv_string):
+    result = {}
+    for part in kv_string.split(","):
+        key, _, value = part.partition("=")
+        result[key] = convert_string_to_type(value)
+    return result
+
+
 def format_dict_as_text(d, indent=0):
     lines = []
     prefix = " " * indent

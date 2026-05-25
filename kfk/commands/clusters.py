@@ -9,8 +9,6 @@ from kfk.commons import (
     create_temp_file,
     delete_last_applied_configuration,
     delete_resource_config,
-    get_config_list,
-    get_kv_config_list,
     get_resource_as_stream,
     open_file_in_system_editor,
     raise_exception_for_missing_options,
@@ -27,7 +25,7 @@ from kfk.kubernetes_commons import (
 )
 from kfk.messages import Messages
 from kfk.option_extensions import NotRequiredIf
-from kfk.utils import convert_string_to_type
+from kfk.utils import parse_kv_string
 
 
 @click.option("-y", "--yes", "is_yes", help='"Yes" confirmation', is_flag=True)
@@ -348,29 +346,13 @@ def _add_config_if_provided(config, cluster_dict):
         add_kv_config_to_resource(config, cluster_dict["spec"]["kafka"]["config"])
 
 
-def _parse_listener(listener_str):
-    listener = {}
-    for kv in get_config_list(listener_str):
-        kv_pair = get_kv_config_list(kv)
-        listener[kv_pair[0]] = convert_string_to_type(kv_pair[1])
-    return listener
-
-
-def _parse_listener_auth(listener_auth):
-    auth = {}
-    for part in get_config_list(listener_auth):
-        key, _, value = part.partition("=")
-        auth[key] = convert_string_to_type(value)
-    return auth
-
-
 def _add_listeners_if_provided(add_listener, cluster_dict, listener_auth=None):
     if len(add_listener) > 0:
         listeners = cluster_dict["spec"]["kafka"].setdefault("listeners", [])
         for listener_str in add_listener:
-            new_listener = _parse_listener(listener_str)
+            new_listener = parse_kv_string(listener_str)
             if listener_auth:
-                new_listener["authentication"] = _parse_listener_auth(listener_auth)
+                new_listener["authentication"] = parse_kv_string(listener_auth)
             for existing in listeners:
                 if existing["name"] == new_listener["name"]:
                     existing.update(new_listener)
