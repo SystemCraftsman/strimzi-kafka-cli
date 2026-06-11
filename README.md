@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/systemcraftsman-strimzi-kafka-cli-badge.png)](https://mseep.ai/app/systemcraftsman-strimzi-kafka-cli)
+
 ![Build](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Build/badge.svg) ![Deploy](https://github.com/systemcraftsman/strimzi-kafka-cli/workflows/Deploy/badge.svg) [![PyPI](https://img.shields.io/pypi/v/strimzi-kafka-cli)](https://pypi.org/project/strimzi-kafka-cli/) [![Downloads](https://static.pepy.tech/badge/strimzi-kafka-cli)](https://pepy.tech/project/strimzi-kafka-cli) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Strimzi](https://img.shields.io/badge/Strimzi-1.0.0-blue)](https://github.com/strimzi/strimzi-kafka-operator/releases/tag/1.0.0)
 
 ![Strimzi CLI logo](https://github.com/SystemCraftsman/strimzi-kafka-cli/assets/10568159/596ea147-9594-4262-a0c3-d63fa14f0577)
