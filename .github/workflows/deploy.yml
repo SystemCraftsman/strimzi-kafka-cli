@@ -111,5 +111,4 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           branch: version-update-${{ needs.build.outputs.version }}
           assignees: mabulgu
-          reviewers: mabulgu
           title: Update to version ${{ needs.build.outputs.version }}
