@@ -1,12 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Strimzi Kafka CLI</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strimzi CLI - Kafka For Kubernetes</title>
+  <meta name="description" content="Strimzi Kafka CLI helps traditional Apache Kafka users easily adapt to Strimzi, a Kubernetes operator for Apache Kafka.">
+  <meta name="theme-color" content="#0B0B1A">
+  <meta property="og:title" content="Strimzi CLI - Kafka For Kubernetes">
+  <meta property="og:description" content="A CLI that helps traditional Apache Kafka users easily adapt to Strimzi on Kubernetes.">
+  <meta property="og:image" content="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-Under Construction. Please visit the following link:
 
-https://github.com/systemcraftsman/strimzi-kafka-cli
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">STRIMZI <span>CLI</span></div>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#mcp">MCP</a></li>
+    <li><a href="https://github.com/systemcraftsman/strimzi-kafka-cli">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-stars"></div>
+  <div class="hero-sun"></div>
+  <div class="hero-mountains"></div>
+  <div class="hero-grid"></div>
+  <img src="assets/logo.png" alt="Strimzi CLI" class="hero-logo">
+  <p class="hero-tagline">Kafka For Kubernetes</p>
+  <p class="hero-description">
+    A CLI that helps traditional Apache Kafka users easily adapt to
+    <a href="https://strimzi.io/">Strimzi</a>, a Kubernetes operator for
+    <a href="https://kafka.apache.org/">Apache Kafka</a>. Manage clusters,
+    topics, users, and more with familiar commands.
+  </p>
+  <div class="hero-install">
+    <span class="prompt">$</span>
+    <code>pip install strimzi-kafka-cli</code>
+    <button class="copy-btn" data-copy="pip install strimzi-kafka-cli" title="Copy">&#128203;</button>
+  </div>
+  <div class="hero-buttons">
+    <a href="#install" class="btn btn-primary">Get Started</a>
+    <a href="https://github.com/systemcraftsman/strimzi-kafka-cli" class="btn btn-secondary">View on GitHub</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <h2 class="section-title">Why <span>Strimzi CLI</span></h2>
+  <p class="section-subtitle">Bringing the familiar Apache Kafka CLI experience to Kubernetes-native Kafka operations.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">&#9000;</div>
+      <h3>Familiar Commands</h3>
+      <p>Uses the <code>kfk</code> prefix, mirroring the traditional <code>kafka-*</code> scripts. If you know Kafka, you already know Strimzi CLI.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9096;</div>
+      <h3>Kubernetes Native</h3>
+      <p>Manages Strimzi custom resources directly through the Kubernetes API. No kubectl dependency required.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9881;</div>
+      <h3>Full Resource Control</h3>
+      <p>Create, alter, delete, and describe Kafka clusters, topics, users, ACLs, and Kafka Connect resources.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9889;</div>
+      <h3>Console Tools</h3>
+      <p>Built-in console producer and consumer for quick message testing directly from your terminal.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128274;</div>
+      <h3>Security First</h3>
+      <p>Manage TLS authentication, ACL authorization, OAuth, and listener configurations with simple flags.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#129302;</div>
+      <h3>MCP Server</h3>
+      <p>Built-in Model Context Protocol server with 32 tools for AI-assisted Kafka management on Kubernetes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section id="install">
+  <h2 class="section-title">Get <span>Started</span></h2>
+  <p class="section-subtitle">Install Strimzi CLI in seconds. Requires Python 3.11 or higher.</p>
+  <div class="install-tabs">
+    <button class="install-tab active" data-tab="pip">pip</button>
+    <button class="install-tab" data-tab="pipx">pipx</button>
+    <button class="install-tab" data-tab="homebrew">Homebrew</button>
+  </div>
+  <div class="install-panel active" id="tab-pip">
+    <div class="code-block">
+      <button class="copy-btn" data-copy="pip install strimzi-kafka-cli --user">Copy</button>
+      <span class="prompt">$</span> <span class="command">pip install strimzi-kafka-cli --user</span>
+    </div>
+    <p class="install-note">With MCP server support:</p>
+    <div class="code-block">
+      <button class="copy-btn" data-copy="pip install strimzi-kafka-cli[mcp] --user">Copy</button>
+      <span class="prompt">$</span> <span class="command">pip install strimzi-kafka-cli[mcp] --user</span>
+    </div>
+  </div>
+  <div class="install-panel" id="tab-pipx">
+    <div class="code-block">
+      <button class="copy-btn" data-copy="pipx install strimzi-kafka-cli">Copy</button>
+      <span class="prompt">$</span> <span class="command">pipx install strimzi-kafka-cli</span>
+    </div>
+    <p class="install-note">Recommended for isolated environments.</p>
+  </div>
+  <div class="install-panel" id="tab-homebrew">
+    <div class="code-block">
+      <button class="copy-btn" data-copy="brew tap systemcraftsman/strimzi-kafka-cli
+brew install strimzi-kafka-cli">Copy</button>
+      <span class="comment"># Tap the repository</span><br>
+      <span class="prompt">$</span> <span class="command">brew tap systemcraftsman/strimzi-kafka-cli</span><br><br>
+      <span class="comment"># Install</span><br>
+      <span class="prompt">$</span> <span class="command">brew install strimzi-kafka-cli</span>
+    </div>
+    <p class="install-note">Homebrew install uses a virtual environment automatically.</p>
+  </div>
+</section>
+
+<!-- COMMANDS -->
+<section id="commands">
+  <h2 class="section-title">Available <span>Commands</span></h2>
+  <p class="section-subtitle">Manage your entire Strimzi deployment from the terminal.</p>
+  <div class="commands-table-wrapper">
+    <table class="commands-table">
+      <thead>
+        <tr>
+          <th>Command</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>kfk clusters</code></td>
+          <td>Create, alter, delete, and describe Kafka clusters</td>
+        </tr>
+        <tr>
+          <td><code>kfk topics</code></td>
+          <td>Create, alter, delete, and describe Kafka topics</td>
+        </tr>
+        <tr>
+          <td><code>kfk users</code></td>
+          <td>Create, alter, delete, and describe Kafka users</td>
+        </tr>
+        <tr>
+          <td><code>kfk acls</code></td>
+          <td>Manage ACLs on Kafka</td>
+        </tr>
+        <tr>
+          <td><code>kfk configs</code></td>
+          <td>Add or remove entity config for topics, clients, and users</td>
+        </tr>
+        <tr>
+          <td><code>kfk connect</code></td>
+          <td>Manage Kafka Connect clusters and connectors</td>
+        </tr>
+        <tr>
+          <td><code>kfk console-consumer</code></td>
+          <td>Read data from Kafka topics</td>
+        </tr>
+        <tr>
+          <td><code>kfk console-producer</code></td>
+          <td>Publish data to Kafka topics</td>
+        </tr>
+        <tr>
+          <td><code>kfk operator</code></td>
+          <td>Install or uninstall the Strimzi Kafka Operator</td>
+        </tr>
+        <tr>
+          <td><code>kfk mcp</code></td>
+          <td>Start the Strimzi MCP server for AI-assisted management</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- MCP -->
+<section id="mcp">
+  <h2 class="section-title">MCP <span>Server</span></h2>
+  <p class="section-subtitle">AI-powered Kafka management through the Model Context Protocol.</p>
+  <div class="mcp-content">
+    <div class="mcp-text">
+      <h3>Manage Kafka with AI</h3>
+      <p>Strimzi CLI includes a built-in MCP server that exposes 32 tools for AI assistants to manage your Strimzi Kafka deployments on Kubernetes.</p>
+      <div class="code-block">
+        <button class="copy-btn" data-copy="claude mcp add strimzi-kafka-cli -- kfk mcp">Copy</button>
+        <span class="comment"># Register with Claude Code</span><br>
+        <span class="prompt">$</span> <span class="command">claude mcp add strimzi-kafka-cli -- kfk mcp</span>
+      </div>
+      <p>Works with any MCP-compatible AI assistant. Create clusters, manage topics, configure users, and monitor status through natural language.</p>
+    </div>
+    <div class="mcp-tools">
+      <div class="mcp-tool-badge">
+        <span class="tool-count">6</span>
+        <span class="tool-label">Clusters</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">5</span>
+        <span class="tool-label">Topics</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">5</span>
+        <span class="tool-label">Users</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">5</span>
+        <span class="tool-label">Connect</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">5</span>
+        <span class="tool-label">Connectors</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">1</span>
+        <span class="tool-label">ACLs</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">2</span>
+        <span class="tool-label">Operator</span>
+      </div>
+      <div class="mcp-tool-badge">
+        <span class="tool-count">3</span>
+        <span class="tool-label">Node Pools</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="https://github.com/systemcraftsman/strimzi-kafka-cli">GitHub</a>
+      <a href="https://pypi.org/project/strimzi-kafka-cli/">PyPI</a>
+      <a href="https://github.com/systemcraftsman/strimzi-kafka-cli/issues">Issues</a>
+      <a href="https://strimzi.io/">Strimzi</a>
+      <a href="https://www.systemcraftsman.com/">System Craftsman</a>
+    </div>
+    <p class="footer-meta">
+      Apache-2.0 License &middot;
+      Made by <a href="https://github.com/mabulgu">Aykut Bulgu</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Mobile nav toggle
+document.getElementById('nav-toggle').addEventListener('click', () => {
+  document.getElementById('nav-links').classList.toggle('open');
+});
+
+// Close mobile nav on link click
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('nav-links').classList.remove('open');
+  });
+});
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = btn.dataset.copy;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = original;
+      }, 2000);
+    });
+  });
+});
+
+// Install tabs
+document.querySelectorAll('.install-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.install-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+</script>
+
 </body>
 </html>
