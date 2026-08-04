@@ -79,8 +79,8 @@ nav .nav-brand span {
 }
 
 .nav-version {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
   font-weight: 500;
   color: var(--bg-dark);
   background: var(--cyan);
@@ -88,7 +88,7 @@ nav .nav-brand span {
   border-radius: 4px;
   margin-left: 0.5rem;
   vertical-align: middle;
-  letter-spacing: 0;
+  letter-spacing: 1px;
   text-shadow: none;
   transition: all 0.2s;
 }
@@ -314,8 +314,8 @@ nav .nav-toggle {
 .hero-version {
   position: relative;
   z-index: 2;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--cyan);
   background: #241b2fCC;
