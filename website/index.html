@@ -36,7 +36,6 @@
   <div class="hero-mountains"></div>
   <div class="hero-grid"></div>
   <img src="assets/logo.png" alt="Strimzi CLI" class="hero-logo">
-  <div class="hero-version" id="hero-version"></div>
   <p class="hero-tagline">Kafka For Kubernetes</p>
   <p class="hero-description">
     A CLI that helps traditional Apache Kafka users easily adapt to
@@ -267,9 +266,7 @@ fetch('https://pypi.org/pypi/strimzi-kafka-cli/json')
   .then(data => {
     const version = data.info.version;
     const navV = document.getElementById('nav-version');
-    const heroV = document.getElementById('hero-version');
     navV.textContent = 'v' + version;
-    heroV.textContent = 'v' + version;
   })
   .catch(() => {});
 
