@@ -18,7 +18,7 @@
 
 <!-- NAV -->
 <nav id="nav">
-  <div class="nav-brand">STRIMZI <span>CLI</span></div>
+  <div class="nav-brand">STRIMZI <span>CLI</span> <a href="https://pypi.org/project/strimzi-kafka-cli/" class="nav-version" id="nav-version"></a></div>
   <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
   <ul class="nav-links" id="nav-links">
     <li><a href="#features">Features</a></li>
@@ -36,6 +36,7 @@
   <div class="hero-mountains"></div>
   <div class="hero-grid"></div>
   <img src="assets/logo.png" alt="Strimzi CLI" class="hero-logo">
+  <div class="hero-version" id="hero-version"></div>
   <p class="hero-tagline">Kafka For Kubernetes</p>
   <p class="hero-description">
     A CLI that helps traditional Apache Kafka users easily adapt to
@@ -260,6 +261,18 @@ brew install strimzi-kafka-cli">Copy</button>
 </footer>
 
 <script>
+// Fetch version from PyPI
+fetch('https://pypi.org/pypi/strimzi-kafka-cli/json')
+  .then(r => r.json())
+  .then(data => {
+    const version = data.info.version;
+    const navV = document.getElementById('nav-version');
+    const heroV = document.getElementById('hero-version');
+    navV.textContent = 'v' + version;
+    heroV.textContent = 'v' + version;
+  })
+  .catch(() => {});
+
 // Nav scroll effect
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
