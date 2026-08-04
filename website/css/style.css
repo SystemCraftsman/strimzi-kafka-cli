@@ -83,7 +83,7 @@ nav .nav-brand span {
   font-size: 0.6rem;
   font-weight: 500;
   color: var(--cyan);
-  background: #241b2fCC;
+  background: transparent;
   border: 1px solid var(--cyan);
   padding: 0.15rem 0.5rem;
   border-radius: 20px;
@@ -91,7 +91,6 @@ nav .nav-brand span {
   vertical-align: middle;
   letter-spacing: 1px;
   box-shadow: 0 0 10px var(--cyan-glow);
-  backdrop-filter: blur(8px);
   transition: all 0.2s;
 }
 
