@@ -4,7 +4,6 @@ from kfk.commands.configs import configs
 from kfk.commands.connect.clusters import clusters
 from kfk.commands.connect.connectors import connectors
 from kfk.commands.console import console_consumer, console_producer
-from kfk.commands.env import env
 from kfk.commands.main import kfk
 from kfk.commands.mcp import mcp
 from kfk.commands.operator import operator

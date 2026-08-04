@@ -120,9 +120,3 @@ Please see [pyproject.toml](https://github.com/SystemCraftsman/strimzi-kafka-cli
 ``` bash
 kfk --version
 ```
-
-You can use the following environment variables to customize paths:
-
-**STRIMZI_KAFKA_CLI_BASE_PATH:** Set this if you want to have a custom Strimzi Kafka CLI folder. It is `~/.strimzi-kafka-cli` as default.
-
-**STRIMZI_KAFKA_CLI_STRIMZI_PATH:** Set this if you want to use a custom Strimzi/AMQ Streams. We only recommend this when using AMQ Streams instead of Strimzi.
