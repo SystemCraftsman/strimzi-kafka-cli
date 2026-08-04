@@ -98,10 +98,35 @@ jobs:
           repository: SystemCraftsman/homebrew-strimzi-kafka-cli
           ref: refs/heads/master
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-      - name: Update version in formula
+      - name: Update formula
         run: |
-          version="$(sed -n 's/.*version "\(.*\)"/\1/p' strimzi-kafka-cli.rb | sed -e 's/^[[:space:]]*//')"
-          sed -i -e "s/$version/${{ needs.build.outputs.version }}/g" strimzi-kafka-cli.rb
+          VERSION="${{ needs.build.outputs.version }}"
+          PYPI_JSON=$(curl -s "https://pypi.org/pypi/strimzi-kafka-cli/${VERSION}/json")
+          TARBALL_URL=$(echo "$PYPI_JSON" | jq -r '.urls[] | select(.packagetype=="sdist") | .url')
+          SHA256=$(echo "$PYPI_JSON" | jq -r '.urls[] | select(.packagetype=="sdist") | .digests.sha256')
+          cat > strimzi-kafka-cli.rb << FORMULA
+          class StrimziKafkaCli < Formula
+            include Language::Python::Virtualenv
+
+            desc "Command Line Interface for Strimzi Kafka Operator"
+            homepage "https://strimzi-cli.dev"
+            url "${TARBALL_URL}"
+            sha256 "${SHA256}"
+            license "Apache-2.0"
+
+            depends_on "python@3.12"
+
+            def install
+              virtualenv_install_with_resources
+            end
+
+            test do
+              assert_match "Strimzi Kafka CLI", shell_output("#{bin}/kfk")
+              assert_match "CLI Version:", shell_output("#{bin}/kfk --version")
+            end
+          end
+          FORMULA
+          sed -i 's/^          //' strimzi-kafka-cli.rb
       - name: Commit and push
         run: |
           git config user.name "GitHub Actions"
