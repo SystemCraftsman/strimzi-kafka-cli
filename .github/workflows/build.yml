@@ -21,7 +21,7 @@ jobs:
         run: python -m pip install --upgrade setuptools
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -35,7 +35,7 @@ jobs:
       - name: Retrieve the kubeconfig and decode it to a file
         run: |
           mkdir ~/.kube
-          curl https://raw.githubusercontent.com/SystemCraftsman/strimzi-kafka-cli/main/tests/files/yaml/kubeconfig -o ~/.kube/config
+          cp tests/files/yaml/kubeconfig ~/.kube/config
 
       - name: Test
         run: |
