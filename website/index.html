@@ -25,6 +25,7 @@
     <li><a href="#install">Install</a></li>
     <li><a href="#commands">Commands</a></li>
     <li><a href="#mcp">MCP</a></li>
+    <li><a href="#videos">Videos</a></li>
     <li><a href="https://github.com/systemcraftsman/strimzi-kafka-cli">GitHub</a></li>
   </ul>
 </nav>
@@ -242,6 +243,16 @@ brew install strimzi-kafka-cli">Copy</button>
   </div>
 </section>
 
+<!-- VIDEOS -->
+<section id="videos">
+  <h2 class="section-title">Strimzi CLI <span>in Action</span></h2>
+  <p class="section-subtitle">Watch videos covering Strimzi CLI from getting started to advanced usage.</p>
+  <div class="video-grid" id="video-grid"></div>
+  <p class="section-subtitle" style="margin-top: 2rem; margin-bottom: 0;">
+    <a href="https://www.youtube.com/playlist?list=PLPqa7SYPM5LmOF5F-CqTk3bC2-p3WojP1" target="_blank" rel="noopener">View all videos on YouTube &rarr;</a>
+  </p>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-content">
@@ -252,10 +263,7 @@ brew install strimzi-kafka-cli">Copy</button>
       <a href="https://strimzi.io/">Strimzi</a>
       <a href="https://www.systemcraftsman.com/">System Craftsman</a>
     </div>
-    <p class="footer-meta">
-      Apache-2.0 License &middot;
-      Made by <a href="https://github.com/mabulgu">Aykut Bulgu</a>
-    </p>
+    <p class="footer-meta">Apache-2.0 License</p>
   </div>
 </footer>
 
@@ -267,6 +275,33 @@ fetch('https://pypi.org/pypi/strimzi-kafka-cli/json')
     const version = data.info.version;
     const navV = document.getElementById('nav-version');
     navV.textContent = 'v' + version;
+  })
+  .catch(() => {});
+
+// Load playlist videos dynamically from YouTube RSS
+const PLAYLIST_ID = 'PLPqa7SYPM5LmOF5F-CqTk3bC2-p3WojP1';
+const grid = document.getElementById('video-grid');
+fetch(`https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`)
+  .then(r => r.json())
+  .then(data => {
+    const videos = data.items
+      .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
+      .slice(0, 3);
+    videos.forEach(v => {
+      const vid = v.guid.replace('yt:video:', '');
+      const card = document.createElement('a');
+      card.href = `https://www.youtube.com/watch?v=${vid}&list=${PLAYLIST_ID}`;
+      card.className = 'video-card';
+      card.target = '_blank';
+      card.rel = 'noopener';
+      card.innerHTML = `
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" alt="${v.title}" loading="lazy">
+          <div class="play-icon">&#9654;</div>
+        </div>
+        <p class="video-title">${v.title}</p>`;
+      grid.appendChild(card);
+    });
   })
   .catch(() => {});
 
