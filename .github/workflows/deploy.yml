@@ -102,13 +102,10 @@ jobs:
         run: |
           version="$(sed -n 's/.*version "\(.*\)"/\1/p' strimzi-kafka-cli.rb | sed -e 's/^[[:space:]]*//')"
           sed -i -e "s/$version/${{ needs.build.outputs.version }}/g" strimzi-kafka-cli.rb
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          commit-message: Update to version ${{ needs.build.outputs.version }}
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          branch: version-update-${{ needs.build.outputs.version }}
-          assignees: mabulgu
-          title: Update to version ${{ needs.build.outputs.version }}
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add strimzi-kafka-cli.rb
+          git commit -m "Update to version ${{ needs.build.outputs.version }}"
+          git push origin master
