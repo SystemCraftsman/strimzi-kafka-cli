@@ -6,6 +6,7 @@ from kfk.commands.connect.connectors import connectors
 from kfk.commands.console import console_consumer, console_producer
 from kfk.commands.main import kfk
 from kfk.commands.mcp import mcp
+from kfk.commands.mirror_maker2 import mm2
 from kfk.commands.node_pools import node_pools
 from kfk.commands.operator import operator
 from kfk.commands.topics import topics

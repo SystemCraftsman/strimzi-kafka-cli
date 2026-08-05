@@ -32,6 +32,7 @@ Commands:
   console-consumer  Reads data from Kafka topics and outputs it to...
   console-producer  Reads data from standard input and publish it to Kafka.
   mcp               Starts the Strimzi MCP server.
+  mm2               Lists, describes KafkaMirrorMaker2(s).
   node-pools        Lists, describes KafkaNodePool(s).
   operator          Installs/Uninstalls Strimzi Kafka Operator.
   topics            Creates, alters, deletes, describes Kafka topic(s).
@@ -97,7 +98,7 @@ kfk mcp
 claude mcp add strimzi-kafka-cli -- kfk mcp
 ```
 
-### Available Tools (32)
+### Available Tools (34)
 
 | Category | Tools |
 |----------|-------|
@@ -106,6 +107,7 @@ claude mcp add strimzi-kafka-cli -- kfk mcp
 | Users | `list_users`, `get_user`, `create_user`, `delete_user`, `alter_user` |
 | Connect Clusters | `list_connects`, `get_connect`, `create_connect`, `delete_connect`, `alter_connect` |
 | Connectors | `list_connectors`, `get_connector`, `create_connector`, `delete_connector`, `alter_connector` |
+| MirrorMaker2 | `list_mirror_maker_2s`, `get_mirror_maker_2` |
 | ACLs | `add_or_remove_acls` |
 | Operator | `install_operator`, `uninstall_operator` |
 | Node Pools | `list_node_pools`, `get_node_pool` |

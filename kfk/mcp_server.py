@@ -1,6 +1,14 @@
 from fastmcp import FastMCP
 
-from kfk.commands import acls, clusters, node_pools, operator, topics, users
+from kfk.commands import (
+    acls,
+    clusters,
+    mirror_maker2,
+    node_pools,
+    operator,
+    topics,
+    users,
+)
 from kfk.commands.connect import clusters as connect_clusters
 from kfk.commands.connect import connectors
 from kfk.commands.main import version as cli_version
@@ -98,6 +106,16 @@ mcp.tool(
     description="Uninstall the Strimzi Kafka Operator.",
 )(operator.uninstall)
 
+
+# MirrorMaker2
+mcp.tool(
+    name="list_mirror_maker_2s",
+    description="List KafkaMirrorMaker2s in the namespace.",
+)(mirror_maker2.list)
+mcp.tool(
+    name="get_mirror_maker_2",
+    description="Describe a KafkaMirrorMaker2 resource.",
+)(mirror_maker2.describe)
 
 # Node Pools
 mcp.tool(name="list_node_pools", description="List KafkaNodePools in the namespace.")(
