@@ -124,6 +124,12 @@ mcp.tool(name="list_node_pools", description="List KafkaNodePools in the namespa
 mcp.tool(name="get_node_pool", description="Describe a KafkaNodePool resource.")(
     node_pools.describe
 )
+mcp.tool(name="create_node_pool", description="Create a KafkaNodePool resource.")(
+    node_pools.create
+)
+mcp.tool(name="delete_node_pool", description="Delete a KafkaNodePool resource.")(
+    node_pools.delete
+)
 
 
 # Version

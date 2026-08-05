@@ -98,7 +98,7 @@ kfk mcp
 claude mcp add strimzi-kafka-cli -- kfk mcp
 ```
 
-### Available Tools (34)
+### Available Tools (36)
 
 | Category | Tools |
 |----------|-------|
@@ -110,7 +110,7 @@ claude mcp add strimzi-kafka-cli -- kfk mcp
 | MirrorMaker2 | `list_mirror_maker_2s`, `get_mirror_maker_2` |
 | ACLs | `add_or_remove_acls` |
 | Operator | `install_operator`, `uninstall_operator` |
-| Node Pools | `list_node_pools`, `get_node_pool` |
+| Node Pools | `list_node_pools`, `get_node_pool`, `create_node_pool`, `delete_node_pool` |
 | Version | `get_version` |
 
 ## Dependencies
