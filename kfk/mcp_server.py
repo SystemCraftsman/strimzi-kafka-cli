@@ -1,10 +1,10 @@
 from fastmcp import FastMCP
 
-from kfk.commands import acls, clusters, operator, topics, users
+from kfk.commands import acls, clusters, node_pools, operator, topics, users
 from kfk.commands.connect import clusters as connect_clusters
 from kfk.commands.connect import connectors
 from kfk.commands.main import version as cli_version
-from kfk.kubernetes_commons import get_resource, list_resource
+from kfk.kubernetes_commons import get_resource
 
 mcp = FastMCP("strimzi-kafka-cli")
 
@@ -100,16 +100,12 @@ mcp.tool(
 
 
 # Node Pools
-@mcp.tool()
-def list_node_pools(namespace: str) -> dict:
-    """List KafkaNodePools in the namespace."""
-    return list_resource("kafkanodepools", namespace)
-
-
-@mcp.tool()
-def get_node_pool(pool: str, namespace: str) -> dict:
-    """Get a KafkaNodePool resource."""
-    return get_resource("kafkanodepools", pool, namespace)
+mcp.tool(name="list_node_pools", description="List KafkaNodePools in the namespace.")(
+    node_pools.list
+)
+mcp.tool(name="get_node_pool", description="Describe a KafkaNodePool resource.")(
+    node_pools.describe
+)
 
 
 # Version
