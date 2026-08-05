@@ -97,7 +97,7 @@ kfk mcp
 claude mcp add strimzi-kafka-cli -- kfk mcp
 ```
 
-### Available Tools (28)
+### Available Tools (32)
 
 | Category | Tools |
 |----------|-------|
