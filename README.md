@@ -32,8 +32,8 @@ Commands:
   console-consumer  Reads data from Kafka topics and outputs it to...
   console-producer  Reads data from standard input and publish it to Kafka.
   mcp               Starts the Strimzi MCP server.
-  mm2s              Lists, describes KafkaMirrorMaker2(s).
-  node-pools        Lists, describes KafkaNodePool(s).
+  mm2s              Lists, describes, creates, deletes KafkaMirrorMaker2(s).
+  node-pools        Lists, describes, creates, deletes KafkaNodePool(s).
   operator          Installs/Uninstalls Strimzi Kafka Operator.
   topics            Creates, alters, deletes, describes Kafka topic(s).
   users             Creates, alters, deletes, describes Kafka users(s).
