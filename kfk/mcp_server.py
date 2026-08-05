@@ -116,6 +116,14 @@ mcp.tool(
     name="get_mirror_maker_2",
     description="Describe a KafkaMirrorMaker2 resource.",
 )(mirror_maker2.describe)
+mcp.tool(
+    name="create_mirror_maker_2",
+    description="Create a KafkaMirrorMaker2 resource.",
+)(mirror_maker2.create)
+mcp.tool(
+    name="delete_mirror_maker_2",
+    description="Delete a KafkaMirrorMaker2 resource.",
+)(mirror_maker2.delete)
 
 # Node Pools
 mcp.tool(name="list_node_pools", description="List KafkaNodePools in the namespace.")(
