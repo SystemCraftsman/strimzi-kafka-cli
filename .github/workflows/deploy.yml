@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      update_website:
+        description: 'Update the website after deploy'
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -134,3 +140,15 @@ jobs:
           git add strimzi-kafka-cli.rb
           git commit -m "Update to version ${{ needs.build.outputs.version }}"
           git push origin master
+
+  update-website:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.update_website == 'true' }}
+    steps:
+      - name: Trigger website update
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.WEBSITE_TOKEN }}" \
+            https://api.github.com/repos/strimzi-cli/strimzi-cli.github.io/dispatches \
+            -d '{"event_type":"update-website"}'
