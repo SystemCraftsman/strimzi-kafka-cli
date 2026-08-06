@@ -4,12 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      update_website:
-        description: 'Update the website after deploy'
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -140,8 +134,3 @@ jobs:
           git add strimzi-kafka-cli.rb
           git commit -m "Update to version ${{ needs.build.outputs.version }}"
           git push origin master
-
-  update-website:
-    if: ${{ github.event.inputs.update_website == 'true' }}
-    uses: ./.github/workflows/update-website.yml
-    secrets: inherit
