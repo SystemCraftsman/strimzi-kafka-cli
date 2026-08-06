@@ -28,11 +28,12 @@ Commands:
   acls              Manages ACLs on Kafka.
   clusters          Creates, alters, deletes, describes Kafka cluster(s).
   configs           Adds/Removes entity config for a topic, client, user...
-  connect           Creates, alters, deletes, describes Kafka Connect...
+  connect clusters      Creates, alters, deletes, describes KafkaConnect cluster(s).
+  connect connectors    Creates, alters, deletes, describes KafkaConnector(s).
+  connect mirror-maker  Lists, describes, creates, deletes KafkaMirrorMaker2(s).
   console-consumer  Reads data from Kafka topics and outputs it to...
   console-producer  Reads data from standard input and publish it to Kafka.
   mcp               Starts the Strimzi MCP server.
-  mm2s              Lists, describes, creates, deletes KafkaMirrorMaker2(s).
   node-pools        Lists, describes, creates, deletes KafkaNodePool(s).
   operator          Installs/Uninstalls Strimzi Kafka Operator.
   topics            Creates, alters, deletes, describes Kafka topic(s).

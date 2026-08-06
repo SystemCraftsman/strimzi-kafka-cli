@@ -1,16 +1,8 @@
 from fastmcp import FastMCP
 
-from kfk.commands import (
-    acls,
-    clusters,
-    mirror_maker2,
-    node_pools,
-    operator,
-    topics,
-    users,
-)
+from kfk.commands import acls, clusters, node_pools, operator, topics, users
 from kfk.commands.connect import clusters as connect_clusters
-from kfk.commands.connect import connectors
+from kfk.commands.connect import connectors, mirror_maker
 from kfk.commands.main import version as cli_version
 from kfk.kubernetes_commons import get_resource
 
@@ -111,19 +103,19 @@ mcp.tool(
 mcp.tool(
     name="list_mirror_maker_2s",
     description="List KafkaMirrorMaker2s in the namespace.",
-)(mirror_maker2.list)
+)(mirror_maker.list)
 mcp.tool(
     name="get_mirror_maker_2",
     description="Describe a KafkaMirrorMaker2 resource.",
-)(mirror_maker2.describe)
+)(mirror_maker.describe)
 mcp.tool(
     name="create_mirror_maker_2",
     description="Create a KafkaMirrorMaker2 resource.",
-)(mirror_maker2.create)
+)(mirror_maker.create)
 mcp.tool(
     name="delete_mirror_maker_2",
     description="Delete a KafkaMirrorMaker2 resource.",
-)(mirror_maker2.delete)
+)(mirror_maker.delete)
 
 # Node Pools
 mcp.tool(name="list_node_pools", description="List KafkaNodePools in the namespace.")(

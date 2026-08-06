@@ -3,7 +3,7 @@ import json
 import click
 import yaml
 
-from kfk.commands.main import kfk
+from kfk.commands.connect import connect
 from kfk.commons import create_temp_file
 from kfk.kubernetes_commons import (
     create_using_yaml,
@@ -53,15 +53,15 @@ from kfk.option_extensions import NotRequiredIf
     help="Target cluster bootstrap servers.",
 )
 @click.option(
-    "--mm2",
+    "--mirror-maker",
     help="KafkaMirrorMaker2 name",
     required=True,
     cls=NotRequiredIf,
     options=["is_list"],
 )
-@kfk.command(name="mm2s")
-def mirror_maker_2(
-    mm2,
+@connect.command(name="mirror-maker")
+def mirror_maker(
+    mirror_maker,
     target,
     source,
     is_list,
@@ -75,33 +75,33 @@ def mirror_maker_2(
     if is_list:
         list(namespace)
     elif is_describe:
-        describe(mm2, output, namespace)
+        describe(mirror_maker, output, namespace)
     elif is_create:
-        create(mm2, source, target, namespace)
+        create(mirror_maker, source, target, namespace)
     elif is_delete:
-        delete(mm2, namespace)
+        delete(mirror_maker, namespace)
 
 
 def list(namespace):
     return list_resource("kafkamirrormaker2s", namespace)
 
 
-def describe(mm2, output, namespace):
+def describe(mirror_maker, output, namespace):
     if output is not None:
-        resource = get_resource("kafkamirrormaker2s", mm2, namespace)
+        resource = get_resource("kafkamirrormaker2s", mirror_maker, namespace)
         if output == "yaml":
             click.echo(yaml.dump(resource, default_flow_style=False))
         elif output == "json":
             click.echo(json.dumps(resource, indent=2))
     else:
-        describe_resource("kafkamirrormaker2s", mm2, namespace)
+        describe_resource("kafkamirrormaker2s", mirror_maker, namespace)
 
 
-def create(mm2, source, target, namespace):
+def create(mirror_maker, source, target, namespace):
     mm2_dict = {
         "apiVersion": "kafka.strimzi.io/v1beta2",
         "kind": "KafkaMirrorMaker2",
-        "metadata": {"name": mm2},
+        "metadata": {"name": mirror_maker},
         "spec": {
             "version": "4.2.0",
             "replicas": 1,
@@ -134,11 +134,11 @@ def create(mm2, source, target, namespace):
     temp_file.close()
 
 
-def delete(mm2, namespace):
+def delete(mirror_maker, namespace):
     mm2_dict = {
         "apiVersion": "kafka.strimzi.io/v1beta2",
         "kind": "KafkaMirrorMaker2",
-        "metadata": {"name": mm2, "namespace": namespace},
+        "metadata": {"name": mirror_maker, "namespace": namespace},
     }
 
     mm2_yaml = yaml.dump(mm2_dict)
