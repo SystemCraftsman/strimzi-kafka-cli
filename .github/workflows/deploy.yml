@@ -142,13 +142,6 @@ jobs:
           git push origin master
 
   update-website:
-    runs-on: ubuntu-latest
     if: ${{ github.event.inputs.update_website == 'true' }}
-    steps:
-      - name: Trigger website update
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.WEBSITE_TOKEN }}" \
-            https://api.github.com/repos/strimzi-cli/strimzi-cli.github.io/dispatches \
-            -d '{"event_type":"update-website"}'
+    uses: ./.github/workflows/update-website.yml
+    secrets: inherit

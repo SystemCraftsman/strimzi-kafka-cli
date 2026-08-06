@@ -1,0 +1,30 @@
+name: Update Website
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  update-website:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+        with:
+          repository: strimzi-cli/strimzi-cli.github.io
+          token: ${{ secrets.WEBSITE_TOKEN }}
+          submodules: true
+      - name: Update submodule
+        run: |
+          git submodule update --remote strimzi-kafka-cli
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add strimzi-kafka-cli
+          git diff --cached --quiet || (git commit -m "Update strimzi-kafka-cli submodule" && git push origin main)
+      - name: Trigger website deploy
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.WEBSITE_TOKEN }}" \
+            https://api.github.com/repos/strimzi-cli/strimzi-cli.github.io/dispatches \
+            -d '{"event_type":"update-website"}'
