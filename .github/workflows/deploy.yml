@@ -150,3 +150,34 @@ jobs:
           git add strimzi-kafka-cli.rb
           git commit -m "Update to version ${{ needs.build.outputs.version }}"
           git push origin master
+
+  publish-mcp-registry:
+    runs-on: ubuntu-latest
+    needs: [build, publish-pypi]
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag && format('refs/tags/{0}', github.event.inputs.tag) || github.ref }}
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher-linux-amd64 -o mcp-publisher
+          chmod +x mcp-publisher
+      - name: Update server.json version
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          python3 -c "
+          import json
+          with open('server.json') as f:
+              data = json.load(f)
+          data['version'] = '$VERSION'
+          for pkg in data.get('packages', []):
+              pkg['version'] = '$VERSION'
+          with open('server.json', 'w') as f:
+              json.dump(data, f, indent=4)
+          "
+      - name: Publish to MCP Registry
+        run: |
+          ./mcp-publisher login github-actions
+          ./mcp-publisher publish
