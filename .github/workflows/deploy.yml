@@ -11,8 +11,35 @@ on:
         required: true
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Build and Integration Test status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          check_workflow() {
+            local workflow="$1"
+            local conclusion=$(gh run list --repo ${{ github.repository }} --workflow "$workflow" --branch main --limit 1 --json conclusion --jq '.[0].conclusion')
+            if [ "$conclusion" != "success" ]; then
+              echo "::error::$workflow latest run: $conclusion"
+              return 1
+            fi
+            echo "$workflow latest run: success"
+          }
+
+          failed=0
+          check_workflow "Build" || failed=1
+          check_workflow "Integration Test" || failed=1
+
+          if [ "$failed" -eq 1 ]; then
+            echo "::error::Deploy blocked: required workflows have not passed on main"
+            exit 1
+          fi
+
   build:
     runs-on: ubuntu-latest
+    needs: gate
     steps:
       - uses: actions/checkout@v4
         with:
