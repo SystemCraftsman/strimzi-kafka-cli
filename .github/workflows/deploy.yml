@@ -162,7 +162,8 @@ jobs:
           ref: ${{ github.event.inputs.tag && format('refs/tags/{0}', github.event.inputs.tag) || github.ref }}
       - name: Install mcp-publisher
         run: |
-          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher-linux-amd64 -o mcp-publisher
+          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz -o mcp-publisher.tar.gz
+          tar xzf mcp-publisher.tar.gz
           chmod +x mcp-publisher
       - name: Update server.json version
         run: |
