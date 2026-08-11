@@ -1,6 +1,6 @@
 [project]
 name = "strimzi-kafka-cli"
-version = "1.0.0b9"
+version = "1.0.0b10"
 description = "Command Line Interface for Strimzi Kafka Operator"
 authors = [{ name = "Aykut Bulgu", email = "aykut@systemcraftsman.com" }]
 readme = "README.md"
