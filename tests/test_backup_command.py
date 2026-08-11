@@ -273,6 +273,157 @@ class TestBackupKafkaCommand(TestCase):
         assert result.exit_code != 0
         assert "--from is required" in result.output
 
+    @mock.patch("kfk.setup.setup")
+    @mock.patch("kfk.commands.backup.kafka.restore_custom_resource")
+    @mock.patch("kfk.commands.backup.kafka.extract_archive")
+    def test_restore_to_different_namespace(
+        self, mock_extract, mock_restore_cr, mock_setup
+    ):
+        mock_extract.return_value = {
+            "kafka.yaml": {
+                "kind": "Kafka",
+                "metadata": {"name": "old-cluster", "namespace": "old-ns"},
+                "spec": {},
+            },
+        }
+        result = self.runner.invoke(
+            kfk,
+            [
+                "backup",
+                "kafka",
+                "--restore",
+                "--from",
+                "backup.tar.gz",
+                "--cluster",
+                "my-cluster",
+                "-n",
+                "new-namespace",
+            ],
+        )
+        assert result.exit_code == 0
+        call_args = mock_restore_cr.call_args
+        assert call_args[0][1] == "new-namespace"
+
+    @mock.patch("kfk.setup.setup")
+    @mock.patch("kfk.commands.backup.kafka.restore_secret")
+    @mock.patch("kfk.commands.backup.kafka.restore_custom_resource")
+    @mock.patch("kfk.commands.backup.kafka.extract_archive")
+    def test_restore_idempotent(
+        self, mock_extract, mock_restore_cr, mock_restore_secret, mock_setup
+    ):
+        mock_extract.return_value = {
+            "kafka.yaml": {
+                "kind": "Kafka",
+                "metadata": {"name": "my-cluster"},
+                "spec": {},
+            },
+            "topics/t1.yaml": {
+                "kind": "KafkaTopic",
+                "metadata": {"name": "t1"},
+                "spec": {},
+            },
+            "secrets/s1.yaml": {
+                "metadata": {"name": "s1"},
+                "data": {},
+            },
+        }
+        result = self.runner.invoke(
+            kfk,
+            [
+                "backup",
+                "kafka",
+                "--restore",
+                "--from",
+                "backup.tar.gz",
+                "--cluster",
+                "my-cluster",
+                "-n",
+                "kafka",
+            ],
+        )
+        assert result.exit_code == 0
+        assert mock_restore_cr.call_count == 2
+        assert mock_restore_secret.call_count == 1
+
+    @mock.patch("kfk.setup.setup")
+    @mock.patch("kfk.commands.backup.kafka.create_archive")
+    @mock.patch("kfk.commands.backup.kafka.get_custom_resources")
+    def test_backup_with_topics_users_nodepools(
+        self, mock_get_resources, mock_create_archive, mock_setup
+    ):
+        mock_get_resources.side_effect = [
+            [{"metadata": {"name": "my-cluster"}, "spec": {}}],
+            [{"metadata": {"name": "pool-a"}, "spec": {}}],
+            [
+                {"metadata": {"name": "topic-1"}, "spec": {}},
+                {"metadata": {"name": "topic-2"}, "spec": {}},
+            ],
+            [{"metadata": {"name": "user-1"}, "spec": {}}],
+        ]
+        result = self.runner.invoke(
+            kfk,
+            [
+                "backup",
+                "kafka",
+                "--cluster",
+                "my-cluster",
+                "-n",
+                "kafka",
+                "-o",
+                "/tmp/full-backup.tar.gz",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "Kafka/my-cluster" in result.output
+        assert "KafkaNodePool/pool-a" in result.output
+        assert "KafkaTopic/topic-1" in result.output
+        assert "KafkaTopic/topic-2" in result.output
+        assert "KafkaUser/user-1" in result.output
+        archive_resources = mock_create_archive.call_args[0][0]
+        assert "kafka.yaml" in archive_resources
+        assert "nodepools/pool-a.yaml" in archive_resources
+        assert "topics/topic-1.yaml" in archive_resources
+        assert "topics/topic-2.yaml" in archive_resources
+        assert "users/user-1.yaml" in archive_resources
+
+    @mock.patch("kfk.setup.setup")
+    @mock.patch("kfk.commands.backup.kafka.create_archive")
+    @mock.patch("kfk.commands.backup.kafka.get_secrets")
+    @mock.patch("kfk.commands.backup.kafka.get_custom_resources")
+    def test_backup_with_include_secrets(
+        self, mock_get_resources, mock_get_secrets, mock_create_archive, mock_setup
+    ):
+        mock_get_resources.side_effect = [
+            [{"metadata": {"name": "my-cluster"}, "spec": {}}],
+            [],
+            [],
+            [{"metadata": {"name": "user-1"}, "spec": {}}],
+        ]
+        mock_get_secrets.side_effect = [
+            [{"metadata": {"name": "my-cluster-ca-cert"}, "data": {}}],
+            [{"metadata": {"name": "user-1-creds"}, "data": {}}],
+        ]
+        result = self.runner.invoke(
+            kfk,
+            [
+                "backup",
+                "kafka",
+                "--cluster",
+                "my-cluster",
+                "-n",
+                "kafka",
+                "--include-secrets",
+                "-o",
+                "/tmp/secrets-backup.tar.gz",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "Secret/my-cluster-ca-cert" in result.output
+        assert "Secret/user-1-creds" in result.output
+        archive_resources = mock_create_archive.call_args[0][0]
+        assert "secrets/my-cluster-ca-cert.yaml" in archive_resources
+        assert "secrets/user-1-creds.yaml" in archive_resources
+
 
 class TestBackupConnectCommand(TestCase):
     def setUp(self):
