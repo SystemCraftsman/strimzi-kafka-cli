@@ -125,3 +125,7 @@ kfk = "kfk.main:kfk"
 addopts = [
     "--import-mode=importlib",
 ]
+markers = [
+    "integration: integration tests requiring a live Kubernetes cluster",
+]
+testpaths = ["tests"]
