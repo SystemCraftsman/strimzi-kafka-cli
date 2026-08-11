@@ -1,0 +1,34 @@
+name: Integration Test
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make install-dependencies
+
+      - name: Set up kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: strimzi-cli-test
+          config: tests/integration/kind-config.yaml
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          kind get kubeconfig --name strimzi-cli-test > ~/.kube/config
+
+      - name: Run integration tests
+        run: make test-integration
