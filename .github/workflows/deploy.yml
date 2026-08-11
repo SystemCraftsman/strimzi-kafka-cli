@@ -14,18 +14,41 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Build and Integration Test status
+      - name: Resolve commit SHA for tag
+        id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          SHA=$(gh api repos/${{ github.repository }}/git/ref/tags/${TAG} --jq '.object.sha' 2>/dev/null || echo "")
+          if [ -z "$SHA" ]; then
+            echo "::error::Tag ${TAG} not found"
+            exit 1
+          fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Deploying tag ${TAG} at commit ${SHA}"
+      - name: Check Build and Integration Test status for commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA="${{ steps.resolve.outputs.sha }}"
+
           check_workflow() {
             local workflow="$1"
-            local conclusion=$(gh run list --repo ${{ github.repository }} --workflow "$workflow" --branch main --limit 1 --json conclusion --jq '.[0].conclusion')
-            if [ "$conclusion" != "success" ]; then
-              echo "::error::$workflow latest run: $conclusion"
+            local conclusion=$(gh run list --repo ${{ github.repository }} --workflow "$workflow" --commit "$SHA" --json conclusion --jq '.[0].conclusion')
+            if [ -z "$conclusion" ]; then
+              echo "::error::$workflow has not run for commit $SHA"
               return 1
             fi
-            echo "$workflow latest run: success"
+            if [ "$conclusion" != "success" ]; then
+              echo "::error::$workflow failed for commit $SHA (status: $conclusion)"
+              return 1
+            fi
+            echo "$workflow passed for commit $SHA"
           }
 
           failed=0
@@ -33,7 +56,7 @@ jobs:
           check_workflow "Integration Test" || failed=1
 
           if [ "$failed" -eq 1 ]; then
-            echo "::error::Deploy blocked: required workflows have not passed on main"
+            echo "::error::Deploy blocked: required workflows have not passed for this commit"
             exit 1
           fi
 
