@@ -1,30 +1,40 @@
 import click
 
 
-class NotRequiredIf(click.Option):
-    # TODO: Refactor here
+class _ConditionalRequired(click.Option):
 
     def __init__(self, *args, **kwargs):
         self.options = kwargs.pop("options")
         assert self.options, "'options' parameter required"
         kwargs["help"] = (
             kwargs.get("help", "")
-            + " This argument is mutually exclusive with %s" % self.options
+            + " This argument is %s with %s" % (self._relation, self.options)
         ).strip()
-        super(NotRequiredIf, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+    def _check_options_exist(self, opts):
+        return any(opts.get(opt) for opt in self.options)
 
     def handle_parse_result(self, ctx, opts, args):
-        control_options_exist = False
+        self.required = self._resolve_required(self._check_options_exist(opts))
+        return super().handle_parse_result(ctx, opts, args)
 
-        for options in self.options:
-            if opts.get(options):
-                control_options_exist = True
-                break
+    def _resolve_required(self, options_exist):
+        raise NotImplementedError
 
-        if control_options_exist:
-            self.required = None
 
-        return super(NotRequiredIf, self).handle_parse_result(ctx, opts, args)
+class NotRequiredIf(_ConditionalRequired):
+    _relation = "mutually exclusive"
+
+    def _resolve_required(self, options_exist):
+        return False if options_exist else self.required
+
+
+class RequiredIf(_ConditionalRequired):
+    _relation = "mutually inclusive"
+
+    def _resolve_required(self, options_exist):
+        return options_exist
 
 
 class RequiredIfValue(click.Option):
@@ -37,42 +47,11 @@ class RequiredIfValue(click.Option):
             + " This argument is required when %s"
             % ", ".join(f"{k}={v}" for k, v in self.option_value_pairs.items())
         ).strip()
-        super(RequiredIfValue, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        for option, value in self.option_value_pairs.items():
-            if opts.get(option) == value:
-                self.required = True
-                break
-        else:
-            self.required = None
-
-        return super(RequiredIfValue, self).handle_parse_result(ctx, opts, args)
-
-
-class RequiredIf(click.Option):
-    # TODO: Refactor here
-
-    def __init__(self, *args, **kwargs):
-        self.options = kwargs.pop("options")
-        assert self.options, "'options' parameter required"
-        kwargs["help"] = (
-            kwargs.get("help", "")
-            + " This argument is mutually inclusive with %s" % self.options
-        ).strip()
-        super(RequiredIf, self).__init__(*args, **kwargs)
-
-    def handle_parse_result(self, ctx, opts, args):
-        control_options_exist = False
-
-        for options in self.options:
-            if opts.get(options):
-                control_options_exist = True
-                break
-
-        if control_options_exist:
-            self.required = True
-        else:
-            self.required = None
-
-        return super(RequiredIf, self).handle_parse_result(ctx, opts, args)
+        self.required = any(
+            opts.get(option) == value
+            for option, value in self.option_value_pairs.items()
+        )
+        return super().handle_parse_result(ctx, opts, args)

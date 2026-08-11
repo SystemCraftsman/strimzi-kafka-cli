@@ -91,7 +91,6 @@ CONNECT_SKIPPED_PROPERTIES = (
     "--list",
     "is_list",
     help="Lists all available clusters.",
-    required=True,
     is_flag=True,
 )
 @click.option(

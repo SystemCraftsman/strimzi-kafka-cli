@@ -119,7 +119,6 @@ from kfk.utils import parse_kv_string
     "--list",
     "is_list",
     help="List all available clusters.",
-    required=True,
     is_flag=True,
 )
 @click.option(

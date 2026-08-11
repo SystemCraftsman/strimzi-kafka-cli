@@ -28,3 +28,10 @@ class TestClusters:
         )
         assert result.exit_code == 0
         assert cluster in result.output
+
+    def test_no_option_shows_error(self, runner, kfk_cmd, cluster, namespace):
+        result = runner.invoke(
+            kfk_cmd,
+            ["clusters", "--cluster", cluster, "-n", namespace],
+        )
+        assert result.exit_code == 1

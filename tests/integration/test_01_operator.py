@@ -8,11 +8,25 @@ class TestOperatorInstall:
 
     def test_create_namespace(self, namespace):
         result = subprocess.run(
-            ["kubectl", "create", "namespace", namespace],
+            [
+                "kubectl",
+                "create",
+                "namespace",
+                namespace,
+                "--dry-run=client",
+                "-o",
+                "yaml",
+            ],
             capture_output=True,
             text=True,
         )
-        assert result.returncode == 0
+        apply = subprocess.run(
+            ["kubectl", "apply", "-f", "-"],
+            input=result.stdout,
+            capture_output=True,
+            text=True,
+        )
+        assert apply.returncode == 0
 
     def test_install_operator(self, runner, kfk_cmd, namespace):
         result = runner.invoke(
