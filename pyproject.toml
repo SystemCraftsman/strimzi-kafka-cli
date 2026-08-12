@@ -39,17 +39,12 @@ mcp = [
 ]
 dev = [
     "twine",
-    "flake8",
-    "flake8-pyproject",
+    "ruff",
     "pytest",
     "wheel",
     "build",
-    "isort",
-    "black",
     "mypy",
     "pre-commit<4",
-    "bandit",
-    "autoflake",
     "fastmcp",
 ]
 
@@ -67,51 +62,18 @@ license-files = ["LICENSE"]
 zip-safe = true
 
 
-[tool.flake8]
-exclude = ".git,venv,.venv,env,.env,__pycache__,docs,dist"
-max-complexity = 10
-max-line-length = 88
-extend-ignore = """
-    W503,
-    E203,
-    E701,
-    C901,
-"""
-per-file-ignores = """
-        ./kfk/main.py: F401, F811
-    """
-
-[tool.isort]
-line_length = 88
-profile = "black"
-
-[tool.bandit]
-target = ["tests", "kfk"]
-tests = ["B201", "B301"]
-
-[tool.autoflake]
-check = true
-imports = ["kfk"]
-
-
-[tool.black]
-target-version = ["py311", "py312", "py313"]
+[tool.ruff]
+target-version = "py311"
 line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | docs
-)/
-'''
+exclude = [".git", ".venv", "__pycache__", "docs", "dist", "build"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "S", "B"]
+ignore = ["E203", "E701", "S108", "S603", "S110", "S105", "S202", "S607"]
+per-file-ignores = {"kfk/main.py" = ["F401", "F811"], "tests/**" = ["S101"], "kfk/argument_extensions.py" = ["S101"], "kfk/option_extensions.py" = ["S101"]}
+
+[tool.ruff.lint.isort]
+known-first-party = ["kfk"]
 
 
 [build-system]

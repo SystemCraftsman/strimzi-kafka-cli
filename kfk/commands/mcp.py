@@ -8,8 +8,8 @@ def mcp():
     """Starts the Strimzi MCP server."""
     try:
         from kfk.mcp_server import mcp as mcp_server
-    except ImportError:
+    except ImportError as err:
         raise click.ClickException(
-            "MCP dependencies not installed." " Run: pip install strimzi-kafka-cli[mcp]"
-        )
+            "MCP dependencies not installed. Run: pip install strimzi-kafka-cli[mcp]"
+        ) from err
     mcp_server.run()

@@ -52,7 +52,7 @@ def _backup(cluster, namespace, output, include_secrets):
     node_pools = get_custom_resources(
         "kafkanodepools", namespace, label=f"strimzi.io/cluster={cluster}"
     )
-    for i, np in enumerate(node_pools):
+    for _i, np in enumerate(node_pools):
         name = np["metadata"]["name"]
         resources[f"nodepools/{name}.yaml"] = clean_metadata(np)
         click.echo(f"  KafkaNodePool/{name}")

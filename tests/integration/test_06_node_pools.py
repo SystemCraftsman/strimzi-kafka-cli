@@ -3,7 +3,6 @@ from tests.integration.conftest import requires_cluster
 
 @requires_cluster
 class TestNodePools:
-
     def test_list_node_pools(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd, ["node-pools", "--list", "-c", cluster, "-n", namespace]

@@ -3,7 +3,6 @@ from tests.integration.conftest import requires_cluster, wait_for_resource
 
 @requires_cluster
 class TestClusters:
-
     def test_create_cluster(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd,
@@ -12,9 +11,9 @@ class TestClusters:
         assert result.exit_code == 0
 
     def test_cluster_is_ready(self, cluster, namespace):
-        assert wait_for_resource(
-            "kafka", cluster, namespace, timeout=300
-        ), "Kafka cluster did not become ready"
+        assert wait_for_resource("kafka", cluster, namespace, timeout=300), (
+            "Kafka cluster did not become ready"
+        )
 
     def test_list_clusters(self, runner, kfk_cmd, namespace):
         result = runner.invoke(kfk_cmd, ["clusters", "--list", "-n", namespace])

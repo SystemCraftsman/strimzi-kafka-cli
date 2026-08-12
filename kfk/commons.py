@@ -145,7 +145,7 @@ def apply_client_config_from_file(
         temp_file = create_temp_file(file.read())
         lines = []
         with open(temp_file.name) as temp_file:
-            for cnt, producer_property in enumerate(temp_file):
+            for _cnt, producer_property in enumerate(temp_file):
                 producer_property = producer_property.strip()
                 if "security.protocol" in producer_property:
                     producer_property_list = get_kv_config_list(producer_property)
