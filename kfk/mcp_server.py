@@ -132,6 +132,151 @@ mcp.tool(name="delete_node_pool", description="Delete a KafkaNodePool resource."
 )
 
 
+# Backup
+@mcp.tool()
+def backup_kafka(
+    cluster: str, namespace: str, output: str = "", include_secrets: bool = False
+) -> str:
+    """Back up a Kafka cluster and its resources to a gzip archive."""
+    from kfk.commands.backup.commons import (
+        clean_metadata,
+        clean_secret_metadata,
+        create_archive,
+        get_custom_resources,
+        get_secrets,
+    )
+
+    if not output:
+        output = f"{cluster}-backup.tar.gz"
+    resources = {}
+    kafkas = get_custom_resources("kafkas", namespace)
+    for k in kafkas:
+        if k["metadata"]["name"] == cluster:
+            resources["kafka.yaml"] = clean_metadata(k)
+            break
+    else:
+        return f"Kafka cluster '{cluster}' not found in namespace '{namespace}'"
+    for np in get_custom_resources(
+        "kafkanodepools", namespace, label=f"strimzi.io/cluster={cluster}"
+    ):
+        name = np["metadata"]["name"]
+        resources[f"nodepools/{name}.yaml"] = clean_metadata(np)
+    for topic in get_custom_resources(
+        "kafkatopics", namespace, label=f"strimzi.io/cluster={cluster}"
+    ):
+        name = topic["metadata"]["name"]
+        resources[f"topics/{name}.yaml"] = clean_metadata(topic)
+    users = get_custom_resources(
+        "kafkausers", namespace, label=f"strimzi.io/cluster={cluster}"
+    )
+    for user in users:
+        name = user["metadata"]["name"]
+        resources[f"users/{name}.yaml"] = clean_metadata(user)
+    if include_secrets:
+        for secret in get_secrets(
+            namespace,
+            f"strimzi.io/cluster={cluster},strimzi.io/kind=Kafka",
+        ):
+            name = secret["metadata"]["name"]
+            resources[f"secrets/{name}.yaml"] = clean_secret_metadata(secret)
+        for user in users:
+            user_name = user["metadata"]["name"]
+            label = (
+                f"strimzi.io/cluster={cluster},"
+                f"strimzi.io/kind=KafkaUser,"
+                f"strimzi.io/name={user_name}"
+            )
+            for secret in get_secrets(namespace, label):
+                name = secret["metadata"]["name"]
+                resources[f"secrets/{name}.yaml"] = clean_secret_metadata(secret)
+    create_archive(resources, output)
+    return f"Backup saved to {output} ({len(resources)} resources)"
+
+
+@mcp.tool()
+def restore_kafka(from_backup: str, cluster: str, namespace: str) -> str:
+    """Restore a Kafka cluster and its resources from a backup archive."""
+    from kfk.commands.backup.commons import (
+        extract_archive,
+        restore_custom_resource,
+        restore_secret,
+    )
+
+    resources = extract_archive(from_backup)
+    restored = []
+    if "kafka.yaml" in resources:
+        resource = resources["kafka.yaml"]
+        resource["metadata"]["name"] = cluster
+        restore_custom_resource(resource, namespace)
+        restored.append(f"Kafka/{cluster}")
+    for name, resource in sorted(resources.items()):
+        if name.startswith("nodepools/"):
+            restore_custom_resource(resource, namespace)
+            restored.append(name)
+    for name, resource in sorted(resources.items()):
+        if name.startswith("topics/"):
+            restore_custom_resource(resource, namespace)
+            restored.append(name)
+    for name, resource in sorted(resources.items()):
+        if name.startswith("users/"):
+            restore_custom_resource(resource, namespace)
+            restored.append(name)
+    for name, resource in sorted(resources.items()):
+        if name.startswith("secrets/"):
+            restore_secret(resource, namespace)
+            restored.append(name)
+    return f"Restored {len(restored)} resources to namespace '{namespace}'"
+
+
+@mcp.tool()
+def backup_connect(cluster: str, namespace: str, output: str = "") -> str:
+    """Back up a Kafka Connect cluster and its connectors to a gzip archive."""
+    from kfk.commands.backup.commons import (
+        clean_metadata,
+        create_archive,
+        get_custom_resources,
+    )
+
+    if not output:
+        output = f"{cluster}-connect-backup.tar.gz"
+    resources = {}
+    connects = get_custom_resources("kafkaconnects", namespace)
+    for kc in connects:
+        if kc["metadata"]["name"] == cluster:
+            resources["connect.yaml"] = clean_metadata(kc)
+            break
+    else:
+        return f"KafkaConnect '{cluster}' not found in namespace '{namespace}'"
+    for connector in get_custom_resources(
+        "kafkaconnectors",
+        namespace,
+        label=f"strimzi.io/cluster={cluster}",
+    ):
+        name = connector["metadata"]["name"]
+        resources[f"connectors/{name}.yaml"] = clean_metadata(connector)
+    create_archive(resources, output)
+    return f"Backup saved to {output} ({len(resources)} resources)"
+
+
+@mcp.tool()
+def restore_connect(from_backup: str, cluster: str, namespace: str) -> str:
+    """Restore a Kafka Connect cluster and its connectors from a backup archive."""
+    from kfk.commands.backup.commons import extract_archive, restore_custom_resource
+
+    resources = extract_archive(from_backup)
+    restored = []
+    if "connect.yaml" in resources:
+        resource = resources["connect.yaml"]
+        resource["metadata"]["name"] = cluster
+        restore_custom_resource(resource, namespace)
+        restored.append(f"KafkaConnect/{cluster}")
+    for name, resource in sorted(resources.items()):
+        if name.startswith("connectors/"):
+            restore_custom_resource(resource, namespace)
+            restored.append(name)
+    return f"Restored {len(restored)} resources to namespace '{namespace}'"
+
+
 # Version
 @mcp.tool()
 def get_version() -> str:

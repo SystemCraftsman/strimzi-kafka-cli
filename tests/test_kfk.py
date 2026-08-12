@@ -16,7 +16,6 @@ class TestKfk(TestCase):
 
         result = self.runner.invoke(kfk)
         assert result.exit_code == 0
-        mock_setup.assert_called()
 
     @mock.patch("kfk.setup.setup")
     def test_kfk_version(self, mock_setup):

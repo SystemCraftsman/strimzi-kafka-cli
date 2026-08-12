@@ -1,4 +1,6 @@
 from kfk.commands.acls import acls
+from kfk.commands.backup.connect import connect as backup_connect
+from kfk.commands.backup.kafka import kafka as backup_kafka
 from kfk.commands.clusters import clusters
 from kfk.commands.configs import configs
 from kfk.commands.connect.clusters import clusters
