@@ -27,6 +27,9 @@ Options:
 
 Commands:
   acls              Manages ACLs on Kafka.
+  backup            Backs up and restores Strimzi resources.
+    kafka             Backs up or restores a Kafka cluster and its resources.
+    connect           Backs up or restores a Kafka Connect cluster and its connectors.
   clusters          Creates, alters, deletes, describes Kafka cluster(s).
   configs           Adds/Removes entity config for a topic, client, user...
   connect           Manages Kafka Connect clusters, connectors, and MirrorMaker2.
@@ -101,7 +104,7 @@ kfk mcp
 claude mcp add strimzi-kafka-cli -- kfk mcp
 ```
 
-### Available Tools (38)
+### Available Tools (42)
 
 | Category | Tools |
 |----------|-------|
@@ -111,6 +114,7 @@ claude mcp add strimzi-kafka-cli -- kfk mcp
 | Connect Clusters | `list_connects`, `get_connect`, `create_connect`, `delete_connect`, `alter_connect` |
 | Connectors | `list_connectors`, `get_connector`, `create_connector`, `delete_connector`, `alter_connector` |
 | MirrorMaker2 | `list_mirror_maker_2s`, `get_mirror_maker_2`, `create_mirror_maker_2`, `delete_mirror_maker_2` |
+| Backup | `backup_kafka`, `restore_kafka`, `backup_connect`, `restore_connect` |
 | ACLs | `add_or_remove_acls` |
 | Operator | `install_operator`, `uninstall_operator` |
 | Node Pools | `list_node_pools`, `get_node_pool`, `create_node_pool`, `delete_node_pool` |

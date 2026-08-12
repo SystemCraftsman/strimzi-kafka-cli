@@ -1,7 +1,7 @@
 {
     "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     "name": "io.github.SystemCraftsman/strimzi-kafka-cli",
-    "description": "Manage Apache Kafka on Kubernetes via Strimzi. Clusters, topics, users, connectors, MM2.",
+    "description": "Manage Apache Kafka on Kubernetes via Strimzi. Clusters, topics, users, connectors, MM2, backup/restore.",
     "repository": {
         "url": "https://github.com/SystemCraftsman/strimzi-kafka-cli",
         "source": "github"
