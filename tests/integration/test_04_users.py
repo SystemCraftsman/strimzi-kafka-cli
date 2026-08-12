@@ -5,6 +5,7 @@ USER_NAME = "integration-test-user"
 
 @requires_cluster
 class TestUsers:
+
     def test_create_user(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd,

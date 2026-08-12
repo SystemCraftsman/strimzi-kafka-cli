@@ -2,6 +2,7 @@ import click
 
 
 class _ConditionalRequired(click.Option):
+
     def __init__(self, *args, **kwargs):
         self.options = kwargs.pop("options")
         assert self.options, "'options' parameter required"
@@ -37,6 +38,7 @@ class RequiredIf(_ConditionalRequired):
 
 
 class RequiredIfValue(click.Option):
+
     def __init__(self, *args, **kwargs):
         self.option_value_pairs = kwargs.pop("option_value_pairs")
         assert self.option_value_pairs, "'option_value_pairs' parameter required"

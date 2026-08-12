@@ -5,6 +5,7 @@ from tests.integration.conftest import requires_cluster
 
 @requires_cluster
 class TestBackup:
+
     def test_backup_kafka(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd,

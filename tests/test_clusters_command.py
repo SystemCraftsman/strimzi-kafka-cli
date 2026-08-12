@@ -984,7 +984,8 @@ class TestKfkClusters(TestCase):
             assert result.exit_code == 0
 
             with open(
-                "tests/files/yaml/kafka-ephemeral_with_custom_auth_listener_config.yaml"
+                "tests/files/yaml/"
+                "kafka-ephemeral_with_custom_auth_listener_config.yaml"
             ) as file:
                 expected_kafka_yaml = file.read()
                 result_kafka_yaml = mock_create_temp_file.call_args[0][0]

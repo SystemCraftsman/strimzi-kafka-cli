@@ -5,6 +5,7 @@ from tests.integration.conftest import requires_cluster, wait_for_deployment
 
 @requires_cluster
 class TestOperatorInstall:
+
     def test_create_namespace(self, namespace):
         result = subprocess.run(
             [

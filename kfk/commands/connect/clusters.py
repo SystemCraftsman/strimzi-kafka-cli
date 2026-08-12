@@ -191,9 +191,9 @@ def create(
             cluster_dict["spec"]["build"]["output"]["image"] = connect_properties.get(
                 SpecialTexts.CONNECT_IMAGE
             ).data
-            cluster_dict["spec"]["build"]["output"]["pushSecret"] = (
-                f"{cluster}-push-secret"
-            )
+            cluster_dict["spec"]["build"]["output"][
+                "pushSecret"
+            ] = f"{cluster}-push-secret"
             cluster_dict["spec"]["build"]["plugins"] = []
 
             for i, plugin_url in enumerate(

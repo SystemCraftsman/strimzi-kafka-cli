@@ -41,7 +41,7 @@ def uninstall(namespace):
 
 def _apply_operator_files(namespace, operation):
     results = []
-    for directory_name, _dirs, files in os.walk(
+    for directory_name, dirs, files in os.walk(
         "{strimzi_path}/install/cluster-operator/".format(strimzi_path=STRIMZI_PATH)
     ):
         for file_name in files:
