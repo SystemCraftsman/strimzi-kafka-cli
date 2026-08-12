@@ -5,7 +5,6 @@ TOPIC_NAME = "integration-test-topic"
 
 @requires_cluster
 class TestTopics:
-
     def test_create_topic(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd,

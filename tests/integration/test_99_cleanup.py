@@ -3,7 +3,6 @@ from tests.integration.conftest import requires_cluster
 
 @requires_cluster
 class TestCleanup:
-
     def test_delete_cluster(self, runner, kfk_cmd, cluster, namespace):
         result = runner.invoke(
             kfk_cmd,

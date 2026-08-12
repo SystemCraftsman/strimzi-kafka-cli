@@ -77,8 +77,7 @@ from kfk.utils import parse_kv_string
 @click.option(
     "--add-listener",
     help=(
-        "A listener to be added to the cluster."
-        " Format: name=X,port=N,type=T,tls=BOOL"
+        "A listener to be added to the cluster. Format: name=X,port=N,type=T,tls=BOOL"
     ),
     multiple=True,
     cls=RequiredIf,
@@ -358,12 +357,12 @@ def _update_replicas(replicas, kafka_dict, broker_dict=None):
         kafka_dict["spec"]["kafka"]["config"]["default.replication.factor"] = int(
             replicas
         )
-        kafka_dict["spec"]["kafka"]["config"][
-            "transaction.state.log.min.isr"
-        ] = min_insync_replicas
-        kafka_dict["spec"]["kafka"]["config"][
-            "min.insync.replicas"
-        ] = min_insync_replicas
+        kafka_dict["spec"]["kafka"]["config"]["transaction.state.log.min.isr"] = (
+            min_insync_replicas
+        )
+        kafka_dict["spec"]["kafka"]["config"]["min.insync.replicas"] = (
+            min_insync_replicas
+        )
 
         if broker_dict is not None:
             broker_dict["spec"]["replicas"] = int(replicas)
