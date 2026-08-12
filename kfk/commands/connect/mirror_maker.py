@@ -174,9 +174,9 @@ def create(mirror_maker, config_file, replicas, namespace):
     replication_factor = properties.get("replication.factor")
     if replication_factor:
         for mirror in spec["mirrors"]:
-            mirror["sourceConnector"].setdefault("config", {})[
-                "replication.factor"
-            ] = replication_factor.data
+            mirror["sourceConnector"].setdefault("config", {})["replication.factor"] = (
+                replication_factor.data
+            )
 
     global_config = {}
     for key in properties:
