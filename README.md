@@ -83,7 +83,13 @@ brew tap systemcraftsman/strimzi-kafka-cli
 brew install strimzi-kafka-cli
 ```
 
-> Installing the CLI by using Homebrew already uses a virtual environment, so you don't have to worry about your main Python environment. For MCP server support, use pip or pipx install instead.
+> Installing the CLI by using Homebrew already uses a virtual environment, so you don't have to worry about your main Python environment.
+
+To install with MCP server support:
+
+``` bash
+brew install strimzi-kafka-cli --with-mcp
+```
 
 Project requires: Python >=3.11
 
