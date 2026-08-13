@@ -186,7 +186,7 @@ jobs:
 
             def install
               virtualenv_install_with_resources
-              system libexec/"bin/pip", "install", "fastmcp"
+              system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip", "--python=#{libexec}/bin/python", "install", "fastmcp"
             end
 
             test do
