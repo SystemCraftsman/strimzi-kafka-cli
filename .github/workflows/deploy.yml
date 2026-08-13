@@ -184,13 +184,9 @@ jobs:
 
             depends_on "python@3.12"
 
-            option "with-mcp", "Install with MCP server support"
-
             def install
               virtualenv_install_with_resources
-              if build.with? "mcp"
-                system libexec/"bin/pip", "install", "fastmcp"
-              end
+              system libexec/"bin/pip", "install", "fastmcp"
             end
 
             test do
