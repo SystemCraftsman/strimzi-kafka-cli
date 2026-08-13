@@ -67,6 +67,12 @@ To install with MCP server support:
 pip install strimzi-kafka-cli[mcp] --user
 ```
 
+Or with pipx:
+
+``` bash
+pipx install strimzi-kafka-cli[mcp]
+```
+
 ### Using Homebrew
 
 ``` bash
