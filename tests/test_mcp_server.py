@@ -42,8 +42,18 @@ class TestMcpServer(TestCase):
             "add_or_remove_acls",
             "install_operator",
             "uninstall_operator",
+            "list_mirror_maker_2s",
+            "get_mirror_maker_2",
+            "create_mirror_maker_2",
+            "delete_mirror_maker_2",
             "list_node_pools",
             "get_node_pool",
+            "create_node_pool",
+            "delete_node_pool",
+            "backup_kafka",
+            "restore_kafka",
+            "backup_connect",
+            "restore_connect",
             "get_version",
         ]
         for tool_name in expected_tools:
