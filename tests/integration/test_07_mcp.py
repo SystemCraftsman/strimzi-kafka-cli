@@ -12,13 +12,14 @@ class TestMcpKafka:
         from kfk.mcp_server import list_kafkas
 
         result = list_kafkas(namespace)
-        assert cluster in result
+        names = [item["metadata"]["name"] for item in result["items"]]
+        assert cluster in names
 
     def test_get_kafka(self, cluster, namespace):
         from kfk.mcp_server import get_kafka
 
         result = get_kafka(cluster, namespace)
-        assert cluster in result
+        assert result["metadata"]["name"] == cluster
 
     def test_get_kafka_status(self, cluster, namespace):
         from kfk.mcp_server import get_kafka_status
@@ -55,13 +56,14 @@ class TestMcpTopics:
         from kfk.mcp_server import list_topics
 
         result = list_topics(cluster, namespace)
-        assert MCP_TOPIC in result
+        names = [item["metadata"]["name"] for item in result["items"]]
+        assert MCP_TOPIC in names
 
     def test_get_topic(self, cluster, namespace):
         from kfk.mcp_server import get_topic
 
         result = get_topic(MCP_TOPIC, cluster, namespace)
-        assert MCP_TOPIC in result
+        assert result["metadata"]["name"] == MCP_TOPIC
 
     def test_alter_topic(self, cluster, namespace):
         from kfk.mcp_server import alter_topic
@@ -109,13 +111,14 @@ class TestMcpUsers:
         from kfk.mcp_server import list_users
 
         result = list_users(cluster, namespace)
-        assert MCP_USER in result
+        names = [item["metadata"]["name"] for item in result["items"]]
+        assert MCP_USER in names
 
     def test_get_user(self, cluster, namespace):
         from kfk.mcp_server import get_user
 
         result = get_user(MCP_USER, cluster, namespace)
-        assert MCP_USER in result
+        assert result["metadata"]["name"] == MCP_USER
 
     def test_alter_user(self, cluster, namespace):
         from kfk.mcp_server import alter_user
@@ -141,13 +144,15 @@ class TestMcpNodePools:
         from kfk.mcp_server import list_node_pools
 
         result = list_node_pools(cluster, namespace)
-        assert "broker" in result
+        names = [item["metadata"]["name"] for item in result["items"]]
+        assert "broker" in names
 
-    def test_get_node_pool(self, cluster, namespace):
+    def test_get_node_pool(self, cluster, namespace, capsys):
         from kfk.mcp_server import get_node_pool
 
-        result = get_node_pool("broker", cluster, namespace)
-        assert "broker" in result
+        get_node_pool("broker", cluster, namespace)
+        captured = capsys.readouterr()
+        assert "broker" in captured.out
 
 
 @requires_cluster
