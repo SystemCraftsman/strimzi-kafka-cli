@@ -6,12 +6,12 @@
         "url": "https://github.com/SystemCraftsman/strimzi-kafka-cli",
         "source": "github"
     },
-    "version": "1.0.0b9",
+    "version": "1.0.0b13",
     "packages": [
         {
             "registryType": "pypi",
             "identifier": "strimzi-kafka-cli",
-            "version": "1.0.0b9",
+            "version": "1.0.0b13",
             "transport": {
                 "type": "stdio"
             }
