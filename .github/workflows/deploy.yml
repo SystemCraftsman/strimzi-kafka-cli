@@ -185,8 +185,8 @@ jobs:
             depends_on "python@3.12"
 
             def install
-              virtualenv_install_with_resources
-              system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip", "--python=#{libexec}/bin/python", "install", "fastmcp"
+              venv = virtualenv_create(libexec, Formula["python@3.12"].opt_bin/"python3.12")
+              system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip", "--python=#{libexec}/bin/python", "install", "strimzi-kafka-cli[mcp]==#{version}"
             end
 
             test do
