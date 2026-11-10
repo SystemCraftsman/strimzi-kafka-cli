@@ -5,6 +5,8 @@ def convert_string_to_type(str_val):
     str_val = str(str_val)
     if str_val.isdigit():
         return int(str_val)
+    elif str_val[:1] in ("+", "-") and str_val[1:].isdigit():
+        return int(str_val)
     elif is_number(str_val):
         return float(str_val)
     elif is_bool(str_val):

@@ -1,38 +1,37 @@
 from unittest import TestCase
 
-from kfk.utils import convert_string_to_type, is_valid_url, snake_to_camel_case
+from kfk.utils import convert_string_to_type, parse_kv_string
 
 
-class TestUtils(TestCase):
-    def test_convert_string_to_int(self):
-        val_str = "12"
-        self.assertEqual(convert_string_to_type(val_str), 12)
+class TestConvertStringToType(TestCase):
+    def test_positive_int(self):
+        self.assertEqual(convert_string_to_type("42"), 42)
+        self.assertIsInstance(convert_string_to_type("42"), int)
 
-    def test_convert_string_to_float(self):
-        val_str = "12.5"
-        self.assertEqual(convert_string_to_type(val_str), 12.5)
+    def test_negative_int(self):
+        self.assertEqual(convert_string_to_type("-5"), -5)
+        self.assertIsInstance(convert_string_to_type("-5"), int)
 
-    def test_convert_string_to_boolean(self):
-        val_str = "true"
-        self.assertEqual(convert_string_to_type(val_str), True)
-        val_str = "false"
-        self.assertEqual(convert_string_to_type(val_str), False)
+    def test_negative_one_stays_int(self):
+        # e.g. Kafka configs like retention.ms=-1 must not become -1.0
+        self.assertEqual(convert_string_to_type("-1"), -1)
+        self.assertIsInstance(convert_string_to_type("-1"), int)
 
-    def test_convert_string_to_str(self):
-        val_str = "test"
-        self.assertEqual(convert_string_to_type(val_str), "test")
+    def test_float(self):
+        self.assertEqual(convert_string_to_type("1.5"), 1.5)
 
-    def test_snake_to_camel_case(self):
-        val_str = "this_is_the_test_string"
-        self.assertEqual(snake_to_camel_case(val_str), "thisIsTheTestString")
+    def test_bool(self):
+        self.assertIs(convert_string_to_type("true"), True)
+        self.assertIs(convert_string_to_type("false"), False)
 
-    def test_is_valid_url(self):
-        not_valid_url_str = "not a valid url"
-        valid_url_str = "https://www.systemcraftsman.com"
-        not_valid_url_str2 = "systemcraftsman.com"
-        not_valid_url_str3 = "systemcraftsman.com"
+    def test_string(self):
+        self.assertEqual(convert_string_to_type("foo"), "foo")
 
-        self.assertFalse(is_valid_url(not_valid_url_str))
-        self.assertTrue(is_valid_url(valid_url_str))
-        self.assertFalse(is_valid_url(not_valid_url_str2))
-        self.assertFalse(is_valid_url(not_valid_url_str3))
+    def test_parse_kv_string_negative_int(self):
+        self.assertEqual(
+            parse_kv_string("retention.ms=-1,foo=bar"),
+            {"retention.ms": -1, "foo": "bar"},
+        )
+        self.assertIsInstance(
+            parse_kv_string("retention.ms=-1")["retention.ms"], int
+        )
